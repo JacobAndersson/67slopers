@@ -1,5 +1,5 @@
 import { dayKey, isSameDay, startOfWeek } from '../dates';
-import type { Session } from './types';
+import type { Session, Workout } from './types';
 
 export function latestSession(sessions: Session[]): Session | undefined {
   return [...sessions].sort((a, b) => b.completedAt.localeCompare(a.completedAt))[0];
@@ -40,4 +40,23 @@ export function weekStreak(sessions: Session[], now = new Date()): number {
     monday.setDate(monday.getDate() - 7);
   }
   return streak;
+}
+
+/**
+ * Workouts ordered by when they were last used, most recent first. A workout that has never
+ * been run ranks by its creation time, so a freshly made one sits at the top until something
+ * newer is run. Edits do not move a workout.
+ */
+export function sortWorkoutsByLastUsed(workouts: Workout[], sessions: Session[]): Workout[] {
+  const lastUsed = new Map<string, string>();
+  for (const s of sessions) {
+    if (!s.workoutId) continue;
+    const prev = lastUsed.get(s.workoutId);
+    if (!prev || s.completedAt > prev) lastUsed.set(s.workoutId, s.completedAt);
+  }
+  const rank = (w: Workout) => {
+    const used = lastUsed.get(w.id);
+    return used && used > w.createdAt ? used : w.createdAt;
+  };
+  return [...workouts].sort((a, b) => rank(b).localeCompare(rank(a)));
 }

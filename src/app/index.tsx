@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { CalendarStats, WeekCalendar } from '@/components/calendar';
 import { WorkoutCard } from '@/components/workout-card';
+import { sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useStore } from '@/lib/store/store';
 
 const PREVIEW = 3;
@@ -20,8 +21,8 @@ export default function HomeScreen() {
   const sessions = useStore((s) => s.sessions);
 
   const savedWorkouts = useMemo(
-    () => [...workouts].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
-    [workouts]
+    () => sortWorkoutsByLastUsed(workouts, sessions),
+    [workouts, sessions]
   );
   const latestSessions = useMemo(
     () => [...sessions].sort((a, b) => b.completedAt.localeCompare(a.completedAt)),

@@ -6,16 +6,15 @@ import { Screen } from '@/components/screen';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { WorkoutCard } from '@/components/workout-card';
+import { sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useStore } from '@/lib/store/store';
 
 /** Every saved workout, most recently edited first. */
 export default function WorkoutsScreen() {
   const router = useRouter();
   const workouts = useStore((s) => s.workouts);
-  const sorted = useMemo(
-    () => [...workouts].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
-    [workouts]
-  );
+  const sessions = useStore((s) => s.sessions);
+  const sorted = useMemo(() => sortWorkoutsByLastUsed(workouts, sessions), [workouts, sessions]);
 
   return (
     <Screen
