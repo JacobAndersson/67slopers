@@ -7,6 +7,30 @@ Cross-platform hangboard training app (iOS, Android, web) built with Expo SDK 57
 Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
 Do not rely on memory of older SDKs; APIs such as native tabs, splash screen and icons have moved.
 
+## Product non-negotiables
+
+Read [docs/principles.md](docs/principles.md) before adding features or dependencies. In short:
+
+- Everything is local. No network requests, no analytics, no accounts, no cloud, no ads.
+- Startup must stay instant: nothing on the launch path beyond bundled fonts and synchronous
+  local storage reads. Do not add root-level providers or SDKs without a reason tied to the timer.
+- The MVP scope is in [docs/mvp.md](docs/mvp.md); the competitor research it is based on is in
+  `competitors/`. Do not build beyond the MVP without checking there first.
+
+## App structure (MVP)
+
+- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home) → `workout/[id]/index.tsx`
+  (overview with Start) → `workout/[id]/run.tsx` (full-screen timer). `workout/new.tsx` and
+  `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`.
+- State lives in `src/lib/store/` (zustand + AsyncStorage, persisted as one JSON blob). Select
+  stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
+  from a selector. Sessions store a snapshot of the workout they ran.
+- Timer logic is pure and tested: `src/lib/timer/intervals.ts` expands a workout into intervals,
+  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms and emits
+  cues, `cues.ts` plays bundled tones (`assets/sounds`, regenerate with `node scripts/gen-tones.mjs`).
+  Screens only render; put behaviour in `src/lib` where `npm test` can reach it.
+- Workouts use `blocks[]`; simple mode is one block. Do not add flat timing fields.
+
 ## Conventions
 
 - Source lives in `src/`. Routes are in `src/app/` (Expo Router, file-based, typed routes on).
@@ -38,4 +62,5 @@ Run before finishing a change:
 npm run typecheck
 npm run lint
 npm run format:check
+npm test
 ```

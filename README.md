@@ -42,20 +42,24 @@ npm run web
 
 ```
 src/
-  app/            Expo Router routes (file-based). One file per screen.
-    _layout.tsx   Root layout: navigation theme, status bar, tabs, portal host
-    index.tsx     Train tab
-    workouts.tsx  Workouts tab
-    history.tsx   History tab
+  app/                      Expo Router routes (single stack, no tabs)
+    _layout.tsx             Fonts + store hydration gate, navigation theme, stack
+    index.tsx               Home: week strip, last session, saved workouts, New workout
+    workout/new.tsx         Create a workout
+    workout/[id]/index.tsx  Overview with Start
+    workout/[id]/edit.tsx   Edit or delete a workout
+    workout/[id]/run.tsx    Full-screen timer
   components/
-    ui/           shadcn-style components added via the reusables CLI
-    app-tabs.tsx  Native tab bar (web variant in app-tabs.web.tsx)
-    screen.tsx    Shared page frame
+    ui/                     shadcn-style components added via the reusables CLI
+    week-strip.tsx, workout-card.tsx, session-row.tsx, stepper.tsx, workout-form.tsx
+    screen.tsx              Shared page frame with an optional pinned footer
   lib/
-    theme.ts      Theme colors as TS values + React Navigation theme
-    utils.ts      `cn()` class merger
-  global.css      Tailwind directives + theme CSS variables
-assets/           App icon, splash and other static assets
+    store/                  zustand store, types, presets, selectors
+    timer/                  Interval expansion, engine, hook, cues (tested)
+    dates.ts, workout-summary.ts, theme.ts, fonts.ts, utils.ts
+  global.css                Tailwind directives + theme CSS variables
+assets/                     Icons, splash, Geist Mono, cue sounds
+scripts/gen-tones.mjs       Regenerates the cue sounds
 ```
 
 Notes:
@@ -96,6 +100,12 @@ screen until ready. React Native needs one font file per weight, each under its 
 family name, so a small plugin in `tailwind.config.js` makes the regular `font-*`
 weight utilities (`font-medium`, `font-semibold`, ...) select the matching family.
 Use those utilities as usual and never set `fontFamily` directly.
+
+## Docs
+
+- [Product principles](docs/principles.md): local-only, no accounts, instant startup, no ads.
+- [MVP scope](docs/mvp.md): what ships first, based on the BoulderFIT analysis.
+- [Competitor research](competitors/README.md): one file per app.
 
 ## Tech
 
