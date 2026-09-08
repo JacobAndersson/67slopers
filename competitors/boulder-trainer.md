@@ -6,8 +6,9 @@
 
 _Researched 2026-09-08. Based on the App Store listing (metadata via the iTunes lookup API), the
 brand-new Google Play listing, boulder-trainer.com (which shows the current UI; the App Store
-screenshots are from the iOS 9 era and no longer represent the app), user reviews, and third-party
-roundups._
+screenshots are from the iOS 9 era and no longer represent the app), user reviews, third-party
+roundups, and a hands-on walkthrough of the Android build installed from Google Play on a Pixel 7 /
+Android 16 emulator (see [Screenshots](#screenshots))._
 
 ## Snapshot
 
@@ -104,6 +105,68 @@ statement is candid: "there is no company behind this app, just a small private 
 - Android build is brand new and unproven (10+ installs); an earlier Android attempt was described
   as buggy by a 2024 roundup.
 
+## Hands-on walkthrough of the Android build (2026-09-08)
+
+The Android app is native (accessibility tree exposed, Material-style, green accent, four bottom
+tabs: Home, Training, Habits, Achievements). Observed flow and behaviour:
+
+- **First launch**: notification permission prompt, then a three-step onboarding: pick your board
+  (Upload Your Own Board / No board / searchable list with thumbnails), pick habit templates
+  (Stretching 10 min, Antagonist training, Practice handstand, Finger mobility 5 min, or your
+  own), then a "Can you make it through 21 days?" pledge that is a **swipe-to-confirm slider**.
+- **Home ("Today")**: streak flame counter, a days ring with the plan progress, week dots (M-S)
+  highlighting training days, "HABITS TODAY" with Add Habit, and a profile icon that opens
+  Settings.
+- **Training tab**: "MY PLAN" card (plan name, board thumbnail, "5 exercises · 20 min", Start
+  Workout), then "ALL PLANS" (Manage exercises & plans, Load online plans) and Training Board
+  Manager. A "+" creates a new plan.
+- **Start Workout triggers the paywall**, a three-page flow: "YOUR POTENTIAL: 1.5x stronger in 4
+  weeks" chart with an App Store quote, a Free-vs-Pro table (Set up plans & boards is free;
+  Hangboard training & timer, Check off habits & streaks, Achievements & medals are Pro; "4.7 ·
+  over 10,000 climbers"), then pricing. **Android prices (Swedish account)**: Yearly 229 kr
+  ("POPULAR", about SEK 4.40/week), Lifetime 519 kr ("BEST VALUE"), Weekly 69 kr. Footnote:
+  "Creating plans, setting up and sharing boards stays free."
+- **Plan editor**: Name, Description, HANGBOARD card with a "Permanently connect this training
+  board to this plan" toggle (otherwise workouts use the board chosen in the Board Manager), then
+  the EXERCISES list ("Dead Hang · 8 s · Pause 60 s · L4/R4") with duplicate and delete icons per
+  row and a "+" to add. The **exercise editor is a dialog with steppers**: Type, Duration,
+  Repetitions, Rest before, Left hole, Right hole. Types on Android: Dead Hang, Bent-Arm Hang,
+  Offset Hang, Pull-up, Offset Pull-up, One-arm Pull-up, L-Hang, Front Lever, Knee Raises,
+  Push-ups, Sit-ups, Custom exercise. **Holes are plain numbers in the editor**; the board picture
+  only appears in the (paywalled) runner.
+- **Load online plans**: Mine / Templates / Shared tabs and a long per-board template list
+  (ALPIDEX, Antworks Strong Ant, Beastmaker 1000 and 2000 "Beginner Level", Bergfreunde Flash,
+  BuddyBoard, Captain Fingerfood, Core Fingerboard, Crimpmonster warm-up, ...). Tapping a row gave
+  no visible feedback in the emulator.
+- **Training Board Manager**: search field, "My Own Board (Photo)" with Take a photo / Choose from
+  photo library, a "Custom Board" entry, then the preset boards with thumbnails. Tapping a board
+  selects it; there is no board detail page.
+- **Custom board flow** (the standout feature): photo picker, then "Crop board" (16:9 frame with
+  draggable corners and a centre line), then "Cut out board" with an automatic "Remove background"
+  toggle, then "Number the holds" (place and move holds, right side mirrored automatically, tap a
+  hold to rate how hard it feels, number size, add pair, Save board).
+- **Habits**: New Habit sheet offers Daily Habit or Counter Goal ("go bouldering 100x").
+- **Achievements tab** is blurred behind "Achievements are part of Pro / Unlock Pro"; visible
+  medal names in the Consistency group: First Streak, One Week, Two Weeks, Three Weeks, One Month,
+  Two Months, Habit Established, Hundred Days, Half-Year Streak, A Whole Year.
+- **Settings**: Training (Automatic timer start, Warm-up time Off/5/10/15 s, Back after countdown,
+  Countdown voice, Seconds per repetition with steppers), Privacy (Anonymous usage statistics),
+  General (Disable screen lock, Training reminder Off/2/3/5/7 days, Widget appearance
+  System/Light/Dark, Restart onboarding), Contact & Rate, Info (FAQ, Credits), Pro (Unlock, Restore
+  purchases), BT Online.
+
+Bugs seen in this build:
+
+- Board search shows wrong manufacturer labels (Beastmaker 2000 listed under "So iLL", So iLL Wood
+  Blister under "Beastmaker"). The 4.1.6 iOS release notes claim this was fixed.
+- The two habits selected during onboarding never appeared; Home and Habits both said "No habits
+  yet".
+- Despite choosing Beastmaker 1000 in onboarding, the default plan and all five preset plans are
+  German-titled Metolius Project plans ("Metolius 7C (schwer) Pyramidentraining", "Training für
+  maximale Haltekraft") on an English device.
+- The system Back button exits the app from several sub-pages (Board Manager, Habits sheet) instead
+  of going up one level.
+
 ## UX observations
 
 - **Two different apps in the wild.** The App Store screenshots still show a 2015-era design (thin
@@ -167,8 +230,24 @@ Negative:
    relaunch is built on them), but they are not MVP.
 6. **Keep the store listing honest and current.** Their decade-old screenshots are a warning.
 
+## Screenshots
+
+Captured 2026-09-08 from the Google Play build on a Pixel 7 / Android 16 emulator, downscaled to
+540 px. All files live in `screenshots/boulder-trainer/`.
+
+| Area          | Files                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Onboarding    | [01 notifications](screenshots/boulder-trainer/01-notification-permission.png), [02 board picker](screenshots/boulder-trainer/02-onboarding-board-picker.png), [03 board search](screenshots/boulder-trainer/03-onboarding-board-search.png), [04 board selected](screenshots/boulder-trainer/04-onboarding-board-selected.png), [05 habits](screenshots/boulder-trainer/05-onboarding-habits.png), [06 streak pledge](screenshots/boulder-trainer/06-onboarding-streak-pledge.png) |
+| Tabs          | [07 home](screenshots/boulder-trainer/07-home.png), [08 training](screenshots/boulder-trainer/08-training.png), [09 habits](screenshots/boulder-trainer/09-habits.png), [10 achievements (Pro)](screenshots/boulder-trainer/10-achievements-pro-locked.png), [29 add habit](screenshots/boulder-trainer/29-add-habit.png)                                                                                                             |
+| Settings      | [11 settings](screenshots/boulder-trainer/11-settings.png), [12 settings scrolled](screenshots/boulder-trainer/12-settings-scrolled.png)                                                                                                                                                                                                                                                                                             |
+| Paywall       | [13 potential](screenshots/boulder-trainer/13-paywall-potential.png), [14 free vs pro](screenshots/boulder-trainer/14-paywall-comparison.png), [15 pricing](screenshots/boulder-trainer/15-paywall-pricing.png)                                                                                                                                                                                                                       |
+| Plans         | [16 plans list](screenshots/boulder-trainer/16-plans-list.png), [17 plan detail](screenshots/boulder-trainer/17-plan-detail.png), [18 exercises](screenshots/boulder-trainer/18-plan-detail-exercises.png), [19 exercise editor](screenshots/boulder-trainer/19-exercise-editor.png), [20 type picker](screenshots/boulder-trainer/20-exercise-type-picker.png), [21 add exercise](screenshots/boulder-trainer/21-add-exercise.png), [22 online plans](screenshots/boulder-trainer/22-online-plans.png) |
+| Boards        | [23 board manager](screenshots/boulder-trainer/23-board-manager.png), [24 search (label bug)](screenshots/boulder-trainer/24-board-manager-search.png)                                                                                                                                                                                                                                                                              |
+| Custom board  | [25 photo picker](screenshots/boulder-trainer/25-custom-board-photo-picker.png), [26 crop](screenshots/boulder-trainer/26-custom-board-crop.png), [27 cut out](screenshots/boulder-trainer/27-custom-board-cutout.png), [28 number holds](screenshots/boulder-trainer/28-custom-board-number-holds.png)                                                                                                                              |
+
 ## Sources
 
+- Hands-on walkthrough of the Android build on an Android 16 emulator, 2026-09-08 (screenshots above)
 - App Store: https://apps.apple.com/us/app/boulder-trainer-hangboard/id770657161 (metadata via
   iTunes lookup API; IAP list and version history from the listing page)
 - Google Play (Android, July 2026):

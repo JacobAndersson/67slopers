@@ -1,0 +1,9 @@
+{
+  "projectId": "b23e0465-b001-4717-b596-aa501bae7662",
+  "shape": "package",
+  "pkg": "hangboard-ui",
+  "globalName": "HangboardUI",
+  "cssEntry": "dist/styles.css",
+  "extraFonts": ["fonts.css"],
+  "readmeHeader": ".design-sync/conventions.md"
+}

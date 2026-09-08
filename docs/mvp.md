@@ -1,0 +1,128 @@
+# MVP scope
+
+The MVP is a hangboard interval timer that matches BoulderFIT feature-for-feature and
+fixes its known weaknesses, built on the [product principles](principles.md). The
+detailed competitor notes live in [`competitors/boulderfit.md`](../competitors/boulderfit.md);
+this document turns them into scope.
+
+**Screenshots:** a hands-on walkthrough of BoulderFIT on an Android emulator is
+captured in [`competitors/screenshots/boulderfit/`](../competitors/screenshots/boulderfit/)
+and indexed at the end of the competitor notes.
+
+## Why BoulderFIT is the base
+
+It is the closest "pure timer" on the market, rated 4.85 with a small but loyal user base,
+and it is local-only with no account, which matches our principles. It is also Android
+only, has drifting audio cues and a tedious multi-set editor. The walkthrough settled the
+ad question: the free tier shows a full-screen interstitial after you finish a workout,
+which is the worst possible moment for it. Those gaps are the MVP's reason to exist.
+
+## In scope
+
+### Workout builder
+
+Parity with BoulderFIT:
+
+- Simple mode: prep, hang, pause (between reps), reps, rest (between sets), sets, with a
+  live estimate of total duration.
+- Complex mode: an ordered list of named sets, each with its own hang, pause, reps and a
+  rest after the set. One prep time for the whole workout.
+- Save the current configuration as a named workout and reload it later (BoulderFIT's
+  "favorites").
+
+Improvements:
+
+- Duplicate, reorder and delete sets in complex mode.
+- Steppers or wheel pickers with sane bounds instead of raw text fields.
+- A handful of built-in presets to start from (7:3 repeaters, max hangs, density hangs).
+  Keep BoulderFIT's warning that hangboarding is not for beginners.
+
+### Timer execution
+
+Parity:
+
+- Full-screen countdown with oversized digits and a phase label (Prep, Hang, Pause, Rest).
+- Colour-fill background that rises as the interval elapses.
+- Rep counter and set counter, plus a "next up" preview of the coming set.
+- Audio cues with selectable pitch, a selectable short countdown pattern (3-2-1, 2-1, 1,
+  none) and a long cue at each interval boundary. Optional vibration. Sounds can be off.
+
+Improvements:
+
+- Pause, skip forward and go back one interval. BoulderFIT has tap-anywhere-to-pause but
+  no skip and no back, so a mistimed set means restarting the workout.
+- Cue scheduling on a monotonic clock so long sessions never drift.
+- Audio ducks background music instead of stopping it, and is audible through earbuds.
+- Screen stays awake during a workout.
+- End-of-workout celebration cue and a short session summary. BoulderFIT shows "DONE" for
+  about a second, drops back to the config screen and logs the session silently.
+- Keeps running when the app is backgrounded (lock-screen presentation is a follow-up).
+
+### History
+
+Parity:
+
+- Chronological list of completed sessions showing the workout name, date and the
+  interval summary (ranges for complex workouts).
+- Edit a session afterwards and attach a free-text note.
+
+Improvements are deferred (see below).
+
+### Settings
+
+- Cue pitch, countdown pattern, vibration, sound on/off.
+- Theme: system, light, dark.
+- Nothing else. No profile.
+
+## Out of scope for the MVP
+
+- Accounts, cloud sync, sharing, social features (principles 1 and 2).
+- Training plans, calendars, scheduling, coaching content, assessments.
+- Analytics, charts, streaks, weekly volume, CSV export.
+- Added-weight or bodyweight logging (natural next layer after the timer).
+- Grade converter. BoulderFIT ships one; it is unrelated to the timer.
+- Watch apps, tablet layouts beyond what the responsive layout gives for free.
+- Force-sensor or board integrations.
+
+## Data and storage
+
+Everything is on-device (principle 1) and must be readable synchronously at startup
+(principle 3).
+
+Recommended: `expo-sqlite` for workouts and sessions, and its key-value store for
+settings and the last-used workout. It works in Expo Go and in development builds,
+supports synchronous reads, and gives us a real query layer once history grows.
+`react-native-mmkv` is faster for key-value data but needs a development build, so it is
+a possible later optimisation, not an MVP dependency.
+
+Entities:
+
+```
+Workout   id, name, prepSeconds, sets[], createdAt, updatedAt, isPreset
+Set       label, hangSeconds, pauseSeconds, reps, restSeconds
+Session   id, workoutId?, name, startedAt, completedAt, snapshot (the workout as run),
+          completed (bool), note
+Settings  cuePitchHz, countdownPattern, vibration, soundEnabled, theme, lastWorkoutId
+```
+
+Sessions store a snapshot of the workout so editing or deleting a workout never rewrites
+history.
+
+## Milestones
+
+Simple mode ships first: the workout model already uses `blocks[]`, so multi-set editing
+is an editor change, not a data or timer change.
+
+1. **Timer core.** Simple-mode configuration, execution screen with cues, keep-awake,
+   pause and skip. Usable for a real session end to end. Measure startup time.
+2. **Workouts.** Complex mode, presets, save and load, duplicate and reorder sets.
+3. **History.** Session log, edit and notes.
+4. **Polish.** Audio ducking, celebration cue, background timing, dark mode pass, web
+   layout pass.
+
+## Open questions
+
+- Which presets ship by default and with what exact numbers.
+- Whether "pause between reps" and "rest between sets" need separate audio cues.
+- Web: does the timer need to work on the web at all for the MVP, or is web a
+  development convenience until later.

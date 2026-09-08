@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "skipLibCheck": true,
+    "rootDir": "../../src",
+    "outDir": "./pkg/dist/src"
+  },
+  "include": ["../../src/components/ui/*.tsx", "../../src/lib/*.ts"]
+}

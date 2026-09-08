@@ -5,8 +5,9 @@
 > beyond our MVP scope, but its timer and logging UX set the bar climbers compare against.
 
 _Researched 2026-09-08. Based on crimpd.com (pricing, docs, blog release notes), the App Store and
-Google Play listings, store screenshots, user reviews and developer replies, and third-party
-reviews and forum threads._
+Google Play listings, store screenshots, user reviews and developer replies, third-party reviews
+and forum threads, and a hands-on walkthrough of the Android build (v8.x from Google Play) on a
+Pixel 7 / Android 16 emulator without logging in (see [Screenshots](#screenshots))._
 
 ## Snapshot
 
@@ -144,6 +145,63 @@ multi-week plan. It is also the delivery vehicle for Lattice Lite 12-week coache
 - Not present: Apple Watch app, offline mode, HealthKit or Google Fit sync (not advertised),
   force-gauge / Tindeq integration, board (Kilter/Tension) app integration beyond tags.
 
+## Hands-on walkthrough of the Android build, logged out (2026-09-08)
+
+Crimpd is a WebView app (Ionic/Capacitor style) whose DOM is exposed to accessibility, so it feels
+native enough. What works **without an account**:
+
+- **Home** opens directly with no onboarding: a search field "What do you want to train today?",
+  then category sections with photo tiles and counts (Endurance: Aerobic Capacity 12, Regeneration
+  10; Power Endurance: Aerobic Power 15, Anaerobic Capacity 23; Strength & Power: Bouldering 12,
+  Finger Strength 50, Power 6; Conditioning: Antagonist & Lower Body 7, Core 18, Flexibility 20,
+  Upper Body 40, so 213 workouts in total), then **Featured Playlists** (Paradigm Climbing "Tension
+  & Movement Drills" 6, Emil Abrahamsson "Technique & Strength Drills" 15, Jonathan Sin "Climbing
+  Training Starter Pack" 10, and more), then promo cards for Create Custom Workouts (Crimpd+), Log
+  Cross-Training Workouts, Start Open Climbing Session, and an **Assessment Tests** row (Edge Lift
+  Test 25 min, Finger Strength Test 20 min, ...).
+- **Search** has Category / Equipment / Home Workouts filters. "hang" finds 21 workouts: Density
+  Hangs 65/70/75 % (15 min), Hangboard Isometric Holds and Repeaters (10 min), Max Hangs 85/90/95 %,
+  Max Hangs One Arm 85/90/95 %, and so on. Cards show image, name, one-line description, category
+  icon and minutes.
+- **Category page** has Featured and All Workouts tabs.
+- **Locked content**: many hangboard workouts (Density Hangs, Hangboard Isometric Holds) carry a
+  "Premium Workout" badge; Start Workout / Log Workout / Add to Plan are greyed out and the page
+  says "This workout is only available to Crimpd+ subscribers" with an upgrade card (Over 200
+  workouts, Training plans, Custom workouts). Free examples: the assessment tests and Emil
+  Abrahamsson's sub-max routine.
+- **Workout detail**: hero image, category icon and title, three round action buttons (Start
+  Workout, Log Workout, Add to Plan), description, variant chips where relevant (A 65 % / B 70 % /
+  C 75 %; A Half Crimp / B Open Crimp / C 3FD), a minutes chip, then the exercise list with
+  thumbnails: "1 set · 6 reps · 00:10 per rep, Rest 00:20 per rep, Resistance 2/10 RPE" (or "Up to
+  Max Load" for tests).
+- **Timer** (Emil's Sub-max Daily Fingerboard Routine): media header with photo/video, exercise
+  name, an info button (bottom sheet with Resistance, Rest Between Reps, Focus Points), a minimise
+  chevron and a clipboard button. Big `mm:ss` plus a small tenths digit. Pressing play starts a
+  **10-second "GET READY..." countdown in orange**, then **"GO!" in green** for the hang, then
+  **"REST" in blue** with the counter switching to "NEXT REP 2/6"; pausing turns the digits red
+  with "PAUSED". Prev/next arrows sit beside the phase label. A card shows SET 1/1 and REP x/6 and
+  expands to the in-session log: a "SET 1 4/6 reps" chip, "Set 1" with a green tick, a
+  five-segment "How hard was this set?" slider (Easy by default) and Add Note. Transport bar: prev
+  set, prev rep, play/pause, next rep, next set. Tapping the clipboard while logged out shows the
+  toast "You must be logged in to log your workouts."
+- **Mini-player**: the chevron shrinks the workout to a bottom bar (thumbnail, exercise, "Set 1/1 ·
+  Rep 4/6", state and time, play, close) that persists across every tab, even the login screen,
+  with a "Return to workout" affordance.
+- **Training Plans tab** (logged out) is an upgrade card ("Create your own training plans or
+  assemble a training plan using Skill Templates", Start Your Training Plan) plus the **Skill
+  Templates grid**: Base Endurance (Off-season Base Endurance Training), Bouldering Fitness (Build
+  Power Endurance for Long Boulder Problems), Bouldering Mastery (Foundational Drills & Workouts
+  for Boulderers), Build Power (Apply Strength through Dynamic Movements), Conquer One-Arm Pull-ups
+  (Advanced Training for Difficult Crux Moves), Improve Body Tension (Maintain Tension on Steep
+  Terrain), Increase Flexibility (Improve Movement at End Ranges of Motion), Peak Power Endurance
+  (Manage the Pump on your Sport Climbing Projects), Progress ... and more.
+- **Login walls**: Logbook ("Training History"), Analytics and Profile each show "You must be
+  logged in to view..." with a Login/Sign-up button. The side menu lists Log In/Sign Up, Home,
+  Training Plans, Training History, Analytics, Profile, Help. The login screen has Log In / Sign Up
+  tabs, email-or-username and password fields, and Forgot your password.
+- The "Upgrade to Crimpd+" buttons did nothing while logged out, so the in-app purchase sheet was
+  not captured; prices above come from the store listings.
+
 ## UX observations (from screenshots, release notes and reviews)
 
 - **Visual style.** Clean white cards, single blue accent, bold uppercase display headings,
@@ -226,8 +284,22 @@ Crimpd is not the MVP target, but it defines what "good" looks like for the piec
 7. **Later**: added-weight suggestion from a finger-strength test, simple weekly volume chart, and
    preset protocols are the natural next layer after the timer.
 
+## Screenshots
+
+Captured 2026-09-08 from the Google Play build on a Pixel 7 / Android 16 emulator, logged out,
+downscaled to 540 px. All files live in `screenshots/crimpd/`.
+
+| Area           | Files                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Home           | [01 home](screenshots/crimpd/01-home.png), [02 scrolled](screenshots/crimpd/02-home-scrolled.png), [03 custom / log / session](screenshots/crimpd/03-home-custom-log-session.png), [04 assessment tests](screenshots/crimpd/04-home-assessment-tests.png)                                                                                                                                       |
+| Library        | [05 search "hang"](screenshots/crimpd/05-search-hang.png), [06 premium locked](screenshots/crimpd/06-workout-detail-premium-locked.png), [07 category](screenshots/crimpd/07-category-finger-strength.png), [08 free workout](screenshots/crimpd/08-workout-detail-free.png), [09 exercises](screenshots/crimpd/09-workout-detail-exercises.png), [19 assessment detail](screenshots/crimpd/19-assessment-detail.png) |
+| Timer          | [10 ready](screenshots/crimpd/10-timer-ready.png), [11 get ready](screenshots/crimpd/11-timer-get-ready.png), [12 hang](screenshots/crimpd/12-timer-hang-go.png), [13 rest](screenshots/crimpd/13-timer-rest-next-rep.png), [14 paused](screenshots/crimpd/14-timer-paused.png), [15 set details](screenshots/crimpd/15-timer-set-details-log.png), [16 log needs login](screenshots/crimpd/16-timer-log-requires-login.png), [17 info sheet](screenshots/crimpd/17-exercise-info-sheet.png), [18 mini-player](screenshots/crimpd/18-timer-mini-player.png) |
+| Plans          | [20 training plans](screenshots/crimpd/20-training-plans.png), [21 skill templates](screenshots/crimpd/21-skill-templates.png), [22 more templates](screenshots/crimpd/22-skill-templates-more.png)                                                                                                                                                                                              |
+| Login walls    | [23 logbook](screenshots/crimpd/23-logbook-login-wall.png), [24 analytics](screenshots/crimpd/24-analytics-login-wall.png), [25 profile](screenshots/crimpd/25-profile-login-wall.png), [26 side menu](screenshots/crimpd/26-side-menu.png), [27 login](screenshots/crimpd/27-login.png)                                                                                                        |
+
 ## Sources
 
+- Hands-on walkthrough of the Android build on an Android 16 emulator, 2026-09-08 (screenshots above)
 - Site: https://www.crimpd.com/ · Pricing: https://www.crimpd.com/pricing/ · Crimpd+:
   https://www.crimpd.com/crimpd-plus/
 - Docs: https://www.crimpd.com/docs/ · Plan builder:

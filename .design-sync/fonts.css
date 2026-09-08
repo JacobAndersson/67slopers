@@ -1,0 +1,39 @@
+/* Geist Mono, one @font-face per weight.
+   React Native registers each weight as its own family name (see src/lib/fonts.ts),
+   and the Tailwind plugin in tailwind.config.js maps the font-* weight utilities
+   onto these names, so the web CSS references them by family, not by weight. */
+@font-face {
+  font-family: 'GeistMono_400Regular';
+  src: url('../assets/fonts/GeistMono_400Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GeistMono_500Medium';
+  src: url('../assets/fonts/GeistMono_500Medium.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GeistMono_600SemiBold';
+  src: url('../assets/fonts/GeistMono_600SemiBold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GeistMono_700Bold';
+  src: url('../assets/fonts/GeistMono_700Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GeistMono_800ExtraBold';
+  src: url('../assets/fonts/GeistMono_800ExtraBold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
