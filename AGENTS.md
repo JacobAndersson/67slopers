@@ -19,8 +19,8 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
 
 ## App structure (MVP)
 
-- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: three saved workouts, three
-  latest sessions, week strip) → `workout/[id]/index.tsx` (overview with Start) →
+- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: week strip, three saved
+  workouts, three latest sessions) → `workout/[id]/index.tsx` (overview with Start) →
   `workout/[id]/run.tsx` (full-screen timer). `workouts.tsx` and `sessions.tsx` are the
   "View all" index screens; `session/[id].tsx` shows one session with "Do it again".
   `workout/new.tsx` and `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`.

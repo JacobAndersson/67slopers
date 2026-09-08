@@ -35,6 +35,8 @@ export default function HomeScreen() {
           <Text>New workout</Text>
         </Button>
       }>
+      <WeekStrip sessions={sessions} />
+
       <SectionHeader
         title="Your workouts"
         actionLabel={savedWorkouts.length > PREVIEW ? 'View all' : undefined}
@@ -69,9 +71,6 @@ export default function HomeScreen() {
       ) : (
         <Text variant="muted">No sessions yet. Pick a workout above and press Start.</Text>
       )}
-
-      <SectionHeader title="This week" />
-      <WeekStrip sessions={sessions} />
     </Screen>
   );
 }

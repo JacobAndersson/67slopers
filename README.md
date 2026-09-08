@@ -44,7 +44,7 @@ npm run web
 src/
   app/                      Expo Router routes (single stack, no tabs)
     _layout.tsx             Fonts + store hydration gate, navigation theme, stack
-    index.tsx               Home: your workouts, latest workouts, this week
+    index.tsx               Home: week strip, your workouts, latest workouts
     workouts.tsx            All saved workouts
     sessions.tsx            All completed sessions, grouped by day
     session/[id].tsx        One session: grade, sets, duration, Do it again
