@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
+import { FeelBadge } from '@/components/feel';
 import { Screen } from '@/components/screen';
 import { SessionRow } from '@/components/session-row';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,6 @@ export default function HomeScreen() {
 
   const daySessions = useMemo(() => sessionsOnDay(sessions, selectedDay), [sessions, selectedDay]);
   const latest = useMemo(() => latestSession(sessions), [sessions]);
-  const latestWorkout = latest ? workouts.find((w) => w.id === latest.workoutId) : undefined;
   const savedWorkouts = useMemo(
     () => [...workouts].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
     [workouts]
@@ -40,16 +40,13 @@ export default function HomeScreen() {
       <WeekStrip sessions={sessions} selected={selectedDay} onSelect={setSelectedDay} />
       {daySessions.length > 0 ? (
         <View className="gap-2">
-          {daySessions.map((session) => {
-            const exists = workouts.some((w) => w.id === session.workoutId);
-            return (
-              <SessionRow
-                key={session.id}
-                session={session}
-                onPress={exists ? () => router.push(`/workout/${session.workoutId}`) : undefined}
-              />
-            );
-          })}
+          {daySessions.map((session) => (
+            <SessionRow
+              key={session.id}
+              session={session}
+              onPress={() => router.push(`/session/${session.id}`)}
+            />
+          ))}
         </View>
       ) : (
         <Text variant="muted">No session on {dayLabel}.</Text>
@@ -60,8 +57,7 @@ export default function HomeScreen() {
       </Text>
       {latest ? (
         <Pressable
-          disabled={!latestWorkout}
-          onPress={() => latestWorkout && router.push(`/workout/${latestWorkout.id}`)}
+          onPress={() => router.push(`/session/${latest.id}`)}
           accessibilityRole="button"
           className="active:opacity-80">
           <Card>
@@ -69,7 +65,8 @@ export default function HomeScreen() {
               <CardDescription>{relativeDay(latest.completedAt)}</CardDescription>
               <CardTitle>{latest.workoutName}</CardTitle>
             </CardHeader>
-            <CardContent className="gap-1">
+            <CardContent className="gap-2">
+              {latest.feel ? <FeelBadge feel={latest.feel} /> : null}
               <Text variant="muted">{summaryLine(latest.snapshot)}</Text>
               <Text variant="small">
                 {setsLine(latest.completedSets, latest.totalSets)} ·{' '}

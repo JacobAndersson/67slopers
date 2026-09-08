@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
+import { FeelBadge } from '@/components/feel';
 import { Screen } from '@/components/screen';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -92,11 +93,17 @@ export default function WorkoutOverviewScreen() {
           <Text variant="muted">About {formatClock(total)} in total.</Text>
         </View>
 
-        <Text variant="muted">
-          {last
-            ? `Last done ${relativeDay(last.completedAt)} · ${setsLine(last.completedSets, last.totalSets)}`
-            : 'Never done'}
-        </Text>
+        {last ? (
+          <View className="gap-2">
+            <Text variant="muted">
+              Last done {relativeDay(last.completedAt)} ·{' '}
+              {setsLine(last.completedSets, last.totalSets)}
+            </Text>
+            {last.feel ? <FeelBadge feel={last.feel} /> : null}
+          </View>
+        ) : (
+          <Text variant="muted">Never done</Text>
+        )}
       </Screen>
     </>
   );

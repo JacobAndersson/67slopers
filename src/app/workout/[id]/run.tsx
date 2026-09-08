@@ -34,10 +34,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { Textarea } from '@/components/ui/textarea';
+import { FeelPicker } from '@/components/feel';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
-import type { Workout, WorkoutTimings } from '@/lib/store/types';
+import type { Feel, Workout, WorkoutTimings } from '@/lib/store/types';
 import { THEME, type ThemeColor } from '@/lib/theme';
 import { createCuePlayer, type CuePlayer } from '@/lib/timer/cues';
 import type { Phase } from '@/lib/timer/intervals';
@@ -112,7 +112,7 @@ function Runner({ workout }: { workout: Workout }) {
   const paused = timer.status === 'paused';
 
   const [startedAt] = useState(() => new Date().toISOString());
-  const [note, setNote] = useState('');
+  const [feel, setFeel] = useState<Feel | undefined>();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const leaving = useRef(false);
 
@@ -150,7 +150,7 @@ function Runner({ workout }: { workout: Workout }) {
       completedSets: timer.completedSets,
       totalSets: timer.totalSets,
       completed: timer.status === 'done',
-      note: note.trim() || undefined,
+      feel,
     });
     leaving.current = true;
     router.dismissTo('/');
@@ -226,13 +226,11 @@ function Runner({ workout }: { workout: Workout }) {
                 {formatClock(timer.elapsedSeconds)}
               </Text>
             </View>
-            <View className="gap-2">
-              <Text variant="muted">Note (optional)</Text>
-              <Textarea
-                value={note}
-                onChangeText={setNote}
-                placeholder="How did it feel?"
-                numberOfLines={3}
+            <View className="gap-3">
+              <Text className="text-xl font-semibold">How did you feel?</Text>
+              <FeelPicker
+                value={feel}
+                onChange={(f) => setFeel((cur) => (cur === f ? undefined : f))}
               />
             </View>
             <Button size="lg" onPress={finish}>

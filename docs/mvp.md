@@ -54,7 +54,9 @@ Improvements:
 - Cue scheduling on a monotonic clock so long sessions never drift.
 - Audio ducks background music instead of stopping it, and is audible through earbuds.
 - Screen stays awake during a workout.
-- End-of-workout celebration cue and a short session summary. BoulderFIT shows "DONE" for
+- End-of-workout celebration cue and a short session summary with a one-tap grade,
+  "How did you feel?" (weak, normal, strong), saved on the session and shown on the
+  home screen, the session screen and the workout overview. BoulderFIT shows "DONE" for
   about a second, drops back to the config screen and logs the session silently.
 - Keeps running when the app is backgrounded (lock-screen presentation is a follow-up).
 
@@ -66,7 +68,10 @@ Parity:
   interval summary (ranges for complex workouts).
 - Edit a session afterwards and attach a free-text note.
 
-Improvements are deferred (see below).
+Improvements:
+
+- Tap a completed session on the home screen to open it: grade, sets, duration, note,
+  and a "Do it again" button that starts the same workout.
 
 ### Settings
 

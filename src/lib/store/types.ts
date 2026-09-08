@@ -24,6 +24,17 @@ export type Workout = WorkoutTimings & {
   updatedAt: string;
 };
 
+/** How the session felt, graded once it ends. */
+export type Feel = 'weak' | 'normal' | 'strong';
+
+export const FEELS: Feel[] = ['weak', 'normal', 'strong'];
+
+export const FEEL_LABELS: Record<Feel, string> = {
+  weak: 'Weak',
+  normal: 'Normal',
+  strong: 'Strong',
+};
+
 export type Session = {
   id: string;
   workoutId: string;
@@ -35,6 +46,7 @@ export type Session = {
   completedSets: number;
   totalSets: number;
   completed: boolean;
+  feel?: Feel;
   note?: string;
 };
 

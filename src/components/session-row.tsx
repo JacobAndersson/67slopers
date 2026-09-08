@@ -1,5 +1,7 @@
 import { Pressable, View } from 'react-native';
 
+import { FEEL_ICONS } from '@/components/feel';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { formatTime } from '@/lib/dates';
 import type { Session } from '@/lib/store/types';
@@ -7,7 +9,6 @@ import { setsLine, summaryLine } from '@/lib/workout-summary';
 
 type SessionRowProps = {
   session: Session;
-  /** Opens the workout the session ran, when it still exists. */
   onPress?: () => void;
 };
 
@@ -23,6 +24,7 @@ export function SessionRow({ session, onPress }: SessionRowProps) {
         <Text className="font-semibold">{session.workoutName}</Text>
         <Text variant="muted">{summaryLine(session.snapshot)}</Text>
       </View>
+      {session.feel ? <Icon as={FEEL_ICONS[session.feel]} className="size-6" /> : null}
       <View className="items-end gap-0.5">
         <Text variant="small">{formatTime(session.completedAt)}</Text>
         <Text variant="muted" className={session.completed ? undefined : 'text-destructive'}>
