@@ -21,6 +21,8 @@ type StoreState = {
   addWorkout: (input: WorkoutInput) => Workout;
   updateWorkout: (id: string, patch: Partial<WorkoutInput>) => void;
   deleteWorkout: (id: string) => void;
+  /** Copies a workout as a new, non-preset entry named "<name> copy". */
+  duplicateWorkout: (id: string) => Workout | undefined;
   addSession: (input: Omit<Session, 'id'>) => Session;
   updateSession: (id: string, patch: Partial<Pick<Session, 'feel'>>) => void;
   deleteSession: (id: string) => void;
@@ -58,6 +60,22 @@ export const useStore = create<StoreState>()(
         })),
 
       deleteWorkout: (id) => set((s) => ({ workouts: s.workouts.filter((w) => w.id !== id) })),
+
+      duplicateWorkout: (id) => {
+        const source = get().workouts.find((w) => w.id === id);
+        if (!source) return undefined;
+        const now = new Date().toISOString();
+        const copy: Workout = {
+          ...source,
+          id: newId(),
+          name: `${source.name} copy`,
+          isPreset: false,
+          createdAt: now,
+          updatedAt: now,
+        };
+        set((s) => ({ workouts: [copy, ...s.workouts] }));
+        return copy;
+      },
 
       addSession: (input) => {
         const session: Session = { ...input, id: newId() };

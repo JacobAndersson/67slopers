@@ -1,10 +1,12 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { CopyIcon } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { FeelBadge } from '@/components/feel';
 import { Screen } from '@/components/screen';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { formatClock, formatShort, relativeDay } from '@/lib/dates';
 import { lastSessionForWorkout } from '@/lib/store/selectors';
@@ -28,6 +30,7 @@ export default function WorkoutOverviewScreen() {
   const router = useRouter();
   const workout = useStore((s) => s.workouts.find((w) => w.id === id));
   const sessions = useStore((s) => s.sessions);
+  const duplicateWorkout = useStore((s) => s.duplicateWorkout);
   const last = useMemo(
     () => (id ? lastSessionForWorkout(sessions, id) : undefined),
     [sessions, id]
@@ -92,6 +95,20 @@ export default function WorkoutOverviewScreen() {
           <Text>{sequence}</Text>
           <Text variant="muted">About {formatClock(total)} in total.</Text>
         </View>
+
+        <Button
+          variant="outline"
+          className="self-start"
+          onPress={() => {
+            const copy = duplicateWorkout(workout.id);
+            if (!copy) return;
+            // Land on the copy's overview with its edit screen on top, so Save returns to the copy.
+            router.replace(`/workout/${copy.id}`);
+            router.push(`/workout/${copy.id}/edit`);
+          }}>
+          <Icon as={CopyIcon} className="size-4" />
+          <Text>Duplicate</Text>
+        </Button>
 
         {last ? (
           <View className="gap-2">
