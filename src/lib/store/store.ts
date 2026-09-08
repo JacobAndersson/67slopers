@@ -22,6 +22,8 @@ type StoreState = {
   updateWorkout: (id: string, patch: Partial<WorkoutInput>) => void;
   deleteWorkout: (id: string) => void;
   addSession: (input: Omit<Session, 'id'>) => Session;
+  updateSession: (id: string, patch: Partial<Pick<Session, 'feel'>>) => void;
+  deleteSession: (id: string) => void;
   setDraft: (draft: Draft | null) => void;
   finishHydration: () => void;
 };
@@ -62,6 +64,11 @@ export const useStore = create<StoreState>()(
         set((s) => ({ sessions: [session, ...s.sessions] }));
         return session;
       },
+
+      updateSession: (id, patch) =>
+        set((s) => ({ sessions: s.sessions.map((x) => (x.id === id ? { ...x, ...patch } : x)) })),
+
+      deleteSession: (id) => set((s) => ({ sessions: s.sessions.filter((x) => x.id !== id) })),
 
       setDraft: (draft) => set({ draft }),
 
