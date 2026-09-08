@@ -28,6 +28,22 @@ npm run android
 npm run web
 ```
 
+## Installing on a phone
+
+The app is built locally; no Expo account or cloud service is involved.
+
+```bash
+npm run build:android          # generates android/ if needed, builds a release APK
+adb install -r android/app/build/outputs/apk/release/app-release.apk
+```
+
+The first build downloads Gradle and the Android NDK and takes 10 to 20 minutes; later
+builds take a couple of minutes. The APK is signed with the generated debug keystore,
+which is fine for installing on your own devices. Publishing to a store needs a real
+release keystore in `android/app/build.gradle`. The `android/` directory is generated and
+ignored by git; regenerate it with `npx expo prebuild --platform android --clean` after
+changing native config in `app.json`.
+
 ## Scripts
 
 | Script                 | What it does                          |

@@ -63,7 +63,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test \"src/**/*.test.ts\""
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "build:android": "expo prebuild --platform android --no-install && cd android && ./gradlew :app:assembleRelease --console=plain"
   },
   "private": true
 }
