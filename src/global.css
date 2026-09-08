@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* "Stella" theme from tweakcn: https://tweakcn.com/themes/cmm2mehjy000004ibgt6g0rbu */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 35 100% 71%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 35 100% 90%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 35 40% 94%;
+    --muted-foreground: 35 20% 40%;
+    --accent: 35 100% 85%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 35 40% 85%;
+    --input: 35 40% 85%;
+    --ring: 35 100% 71%;
+    --radius: 0.85rem;
+    --chart-1: 35 100% 71%;
+    --chart-2: 35 80% 60%;
+    --chart-3: 35 60% 50%;
+    --chart-4: 35 40% 40%;
+    --chart-5: 35 100% 85%;
+  }
+
+  .dark:root {
+    --background: 35 40% 5%;
+    --foreground: 35 100% 95%;
+    --card: 35 40% 8%;
+    --card-foreground: 35 100% 95%;
+    --popover: 35 40% 6%;
+    --popover-foreground: 35 100% 95%;
+    --primary: 35 100% 71%;
+    --primary-foreground: 35 100% 5%;
+    --secondary: 35 40% 15%;
+    --secondary-foreground: 35 100% 85%;
+    --muted: 35 30% 15%;
+    --muted-foreground: 35 20% 65%;
+    --accent: 35 60% 20%;
+    --accent-foreground: 35 100% 85%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 35 30% 20%;
+    --input: 35 30% 20%;
+    --ring: 35 100% 71%;
+    --chart-1: 35 100% 71%;
+    --chart-2: 35 80% 60%;
+    --chart-3: 35 60% 50%;
+    --chart-4: 35 40% 40%;
+    --chart-5: 35 100% 85%;
+  }
+}

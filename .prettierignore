@@ -1,0 +1,6 @@
+assets/
+dist/
+.expo/
+node_modules/
+package-lock.json
+competitors/
