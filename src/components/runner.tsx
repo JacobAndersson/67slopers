@@ -25,7 +25,17 @@ import { useStore } from '@/lib/store/store';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import type { Phase } from '@/lib/timer/intervals';
 import { useTimer } from '@/lib/timer/useTimer';
+import { cn } from '@/lib/utils';
 import { setsLine } from '@/lib/workout-summary';
+
+/** Flat background per phase, so the state reads from across the room without the digits. */
+const PHASE_BG: Record<Phase, string> = {
+  prep: 'bg-accent',
+  hang: 'bg-primary',
+  pause: 'bg-secondary',
+  rest: 'bg-muted',
+  done: 'bg-background',
+};
 
 const PHASE_LABEL: Record<Phase, string> = {
   prep: 'Get ready',
@@ -124,7 +134,7 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const showRep = interval.repCount > 1 && interval.phase !== 'rest';
 
   return (
-    <View className="flex-1 bg-background">
+    <View className={cn('flex-1', idle || finished ? 'bg-background' : PHASE_BG[interval.phase])}>
       <View
         className="flex-1 px-6"
         style={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }}>
@@ -197,14 +207,14 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
               {idle ? (
                 <Text className="text-xl text-muted-foreground">{name} · press play to start</Text>
               ) : timer.nextInterval && timer.nextInterval.phase !== 'done' ? (
-                <Text className="text-xl text-muted-foreground">
+                <Text className="text-xl text-foreground/60">
                   Next: {PHASE_LABEL[timer.nextInterval.phase]}{' '}
                   {timer.nextInterval.seconds >= 60
                     ? formatClock(timer.nextInterval.seconds)
                     : `${timer.nextInterval.seconds}s`}
                 </Text>
               ) : (
-                <Text className="text-xl text-muted-foreground">Last one</Text>
+                <Text className="text-xl text-foreground/60">Last one</Text>
               )}
             </View>
 
@@ -221,10 +231,13 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
               ) : null}
               <Button
                 size="icon"
-                className="h-24 w-24 rounded-full"
+                className="h-24 w-24 rounded-full bg-foreground active:bg-foreground/80"
                 accessibilityLabel={idle ? 'Start' : paused ? 'Resume' : 'Pause'}
                 onPress={idle ? timer.start : paused ? timer.resume : timer.pause}>
-                <Icon as={idle || paused ? PlayIcon : PauseIcon} className="size-10" />
+                <Icon
+                  as={idle || paused ? PlayIcon : PauseIcon}
+                  className="size-10 text-background"
+                />
               </Button>
               {paused ? (
                 <Button
