@@ -5,7 +5,6 @@ import { useFonts } from 'expo-font';
 import { Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'nativewind';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
@@ -16,9 +15,6 @@ import { NAV_THEME, THEME } from '@/lib/theme';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { colorScheme } = useColorScheme();
-  const scheme = colorScheme === 'dark' ? 'dark' : 'light';
-  const colors = THEME[scheme];
   const [fontsLoaded, fontError] = useFonts(FONTS);
   const hydrated = useStore((s) => s.hydrated);
 
@@ -38,16 +34,16 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={NAV_THEME[scheme]}>
-      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+    <ThemeProvider value={NAV_THEME}>
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.foreground,
+          headerStyle: { backgroundColor: THEME.background },
+          headerTintColor: THEME.foreground,
           headerTitleStyle: { fontFamily: 'GeistMono_600SemiBold' },
           headerShadowVisible: false,
           headerBackButtonDisplayMode: 'minimal',
-          contentStyle: { backgroundColor: colors.background },
+          contentStyle: { backgroundColor: THEME.background },
         }}>
         <Stack.Screen name="index" options={{ title: 'Hangboard' }} />
         <Stack.Screen name="workout/new" options={{ title: 'New workout' }} />

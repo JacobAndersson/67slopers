@@ -69,6 +69,6 @@ Not principles, but defaults that follow from how a hangboard timer is actually 
 - Few taps to start: last workout is preselected, one tap starts it.
 - Cues you can trust: audio scheduled against a monotonic clock, not `setInterval`, so
   7:3 repeaters stay in sync. Cues duck music instead of pausing it.
-- Works in the dark: dark mode follows the system.
+- One appearance. There are no themes and no dark mode; the palette is fixed.
 - Cross-platform from one codebase: iOS, Android and web, with native tab bars where the
   platform has them.

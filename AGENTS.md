@@ -42,10 +42,11 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   `npx @react-native-reusables/cli@latest add <name>`; they land in `src/components/ui/`. Prefer
   adding a reusables component over hand-rolling one. Always render text with `Text` from
   `@/components/ui/text`, never the bare React Native `Text`.
-- The theme ("Stella" from tweakcn) is defined twice on purpose: CSS variables in `src/global.css`
+- The palette ("Stella" from tweakcn) is defined twice on purpose: CSS variables in `src/global.css`
   and a TS mirror in `src/lib/theme.ts` (`THEME`, `NAV_THEME`). Change both together. Use `THEME`
   only where a class name cannot be used (native tab bar, navigation theme, animations).
-- Color scheme comes from `useColorScheme()` in `nativewind`, not from `react-native`.
+- One appearance only: no themes, no dark mode, no color-scheme hooks. Do not add `dark:`
+  variants or a `.dark` palette.
 - The typeface is Geist Mono, loaded per weight in `src/lib/fonts.ts` and applied through the
   `font-*` weight utilities, which a plugin in `tailwind.config.js` maps to the per-weight family
   names. Never set `fontFamily`/`fontWeight` by hand; use `font-medium`, `font-semibold`, etc.

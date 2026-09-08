@@ -67,7 +67,7 @@ Notes:
 - Import from `src` with the `@/` alias and from `assets` with `@/assets/`.
 - Native platforms use `NativeTabs` for a platform-native tab bar. The web build
   swaps in a headless tab bar via `app-tabs.web.tsx`.
-- Light and dark mode follow the system setting.
+- One fixed light appearance: no themes, no dark mode.
 
 ## UI and theming
 
@@ -81,16 +81,16 @@ React Native. Add components with the CLI, which writes them into
 npx @react-native-reusables/cli@latest add button card input
 ```
 
-The color theme is "Stella" from [tweakcn](https://tweakcn.com/themes/cmm2mehjy000004ibgt6g0rbu).
+The palette is "Stella" from [tweakcn](https://tweakcn.com/themes/cmm2mehjy000004ibgt6g0rbu).
 It lives in two places that must stay in sync:
 
-- `src/global.css` holds the CSS variables (`:root` for light, `.dark:root` for dark)
-  used by Tailwind classes such as `bg-primary` and `text-muted-foreground`.
+- `src/global.css` holds the CSS variables on `:root`, used by Tailwind classes such as
+  `bg-primary` and `text-muted-foreground`.
 - `src/lib/theme.ts` mirrors the same values as TypeScript for anything that cannot
   take a class name: the native tab bar, the navigation theme, inline styles.
 
-To swap themes, paste a shadcn/tweakcn theme in its Tailwind v3 (HSL) form into
-`global.css` and update `theme.ts` to match.
+To swap palettes, paste a shadcn/tweakcn theme's light values in Tailwind v3 (HSL) form
+into `global.css` and update `theme.ts` to match.
 
 ### Fonts
 

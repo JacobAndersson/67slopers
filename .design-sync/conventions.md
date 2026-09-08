@@ -39,9 +39,6 @@ its own family name, and the `font-*` utilities select the matching family —
 so `font-semibold` is how you get semibold, and a raw CSS `font-weight` will
 not work.
 
-**Dark mode**: light values live on `:root`, dark on `.dark:root`. Put
-`class="dark"` on the root element to switch; every token flips.
-
 ## Component API
 
 - `Text` — `variant`: `default h1 h2 h3 h4 p blockquote code lead large small muted`

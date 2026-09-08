@@ -71,8 +71,7 @@ Improvements are deferred (see below).
 ### Settings
 
 - Cue pitch, countdown pattern, vibration, sound on/off.
-- Theme: system, light, dark.
-- Nothing else. No profile.
+- Nothing else. No profile, no theme picker.
 
 ## Out of scope for the MVP
 
@@ -117,7 +116,7 @@ is an editor change, not a data or timer change.
    pause and skip. Usable for a real session end to end. Measure startup time.
 2. **Workouts.** Complex mode, presets, save and load, duplicate and reorder sets.
 3. **History.** Session log, edit and notes.
-4. **Polish.** Audio ducking, celebration cue, background timing, dark mode pass, web
+4. **Polish.** Audio ducking, celebration cue, background timing, web
    layout pass.
 
 ## Open questions

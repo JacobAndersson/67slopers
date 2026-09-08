@@ -11,7 +11,6 @@ import {
   VolumeXIcon,
   XIcon,
 } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import Animated, {
@@ -39,7 +38,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import type { Workout, WorkoutTimings } from '@/lib/store/types';
-import { THEME } from '@/lib/theme';
+import { THEME, type ThemeColor } from '@/lib/theme';
 import { createCuePlayer, type CuePlayer } from '@/lib/timer/cues';
 import type { Phase } from '@/lib/timer/intervals';
 import { useTimer } from '@/lib/timer/useTimer';
@@ -53,7 +52,7 @@ const PHASE_LABEL: Record<Phase, string> = {
   done: 'Done',
 };
 
-const PHASE_COLOR: Record<Phase, keyof (typeof THEME)['light']> = {
+const PHASE_COLOR: Record<Phase, ThemeColor> = {
   prep: 'accent',
   hang: 'primary',
   pause: 'secondary',
@@ -85,8 +84,6 @@ function Runner({ workout }: { workout: Workout }) {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const { colorScheme } = useColorScheme();
-  const colors = THEME[colorScheme === 'dark' ? 'dark' : 'light'];
 
   const settings = useStore((s) => s.settings);
   const setSettings = useStore((s) => s.setSettings);
@@ -170,7 +167,7 @@ function Runner({ workout }: { workout: Workout }) {
         pointerEvents="none"
         style={[
           { position: 'absolute', left: 0, right: 0, bottom: 0, opacity: 0.45 },
-          { backgroundColor: colors[PHASE_COLOR[interval.phase]] },
+          { backgroundColor: THEME[PHASE_COLOR[interval.phase]] },
           fillStyle,
         ]}
       />
