@@ -19,8 +19,8 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
 
 ## App structure (MVP)
 
-- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: month calendar with week
-  streak, three saved workouts, three latest sessions) → `workout/[id]/index.tsx` (overview with Start) →
+- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: streak stats, the current week,
+  three saved workouts, three latest sessions; `calendar.tsx` is the month view) → `workout/[id]/index.tsx` (overview with Start) →
   `workout/[id]/run.tsx` (full-screen timer, `src/components/runner.tsx`). `workout/run.tsx`
   runs the store's unsaved `draft` (Start from the setup screen, or "Do it again" on a deleted
   workout) and offers to save it at the end. `workouts.tsx` and `sessions.tsx` are the

@@ -48,6 +48,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ title: 'Hangboard' }} />
         <Stack.Screen name="workouts" options={{ title: 'Your workouts' }} />
         <Stack.Screen name="sessions" options={{ title: 'Latest workouts' }} />
+        <Stack.Screen name="calendar" options={{ title: 'Calendar' }} />
         <Stack.Screen name="workout/new" options={{ title: 'New workout' }} />
         <Stack.Screen name="workout/[id]/index" options={{ title: '' }} />
         <Stack.Screen name="workout/[id]/edit" options={{ title: 'Edit workout' }} />

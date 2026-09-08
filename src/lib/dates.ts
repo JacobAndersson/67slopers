@@ -91,3 +91,8 @@ export function monthGrid(date: Date): Date[][] {
 export function formatMonth(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 }
+
+/** First day of the month `offset` months away from `date` (negative = earlier). */
+export function addMonths(date: Date, offset: number): Date {
+  return new Date(date.getFullYear(), date.getMonth() + offset, 1);
+}
