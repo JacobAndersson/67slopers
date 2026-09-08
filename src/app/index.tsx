@@ -8,7 +8,7 @@ import { SectionHeader } from '@/components/section-header';
 import { SessionRow } from '@/components/session-row';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { WeekStrip } from '@/components/week-strip';
+import { MonthCalendar } from '@/components/month-calendar';
 import { WorkoutCard } from '@/components/workout-card';
 import { useStore } from '@/lib/store/store';
 
@@ -35,7 +35,7 @@ export default function HomeScreen() {
           <Text>New workout</Text>
         </Button>
       }>
-      <WeekStrip sessions={sessions} />
+      <MonthCalendar sessions={sessions} />
 
       <SectionHeader
         title="Your workouts"

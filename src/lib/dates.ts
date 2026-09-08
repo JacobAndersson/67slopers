@@ -61,3 +61,33 @@ export function formatShort(totalSeconds: number): string {
 export function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
+
+export function isSameMonth(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+}
+
+/** Stable key for grouping by calendar day in local time. */
+export function dayKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+/**
+ * Monday-to-Sunday rows covering the whole month of `date`. The first and last rows may
+ * spill into the neighbouring months so every row is a full week.
+ */
+export function monthGrid(date: Date): Date[][] {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const last = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const rows: Date[][] = [];
+  const cursor = startOfWeek(first);
+  while (cursor <= last) {
+    rows.push(weekDays(cursor));
+    cursor.setDate(cursor.getDate() + 7);
+  }
+  return rows;
+}
+
+/** "September 2026" in the device locale. */
+export function formatMonth(date: Date): string {
+  return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+}
