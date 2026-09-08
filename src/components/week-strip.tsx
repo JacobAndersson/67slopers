@@ -11,8 +11,9 @@ const WEEKDAY_INITIALS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 type WeekStripProps = {
   sessions: Session[];
-  selected: Date;
-  onSelect: (day: Date) => void;
+  /** When provided, days become tappable and the selected one is ringed. */
+  selected?: Date;
+  onSelect?: (day: Date) => void;
   today?: Date;
 };
 
@@ -27,12 +28,13 @@ export function WeekStrip({ sessions, selected, onSelect, today = new Date() }: 
         {week.map(({ day, sessions: daySessions }, i) => {
           const done = daySessions.length > 0;
           const isToday = isSameDay(day, today);
-          const isSelected = isSameDay(day, selected);
+          const isSelected = selected ? isSameDay(day, selected) : false;
           return (
             <Pressable
               key={day.toISOString()}
-              onPress={() => onSelect(day)}
-              accessibilityRole="button"
+              onPress={onSelect ? () => onSelect(day) : undefined}
+              disabled={!onSelect}
+              accessibilityRole={onSelect ? 'button' : undefined}
               accessibilityState={{ selected: isSelected }}
               accessibilityLabel={`${day.toLocaleDateString(undefined, { weekday: 'long' })}, ${done ? `${daySessions.length} sessions` : 'no session'}`}
               className="items-center gap-1.5 active:opacity-70"

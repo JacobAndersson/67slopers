@@ -44,14 +44,19 @@ npm run web
 src/
   app/                      Expo Router routes (single stack, no tabs)
     _layout.tsx             Fonts + store hydration gate, navigation theme, stack
-    index.tsx               Home: week strip, last session, saved workouts, New workout
+    index.tsx               Home: your workouts, latest workouts, this week
+    workouts.tsx            All saved workouts
+    sessions.tsx            All completed sessions, grouped by day
+    session/[id].tsx        One session: grade, sets, duration, Do it again
     workout/new.tsx         Create a workout
     workout/[id]/index.tsx  Overview with Start
     workout/[id]/edit.tsx   Edit or delete a workout
     workout/[id]/run.tsx    Full-screen timer
   components/
     ui/                     shadcn-style components added via the reusables CLI
-    week-strip.tsx, workout-card.tsx, session-row.tsx, stepper.tsx, workout-form.tsx
+    week-strip.tsx, workout-card.tsx, latest-session-card.tsx, session-row.tsx,
+    section-header.tsx, feel.tsx,
+    stepper.tsx, workout-form.tsx
     screen.tsx              Shared page frame with an optional pinned footer
   lib/
     store/                  zustand store, types, presets, selectors

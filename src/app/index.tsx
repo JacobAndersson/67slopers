@@ -1,34 +1,32 @@
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { useMemo } from 'react';
+import { View } from 'react-native';
 
-import { FeelBadge } from '@/components/feel';
+import { LatestSessionCard } from '@/components/latest-session-card';
 import { Screen } from '@/components/screen';
+import { SectionHeader } from '@/components/section-header';
 import { SessionRow } from '@/components/session-row';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { WeekStrip } from '@/components/week-strip';
 import { WorkoutCard } from '@/components/workout-card';
-import { formatClock, relativeDay } from '@/lib/dates';
-import { latestSession, sessionsOnDay } from '@/lib/store/selectors';
 import { useStore } from '@/lib/store/store';
-import { setsLine, summaryLine } from '@/lib/workout-summary';
+
+const PREVIEW = 3;
 
 export default function HomeScreen() {
   const router = useRouter();
   const workouts = useStore((s) => s.workouts);
   const sessions = useStore((s) => s.sessions);
-  const [selectedDay, setSelectedDay] = useState(() => new Date());
 
-  const daySessions = useMemo(() => sessionsOnDay(sessions, selectedDay), [sessions, selectedDay]);
-  const latest = useMemo(() => latestSession(sessions), [sessions]);
   const savedWorkouts = useMemo(
     () => [...workouts].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
     [workouts]
   );
-
-  const dayLabel = selectedDay.toLocaleDateString(undefined, { weekday: 'long' });
+  const latestSessions = useMemo(
+    () => [...sessions].sort((a, b) => b.completedAt.localeCompare(a.completedAt)),
+    [sessions]
+  );
 
   return (
     <Screen
@@ -37,10 +35,30 @@ export default function HomeScreen() {
           <Text>New workout</Text>
         </Button>
       }>
-      <WeekStrip sessions={sessions} selected={selectedDay} onSelect={setSelectedDay} />
-      {daySessions.length > 0 ? (
+      <SectionHeader
+        title="Your workouts"
+        actionLabel={savedWorkouts.length > PREVIEW ? 'View all' : undefined}
+        onAction={() => router.push('/workouts')}
+      />
+      {savedWorkouts.length > 0 ? (
         <View className="gap-2">
-          {daySessions.map((session) => (
+          {savedWorkouts.slice(0, PREVIEW).map((workout) => (
+            <WorkoutCard key={workout.id} workout={workout} />
+          ))}
+        </View>
+      ) : (
+        <Text variant="muted">No saved workouts. Create one below.</Text>
+      )}
+
+      <SectionHeader
+        title="Latest workouts"
+        actionLabel={latestSessions.length > PREVIEW ? 'View all' : undefined}
+        onAction={() => router.push('/sessions')}
+      />
+      {latestSessions.length > 0 ? (
+        <View className="gap-2">
+          <LatestSessionCard session={latestSessions[0]} />
+          {latestSessions.slice(1, PREVIEW).map((session) => (
             <SessionRow
               key={session.id}
               session={session}
@@ -49,57 +67,11 @@ export default function HomeScreen() {
           ))}
         </View>
       ) : (
-        <Text variant="muted">No session on {dayLabel}.</Text>
+        <Text variant="muted">No sessions yet. Pick a workout above and press Start.</Text>
       )}
 
-      <Text variant="h4" className="mt-2">
-        Last session
-      </Text>
-      {latest ? (
-        <Pressable
-          onPress={() => router.push(`/session/${latest.id}`)}
-          accessibilityRole="button"
-          className="active:opacity-80">
-          <Card>
-            <CardHeader>
-              <CardDescription>{relativeDay(latest.completedAt)}</CardDescription>
-              <CardTitle>{latest.workoutName}</CardTitle>
-            </CardHeader>
-            <CardContent className="gap-2">
-              {latest.feel ? <FeelBadge feel={latest.feel} /> : null}
-              <Text variant="muted">{summaryLine(latest.snapshot)}</Text>
-              <Text variant="small">
-                {setsLine(latest.completedSets, latest.totalSets)} ·{' '}
-                {formatClock(
-                  (new Date(latest.completedAt).getTime() - new Date(latest.startedAt).getTime()) /
-                    1000
-                )}
-                {latest.completed ? '' : ' · ended early'}
-              </Text>
-            </CardContent>
-          </Card>
-        </Pressable>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>No sessions yet</CardTitle>
-            <CardDescription>Pick a workout below and press Start.</CardDescription>
-          </CardHeader>
-        </Card>
-      )}
-
-      <Text variant="h4" className="mt-2">
-        Saved workouts
-      </Text>
-      {savedWorkouts.length > 0 ? (
-        <View className="gap-2">
-          {savedWorkouts.map((workout) => (
-            <WorkoutCard key={workout.id} workout={workout} />
-          ))}
-        </View>
-      ) : (
-        <Text variant="muted">No saved workouts. Create one below.</Text>
-      )}
+      <SectionHeader title="This week" />
+      <WeekStrip sessions={sessions} />
     </Screen>
   );
 }

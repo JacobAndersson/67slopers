@@ -19,9 +19,13 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
 
 ## App structure (MVP)
 
-- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home) → `workout/[id]/index.tsx`
-  (overview with Start) → `workout/[id]/run.tsx` (full-screen timer). `workout/new.tsx` and
-  `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`.
+- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: three saved workouts, three
+  latest sessions, week strip) → `workout/[id]/index.tsx` (overview with Start) →
+  `workout/[id]/run.tsx` (full-screen timer). `workouts.tsx` and `sessions.tsx` are the
+  "View all" index screens; `session/[id].tsx` shows one session with "Do it again".
+  `workout/new.tsx` and `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`.
+- Grades (`feel`) are shown on session and overview screens and in the sessions index, never
+  on the home screen.
 - State lives in `src/lib/store/` (zustand + AsyncStorage, persisted as one JSON blob). Select
   stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
   from a selector. Sessions store a snapshot of the workout they ran.
