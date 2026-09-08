@@ -51,20 +51,21 @@ src/
     workout/new.tsx         Create a workout
     workout/[id]/index.tsx  Overview with Start
     workout/[id]/edit.tsx   Edit or delete a workout
-    workout/[id]/run.tsx    Full-screen timer
+    workout/[id]/run.tsx    Full-screen timer for a saved workout
+    workout/run.tsx         Full-screen timer for an unsaved draft
   components/
     ui/                     shadcn-style components added via the reusables CLI
     week-strip.tsx, workout-card.tsx, latest-session-card.tsx, session-row.tsx,
     section-header.tsx, feel.tsx,
     stepper.tsx, workout-form.tsx
+    runner.tsx              The timer screen itself
     screen.tsx              Shared page frame with an optional pinned footer
   lib/
     store/                  zustand store, types, presets, selectors
-    timer/                  Interval expansion, engine, hook, cues (tested)
+    timer/                  Interval expansion, engine, hook (tested)
     dates.ts, workout-summary.ts, theme.ts, fonts.ts, utils.ts
   global.css                Tailwind directives + theme CSS variables
-assets/                     Icons, splash, Geist Mono, cue sounds
-scripts/gen-tones.mjs       Regenerates the cue sounds
+assets/                     Icons, splash, Geist Mono
 ```
 
 Notes:

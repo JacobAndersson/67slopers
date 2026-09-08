@@ -21,7 +21,9 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
 
 - Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: week strip, three saved
   workouts, three latest sessions) → `workout/[id]/index.tsx` (overview with Start) →
-  `workout/[id]/run.tsx` (full-screen timer). `workouts.tsx` and `sessions.tsx` are the
+  `workout/[id]/run.tsx` (full-screen timer, `src/components/runner.tsx`). `workout/run.tsx`
+  runs the store's unsaved `draft` (Start from the setup screen, or "Do it again" on a deleted
+  workout) and offers to save it at the end. `workouts.tsx` and `sessions.tsx` are the
   "View all" index screens; `session/[id].tsx` shows one session with "Do it again".
   `workout/new.tsx` and `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`.
 - Grades (`feel`) are shown on session and overview screens and in the sessions index, never
@@ -30,9 +32,9 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
   from a selector. Sessions store a snapshot of the workout they ran.
 - Timer logic is pure and tested: `src/lib/timer/intervals.ts` expands a workout into intervals,
-  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms and emits
-  cues, `cues.ts` plays bundled tones (`assets/sounds`, regenerate with `node scripts/gen-tones.mjs`).
-  Screens only render; put behaviour in `src/lib` where `npm test` can reach it.
+  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. The app is
+  silent by design: no audio, no haptics. Screens only render; put behaviour in `src/lib` where
+  `npm test` can reach it.
 - Workouts use `blocks[]`; simple mode is one block. Do not add flat timing fields.
 
 ## Conventions

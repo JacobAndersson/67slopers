@@ -37,7 +37,8 @@ export const FEEL_LABELS: Record<Feel, string> = {
 
 export type Session = {
   id: string;
-  workoutId: string;
+  /** Absent when the session ran an unsaved (temporary) workout. */
+  workoutId?: string;
   workoutName: string;
   /** The workout as it was run, so later edits never rewrite history. */
   snapshot: WorkoutTimings;
@@ -50,7 +51,8 @@ export type Session = {
   note?: string;
 };
 
-export type Settings = {
-  soundEnabled: boolean;
-  vibrationEnabled: boolean;
+/** Timings to run without saving them first. Lives in memory only. */
+export type Draft = {
+  name?: string;
+  timings: WorkoutTimings;
 };

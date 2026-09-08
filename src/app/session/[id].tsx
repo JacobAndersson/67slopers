@@ -14,6 +14,7 @@ export default function SessionScreen() {
   const router = useRouter();
   const session = useStore((s) => s.sessions.find((x) => x.id === id));
   const workout = useStore((s) => s.workouts.find((w) => w.id === session?.workoutId));
+  const setDraft = useStore((s) => s.setDraft);
 
   if (!session) {
     return (
@@ -34,15 +35,19 @@ export default function SessionScreen() {
       <Stack.Screen options={{ title: session.workoutName }} />
       <Screen
         footer={
-          workout ? (
-            <Button size="lg" onPress={() => router.push(`/workout/${workout.id}/run`)}>
-              <Text className="text-lg">Do it again</Text>
-            </Button>
-          ) : (
-            <Text variant="muted" className="text-center">
-              This workout has been deleted, so it cannot be started again.
-            </Text>
-          )
+          <Button
+            size="lg"
+            onPress={() => {
+              if (workout) {
+                router.push(`/workout/${workout.id}/run`);
+              } else {
+                // The workout is gone (or was never saved): run the session's own copy.
+                setDraft({ name: session.workoutName, timings: session.snapshot });
+                router.push('/workout/run');
+              }
+            }}>
+            <Text className="text-lg">Do it again</Text>
+          </Button>
         }>
         <Card>
           <CardHeader>

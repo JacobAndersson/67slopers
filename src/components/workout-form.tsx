@@ -29,7 +29,10 @@ export type WorkoutFormValues = { name: string } & WorkoutTimings;
 type WorkoutFormProps = {
   initial?: Workout;
   submitLabel: string;
+  /** Save. Needs a name. */
   onSubmit: (values: WorkoutFormValues) => void;
+  /** Run without saving. Offered on the create screen only; the name is optional there. */
+  onStart?: (values: WorkoutFormValues) => void;
   onDelete?: () => void;
 };
 
@@ -42,7 +45,13 @@ const DEFAULT_BLOCK: Block = {
 };
 
 /** Simple-mode editor: one block of identical sets. Multi-set editing reuses `blocks` later. */
-export function WorkoutForm({ initial, submitLabel, onSubmit, onDelete }: WorkoutFormProps) {
+export function WorkoutForm({
+  initial,
+  submitLabel,
+  onSubmit,
+  onStart,
+  onDelete,
+}: WorkoutFormProps) {
   const [name, setName] = useState(initial?.name ?? '');
   const [prep, setPrep] = useState(initial?.prepSeconds ?? 10);
   const [block, setBlock] = useState<Block>(initial?.blocks[0] ?? DEFAULT_BLOCK);
@@ -53,6 +62,7 @@ export function WorkoutForm({ initial, submitLabel, onSubmit, onDelete }: Workou
   );
   const total = estimateDuration(timings);
   const canSave = name.trim().length > 0;
+  const values = (): WorkoutFormValues => ({ name: name.trim(), ...timings });
 
   const patch = (p: Partial<Block>) => setBlock((b) => ({ ...b, ...p }));
   const applyPreset = (index: number) => {
@@ -65,12 +75,25 @@ export function WorkoutForm({ initial, submitLabel, onSubmit, onDelete }: Workou
   return (
     <Screen
       footer={
-        <Button
-          size="lg"
-          disabled={!canSave}
-          onPress={() => onSubmit({ name: name.trim(), ...timings })}>
-          <Text>{submitLabel}</Text>
-        </Button>
+        onStart ? (
+          <View className="flex-row gap-3">
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-1"
+              disabled={!canSave}
+              onPress={() => onSubmit(values())}>
+              <Text>{submitLabel}</Text>
+            </Button>
+            <Button size="lg" className="flex-1" onPress={() => onStart(values())}>
+              <Text>Start</Text>
+            </Button>
+          </View>
+        ) : (
+          <Button size="lg" disabled={!canSave} onPress={() => onSubmit(values())}>
+            <Text>{submitLabel}</Text>
+          </Button>
+        )
       }>
       <View className="gap-2">
         <Label nativeID="workout-name">Name</Label>
@@ -78,7 +101,7 @@ export function WorkoutForm({ initial, submitLabel, onSubmit, onDelete }: Workou
           aria-labelledby="workout-name"
           value={name}
           onChangeText={setName}
-          placeholder="Repeaters 7:3"
+          placeholder={onStart ? 'Optional. Needed to save.' : 'Repeaters 7:3'}
           autoCapitalize="sentences"
           returnKeyType="done"
         />
@@ -110,6 +133,7 @@ export function WorkoutForm({ initial, submitLabel, onSubmit, onDelete }: Workou
         onChange={setPrep}
         min={0}
         max={60}
+        step={10}
         format={formatShort}
       />
       <Stepper
@@ -151,8 +175,9 @@ export function WorkoutForm({ initial, submitLabel, onSubmit, onDelete }: Workou
         onChange={(v) => patch({ restSeconds: v })}
         min={0}
         max={600}
-        step={5}
+        step={10}
         format={formatClock}
+        inputMode="clock"
       />
 
       <Separator />

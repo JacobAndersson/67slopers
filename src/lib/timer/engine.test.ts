@@ -11,9 +11,15 @@ import {
   remainingSeconds,
   resume,
   skip,
+  start,
   tick,
 } from './engine';
+
 import { expandWorkout } from './intervals';
+
+/** Engines in these tests are started immediately; the idle state has its own test. */
+const running = (intervals: Parameters<typeof createEngine>[0], now: number) =>
+  start(createEngine(intervals, now), now);
 
 const twoSets = expandWorkout({
   prepSeconds: 10,
@@ -22,7 +28,7 @@ const twoSets = expandWorkout({
 // prep, hang, pause, hang, rest, hang, pause, hang, done
 
 test('tick advances exactly at the boundary and carries no drift', () => {
-  let s = createEngine(twoSets, 1000);
+  let s = running(twoSets, 1000);
   s = tick(s, 10_999);
   assert.equal(s.index, 0);
   assert.ok(Math.abs(remainingSeconds(s, 10_999) - 0.001) < 1e-6);
@@ -33,7 +39,7 @@ test('tick advances exactly at the boundary and carries no drift', () => {
 });
 
 test('a long gap advances through several intervals on one tick', () => {
-  let s = createEngine(twoSets, 0);
+  let s = running(twoSets, 0);
   s = tick(s, 10_000 + 7_000 + 3_000 + 2_500); // 2.5 s into the second hang
   assert.equal(s.index, 3);
   assert.equal(current(s).phase, 'hang');
@@ -41,7 +47,7 @@ test('a long gap advances through several intervals on one tick', () => {
 });
 
 test('pause and resume extend the interval by the paused time', () => {
-  let s = createEngine(twoSets, 0);
+  let s = running(twoSets, 0);
   s = tick(s, 10_000); // hang starts at 10 000
   s = pause(s, 12_000);
   assert.equal(s.status, 'paused');
@@ -54,7 +60,7 @@ test('pause and resume extend the interval by the paused time', () => {
 });
 
 test('skip moves to the next interval and restarts its clock', () => {
-  let s = createEngine(twoSets, 0);
+  let s = running(twoSets, 0);
   s = skip(s, 3_000);
   assert.equal(current(s).phase, 'hang');
   assert.equal(remainingSeconds(s, 3_000), 7);
@@ -65,7 +71,7 @@ test('skip moves to the next interval and restarts its clock', () => {
 });
 
 test('back restarts after two seconds, otherwise goes to the previous interval', () => {
-  let s = createEngine(twoSets, 0);
+  let s = running(twoSets, 0);
   s = tick(s, 10_000);
   s = tick(s, 15_000); // 5 s into the hang
   s = back(s, 15_000);
@@ -76,7 +82,7 @@ test('back restarts after two seconds, otherwise goes to the previous interval',
 });
 
 test('completedSets counts sets whose last hang is behind us, and reaches done', () => {
-  let s = createEngine(twoSets, 0);
+  let s = running(twoSets, 0);
   assert.equal(completedSets(s), 0);
   s = tick(s, 10_000 + 7_000 + 3_000 + 7_000); // second hang of set 1 finished -> rest
   assert.equal(current(s).phase, 'rest');
@@ -87,9 +93,23 @@ test('completedSets counts sets whose last hang is behind us, and reaches done',
 });
 
 test('end freezes the engine without counting the current set', () => {
-  let s = createEngine(twoSets, 0);
+  let s = running(twoSets, 0);
   s = tick(s, 12_000);
   s = end(s);
   assert.equal(s.status, 'ended');
   assert.equal(completedSets(s), 0);
+});
+
+test('idle waits on the first interval until start is called', () => {
+  let s = createEngine(twoSets, 0);
+  assert.equal(s.status, 'idle');
+  assert.equal(remainingSeconds(s, 5_000), 10); // nothing elapses while idle
+  s = tick(s, 20_000);
+  assert.equal(s.index, 0);
+  s = skip(s, 20_000);
+  assert.equal(s.index, 0); // skip and back are no-ops while idle
+  s = start(s, 20_000);
+  assert.equal(s.status, 'running');
+  assert.equal(s.startedAt, 20_000);
+  assert.equal(remainingSeconds(s, 24_000), 6);
 });

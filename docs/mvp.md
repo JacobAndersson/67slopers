@@ -28,7 +28,8 @@ Parity with BoulderFIT:
 - Complex mode: an ordered list of named sets, each with its own hang, pause, reps and a
   rest after the set. One prep time for the whole workout.
 - Save the current configuration as a named workout and reload it later (BoulderFIT's
-  "favorites").
+  "favorites"). A name is only needed to save: Start runs the configuration as is, and the
+  finish screen offers to save it afterwards.
 
 Improvements:
 
@@ -41,20 +42,20 @@ Improvements:
 
 Parity:
 
-- Full-screen countdown with oversized digits and a phase label (Prep, Hang, Pause, Rest).
+- Full-screen countdown with oversized digits and a phase label (Get ready, Hang, Rest).
+  The timer opens ready on the first interval and starts when you press Play.
 - Colour-fill background that rises as the interval elapses.
 - Rep counter and set counter, plus a "next up" preview of the coming set.
-- Audio cues with selectable pitch, a selectable short countdown pattern (3-2-1, 2-1, 1,
-  none) and a long cue at each interval boundary. Optional vibration. Sounds can be off.
+- No audio or haptic cues: the app is silent by design and the display carries the
+  timing. (BoulderFIT's beeps and vibration are deliberately not copied.)
 
 Improvements:
 
 - Pause, skip forward and go back one interval. BoulderFIT has tap-anywhere-to-pause but
   no skip and no back, so a mistimed set means restarting the workout.
-- Cue scheduling on a monotonic clock so long sessions never drift.
-- Audio ducks background music instead of stopping it, and is audible through earbuds.
+- Timing on a monotonic clock so long sessions never drift.
 - Screen stays awake during a workout.
-- End-of-workout celebration cue and a short session summary with a one-tap grade,
+- A short session summary with a one-tap grade,
   "How did you feel?" (weak, normal, strong), saved on the session and shown on the
   home screen, the session screen and the workout overview. BoulderFIT shows "DONE" for
   about a second, drops back to the config screen and logs the session silently.
@@ -75,8 +76,7 @@ Improvements:
 
 ### Settings
 
-- Cue pitch, countdown pattern, vibration, sound on/off.
-- Nothing else. No profile, no theme picker.
+- None yet. No profile, no theme picker, no cue settings (there are no cues).
 
 ## Out of scope for the MVP
 
@@ -106,7 +106,6 @@ Workout   id, name, prepSeconds, sets[], createdAt, updatedAt, isPreset
 Set       label, hangSeconds, pauseSeconds, reps, restSeconds
 Session   id, workoutId?, name, startedAt, completedAt, snapshot (the workout as run),
           completed (bool), note
-Settings  cuePitchHz, countdownPattern, vibration, soundEnabled, theme, lastWorkoutId
 ```
 
 Sessions store a snapshot of the workout so editing or deleting a workout never rewrites
@@ -117,16 +116,15 @@ history.
 Simple mode ships first: the workout model already uses `blocks[]`, so multi-set editing
 is an editor change, not a data or timer change.
 
-1. **Timer core.** Simple-mode configuration, execution screen with cues, keep-awake,
+1. **Timer core.** Simple-mode configuration, execution screen, keep-awake,
    pause and skip. Usable for a real session end to end. Measure startup time.
 2. **Workouts.** Complex mode, presets, save and load, duplicate and reorder sets.
 3. **History.** Session log, edit and notes.
-4. **Polish.** Audio ducking, celebration cue, background timing, web
+4. **Polish.** Background timing, web
    layout pass.
 
 ## Open questions
 
 - Which presets ship by default and with what exact numbers.
-- Whether "pause between reps" and "rest between sets" need separate audio cues.
 - Web: does the timer need to work on the web at all for the MVP, or is web a
   development convenience until later.

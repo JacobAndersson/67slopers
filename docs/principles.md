@@ -16,7 +16,7 @@ Implications:
   home, no remote config, no update checks, no ads.
 - Storage is an on-device database (see [mvp.md](mvp.md#data-and-storage)). Backups, if
   we add them, are local file export and import that the user controls.
-- Only the permissions the timer needs (vibration, keep-awake, audio). No location, no
+- Only the permissions the timer needs (keep-awake). No location, no
   contacts, no notifications for marketing.
 - If sync is ever added, it is optional, additive and opt-in. The local copy stays the
   source of truth.
@@ -67,8 +67,8 @@ Not principles, but defaults that follow from how a hangboard timer is actually 
 - Legible from across the room: oversized digits, a colour-fill progress background and
   large rep and set counters. Never shrink these to fit more on screen.
 - Few taps to start: last workout is preselected, one tap starts it.
-- Cues you can trust: audio scheduled against a monotonic clock, not `setInterval`, so
-  7:3 repeaters stay in sync. Cues duck music instead of pausing it.
+- Timing you can trust: the clock is monotonic, not `setInterval`, so 7:3 repeaters stay
+  in sync. The app is silent: no beeps, no vibration.
 - One appearance. There are no themes and no dark mode; the palette is fixed.
 - Cross-platform from one codebase: iOS, Android and web, with native tab bars where the
   platform has them.

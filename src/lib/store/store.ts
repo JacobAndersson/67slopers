@@ -4,37 +4,36 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { newId } from './ids';
 import { makePresetWorkouts } from './presets';
-import type { Session, Settings, Workout, WorkoutTimings } from './types';
+import type { Draft, Session, Workout, WorkoutTimings } from './types';
 
 type WorkoutInput = { name: string } & WorkoutTimings;
 
 type StoreState = {
   workouts: Workout[];
   sessions: Session[];
-  settings: Settings;
   /** True once presets have been seeded, so deleting them all does not bring them back. */
   seeded: boolean;
   /** True once persisted state has been read from disk (not persisted itself). */
   hydrated: boolean;
+  /** An unsaved workout about to run (not persisted). */
+  draft: Draft | null;
 
   addWorkout: (input: WorkoutInput) => Workout;
   updateWorkout: (id: string, patch: Partial<WorkoutInput>) => void;
   deleteWorkout: (id: string) => void;
   addSession: (input: Omit<Session, 'id'>) => Session;
-  setSettings: (patch: Partial<Settings>) => void;
+  setDraft: (draft: Draft | null) => void;
   finishHydration: () => void;
 };
-
-const DEFAULT_SETTINGS: Settings = { soundEnabled: true, vibrationEnabled: true };
 
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
       workouts: [],
       sessions: [],
-      settings: DEFAULT_SETTINGS,
       seeded: false,
       hydrated: false,
+      draft: null,
 
       addWorkout: (input) => {
         const now = new Date().toISOString();
@@ -64,7 +63,7 @@ export const useStore = create<StoreState>()(
         return session;
       },
 
-      setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
+      setDraft: (draft) => set({ draft }),
 
       finishHydration: () => {
         const { seeded, workouts } = get();
@@ -77,12 +76,17 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 'hangboard',
-      version: 1,
+      version: 2,
+      // v1 persisted cue settings that no longer exist.
+      migrate: (persisted) => {
+        const state = { ...(persisted as Record<string, unknown>) };
+        delete state.settings;
+        return state;
+      },
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (s) => ({
         workouts: s.workouts,
         sessions: s.sessions,
-        settings: s.settings,
         seeded: s.seeded,
       }),
       onRehydrateStorage: () => (state) => {

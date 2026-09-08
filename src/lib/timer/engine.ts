@@ -1,6 +1,6 @@
 import type { Interval } from './intervals';
 
-export type TimerStatus = 'running' | 'paused' | 'done' | 'ended';
+export type TimerStatus = 'idle' | 'running' | 'paused' | 'done' | 'ended';
 
 /**
  * Pure timer state. Every duration is derived from a monotonic clock value passed in
@@ -21,12 +21,25 @@ export type EngineState = {
   pausedTotal: number;
 };
 
+/** The engine waits in `idle` on the first interval until `start` is called. */
 export function createEngine(intervals: Interval[], now: number): EngineState {
   const first = intervals[0];
   return {
     intervals,
     index: 0,
-    status: !first || first.phase === 'done' ? 'done' : 'running',
+    status: !first || first.phase === 'done' ? 'done' : 'idle',
+    startedAt: now,
+    phaseStartedAt: now,
+    pausedAt: null,
+    pausedTotal: 0,
+  };
+}
+
+export function start(state: EngineState, now: number): EngineState {
+  if (state.status !== 'idle') return state;
+  return {
+    ...state,
+    status: 'running',
     startedAt: now,
     phaseStartedAt: now,
     pausedAt: null,
@@ -44,6 +57,7 @@ export function next(state: EngineState): Interval | undefined {
 
 /** Milliseconds elapsed inside the current interval, excluding pauses. */
 export function elapsedMs(state: EngineState, now: number): number {
+  if (state.status === 'idle') return 0;
   const end = state.status === 'paused' && state.pausedAt !== null ? state.pausedAt : now;
   return Math.max(0, end - state.phaseStartedAt - state.pausedTotal);
 }
@@ -107,13 +121,13 @@ export function resume(state: EngineState, now: number): EngineState {
 
 /** Jump to the next interval. Works while paused too (stays paused at its start). */
 export function skip(state: EngineState, now: number): EngineState {
-  if (state.status === 'done' || state.status === 'ended') return state;
+  if (state.status !== 'running' && state.status !== 'paused') return state;
   return moveTo(state, state.index + 1, now);
 }
 
 /** Restart the current interval if more than two seconds in, otherwise go back one. */
 export function back(state: EngineState, now: number): EngineState {
-  if (state.status === 'done' || state.status === 'ended') return state;
+  if (state.status !== 'running' && state.status !== 'paused') return state;
   const target = elapsedMs(state, now) > 2000 ? state.index : Math.max(0, state.index - 1);
   return moveTo(state, target, now);
 }
