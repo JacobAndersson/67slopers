@@ -40,9 +40,16 @@ export default function HomeScreen() {
       <WeekStrip sessions={sessions} selected={selectedDay} onSelect={setSelectedDay} />
       {daySessions.length > 0 ? (
         <View className="gap-2">
-          {daySessions.map((session) => (
-            <SessionRow key={session.id} session={session} />
-          ))}
+          {daySessions.map((session) => {
+            const exists = workouts.some((w) => w.id === session.workoutId);
+            return (
+              <SessionRow
+                key={session.id}
+                session={session}
+                onPress={exists ? () => router.push(`/workout/${session.workoutId}`) : undefined}
+              />
+            );
+          })}
         </View>
       ) : (
         <Text variant="muted">No session on {dayLabel}.</Text>

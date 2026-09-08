@@ -108,6 +108,8 @@ function Runner({ workout }: { workout: Workout }) {
   );
   const timer = useTimer(timings, { onCue: (kind) => cues.current?.[kind]() });
   const finished = timer.status === 'done' || timer.status === 'ended';
+  // Back and Skip only appear while paused: a running timer shows nothing but Pause.
+  const paused = timer.status === 'paused';
 
   const [startedAt] = useState(() => new Date().toISOString());
   const [note, setNote] = useState('');
@@ -269,29 +271,33 @@ function Runner({ workout }: { workout: Workout }) {
             </View>
 
             <View className="flex-row items-center justify-center gap-6">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-16 w-16 rounded-full"
-                accessibilityLabel="Back"
-                onPress={timer.back}>
-                <Icon as={SkipBackIcon} className="size-7" />
-              </Button>
+              {paused ? (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-16 w-16 rounded-full"
+                  accessibilityLabel="Back"
+                  onPress={timer.back}>
+                  <Icon as={SkipBackIcon} className="size-7" />
+                </Button>
+              ) : null}
               <Button
                 size="icon"
                 className="h-24 w-24 rounded-full"
-                accessibilityLabel={timer.status === 'paused' ? 'Resume' : 'Pause'}
-                onPress={timer.status === 'paused' ? timer.resume : timer.pause}>
-                <Icon as={timer.status === 'paused' ? PlayIcon : PauseIcon} className="size-10" />
+                accessibilityLabel={paused ? 'Resume' : 'Pause'}
+                onPress={paused ? timer.resume : timer.pause}>
+                <Icon as={paused ? PlayIcon : PauseIcon} className="size-10" />
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-16 w-16 rounded-full"
-                accessibilityLabel="Skip"
-                onPress={timer.skip}>
-                <Icon as={SkipForwardIcon} className="size-7" />
-              </Button>
+              {paused ? (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-16 w-16 rounded-full"
+                  accessibilityLabel="Skip"
+                  onPress={timer.skip}>
+                  <Icon as={SkipForwardIcon} className="size-7" />
+                </Button>
+              ) : null}
             </View>
           </>
         )}

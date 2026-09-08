@@ -1,20 +1,27 @@
 import { useRouter } from 'expo-router';
+import { PlayIcon } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { formatClock } from '@/lib/dates';
 import type { Workout } from '@/lib/store/types';
 import { estimateDuration, summaryLine } from '@/lib/workout-summary';
 
-/** A saved workout in the home list. Tapping opens its overview. */
+/**
+ * A saved workout in the home list. The play button starts it straight away; tapping
+ * anywhere else opens its overview.
+ */
 export function WorkoutCard({ workout }: { workout: Workout }) {
   const router = useRouter();
   return (
     <Pressable
       onPress={() => router.push(`/workout/${workout.id}`)}
       accessibilityRole="button"
-      className="flex-row items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 active:bg-accent">
+      accessibilityLabel={`${workout.name}, open overview`}
+      className="flex-row items-center gap-3 rounded-lg border border-border bg-card py-3 pl-4 pr-3 active:bg-accent">
       <View className="flex-1 gap-0.5">
         <View className="flex-row items-center gap-2">
           <Text className="font-semibold">{workout.name}</Text>
@@ -25,10 +32,18 @@ export function WorkoutCard({ workout }: { workout: Workout }) {
           ) : null}
         </View>
         <Text variant="muted">{summaryLine(workout)}</Text>
+        <Text variant="muted">{formatClock(estimateDuration(workout))}</Text>
       </View>
-      <Text variant="small" className="text-muted-foreground">
-        {formatClock(estimateDuration(workout))}
-      </Text>
+      <Button
+        size="icon"
+        className="h-12 w-12 rounded-full"
+        accessibilityLabel={`Start ${workout.name}`}
+        onPress={(e) => {
+          e.stopPropagation();
+          router.push(`/workout/${workout.id}/run`);
+        }}>
+        <Icon as={PlayIcon} className="size-6" />
+      </Button>
     </Pressable>
   );
 }
