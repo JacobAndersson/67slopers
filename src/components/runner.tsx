@@ -4,6 +4,7 @@ import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, XIcon } from 'lucid
 import { useEffect, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { FeelPicker } from '@/components/feel';
 import {
@@ -22,20 +23,25 @@ import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
+import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import type { Phase } from '@/lib/timer/intervals';
 import { useTimer } from '@/lib/timer/useTimer';
-import { cn } from '@/lib/utils';
 import { setsLine } from '@/lib/workout-summary';
 
-/** Flat background per phase, so the state reads from across the room without the digits. */
-const PHASE_BG: Record<Phase, string> = {
-  prep: 'bg-accent',
-  hang: 'bg-primary',
-  pause: 'bg-secondary',
-  rest: 'bg-muted',
-  done: 'bg-background',
+/**
+ * Flat background per phase, so the state reads from across the room without the digits.
+ * Theme values rather than classes because the colour is tweened with Reanimated.
+ */
+const PHASE_COLOR: Record<Phase, string> = {
+  prep: THEME.accent,
+  hang: THEME.primary,
+  pause: THEME.secondary,
+  rest: THEME.muted,
+  done: THEME.background,
 };
+
+const BG_TRANSITION_MS = 250;
 
 const PHASE_LABEL: Record<Phase, string> = {
   prep: 'Get ready',
@@ -133,8 +139,15 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const digitSize = Math.min((width * 0.9) / (countdown.length * 0.62), height * 0.28);
   const showRep = interval.repCount > 1 && interval.phase !== 'rest';
 
+  const background = idle || finished ? THEME.background : PHASE_COLOR[interval.phase];
+  const backgroundValue = useSharedValue(background);
+  useEffect(() => {
+    backgroundValue.set(withTiming(background, { duration: BG_TRANSITION_MS }));
+  }, [background, backgroundValue]);
+  const backgroundStyle = useAnimatedStyle(() => ({ backgroundColor: backgroundValue.get() }));
+
   return (
-    <View className={cn('flex-1', idle || finished ? 'bg-background' : PHASE_BG[interval.phase])}>
+    <Animated.View style={[{ flex: 1 }, backgroundStyle]}>
       <View
         className="flex-1 px-6"
         style={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }}>
@@ -187,14 +200,14 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
               <Text className="text-lg uppercase tracking-wide text-muted-foreground font-semibold">
                 {PHASE_LABEL[interval.phase]}
               </Text>
-              <Text className="text-xl text-muted-foreground font-medium">
-                Set {interval.setIndex + 1}/{interval.setCount}
-              </Text>
               {showRep ? (
                 <Text className="text-3xl font-semibold">
                   Rep {interval.repIndex + 1}/{interval.repCount}
                 </Text>
               ) : null}
+              <Text className="text-xl text-muted-foreground font-medium">
+                Set {interval.setIndex + 1}/{interval.setCount}
+              </Text>
             </View>
 
             <View className="flex-1 items-center justify-center">
@@ -272,6 +285,6 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </View>
+    </Animated.View>
   );
 }
