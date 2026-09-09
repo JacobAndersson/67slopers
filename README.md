@@ -1,4 +1,4 @@
-# Sloppy Slopers
+# 67slopers
 
 A cross-platform hangboard training app for iOS, Android and web, built with
 [Expo](https://expo.dev) and [Expo Router](https://docs.expo.dev/router/introduction/).

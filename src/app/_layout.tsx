@@ -48,7 +48,7 @@ export default function RootLayout() {
             headerBackButtonDisplayMode: 'minimal',
             contentStyle: { backgroundColor: THEME.background },
           }}>
-          <Stack.Screen name="index" options={{ title: 'Sloppy Slopers' }} />
+          <Stack.Screen name="index" options={{ title: '67slopers' }} />
           <Stack.Screen name="workouts" options={{ title: 'Your workouts' }} />
           <Stack.Screen name="sessions" options={{ title: 'Latest workouts' }} />
           <Stack.Screen name="calendar" options={{ title: 'Calendar' }} />

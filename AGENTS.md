@@ -1,6 +1,6 @@
-# Sloppy Slopers – agent notes
+# 67slopers – agent notes
 
-Sloppy Slopers is a cross-platform hangboard training app (iOS, Android, web) built with Expo SDK 57 and Expo Router.
+67slopers is a cross-platform hangboard training app (iOS, Android, web) built with Expo SDK 57 and Expo Router.
 
 ## Expo HAS CHANGED
 

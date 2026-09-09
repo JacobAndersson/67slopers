@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Sloppy Slopers",
-    "slug": "sloppy-slopers",
+    "name": "67slopers",
+    "slug": "67slopers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sloppyslopers",
+    "scheme": "slopers67",
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon",
