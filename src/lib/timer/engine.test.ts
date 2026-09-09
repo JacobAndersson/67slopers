@@ -22,8 +22,26 @@ const running = (intervals: Parameters<typeof createEngine>[0], now: number) =>
   start(createEngine(intervals, now), now);
 
 const twoSets = expandWorkout({
-  prepSeconds: 10,
-  blocks: [{ hangSeconds: 7, pauseSeconds: 3, reps: 2, restSeconds: 60, sets: 2 }],
+  steps: [
+    { kind: 'prep', seconds: 10 },
+    {
+      kind: 'repeat',
+      times: 2,
+      skipLastRest: true,
+      steps: [
+        {
+          kind: 'repeat',
+          times: 2,
+          skipLastRest: true,
+          steps: [
+            { kind: 'hang', seconds: 7 },
+            { kind: 'rest', seconds: 3 },
+          ],
+        },
+        { kind: 'rest', seconds: 60 },
+      ],
+    },
+  ],
 });
 // prep, hang, pause, hang, rest, hang, pause, hang, done
 

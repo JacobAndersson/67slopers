@@ -1,3 +1,4 @@
+import { cssInterop } from 'nativewind';
 import {
   createContext,
   useContext,
@@ -6,10 +7,17 @@ import {
   type PropsWithChildren,
   type ReactNode,
 } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import Animated, { useAnimatedRef, type AnimatedRef } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/lib/utils';
+
+// The scroll view is Reanimated's so drag-to-reorder lists can auto-scroll it from a worklet.
+cssInterop(Animated.ScrollView, {
+  className: 'style',
+  contentContainerClassName: 'contentContainerStyle',
+});
 
 type ScreenProps = PropsWithChildren<{
   /** Scroll the content (default) or keep it fixed. */
@@ -23,6 +31,8 @@ type ScreenProps = PropsWithChildren<{
 type ScreenScroll = {
   /** Scrolls the content by `dy` pixels (positive = further down the page). */
   scrollBy: (dy: number) => void;
+  /** The scroll view itself, for components that drive scrolling from Reanimated. */
+  scrollableRef: AnimatedRef<Animated.ScrollView>;
 };
 
 const ScreenScrollContext = createContext<ScreenScroll | null>(null);
@@ -43,21 +53,22 @@ export function Screen({
   children,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const offset = useRef(0);
   const api = useMemo<ScreenScroll>(
     () => ({
       scrollBy: (dy) =>
         scrollRef.current?.scrollTo({ y: Math.max(0, offset.current + dy), animated: true }),
+      scrollableRef: scrollRef,
     }),
-    []
+    [scrollRef]
   );
 
   return (
     <ScreenScrollContext.Provider value={api}>
       <View className={cn('flex-1 bg-background', className)}>
         {scroll ? (
-          <ScrollView
+          <Animated.ScrollView
             ref={scrollRef}
             className="flex-1"
             contentContainerClassName={cn(CONTENT, contentClassName)}
@@ -67,7 +78,7 @@ export function Screen({
             }}
             scrollEventThrottle={64}>
             {children}
-          </ScrollView>
+          </Animated.ScrollView>
         ) : (
           <View className={cn('flex-1', CONTENT, contentClassName)}>{children}</View>
         )}

@@ -2,7 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { cloneSteps } from '../workout-steps';
 import { newId } from './ids';
+import { migrateSessionRecord, migrateWorkoutRecord } from './migrate';
 import { makePresetWorkouts } from './presets';
 import type { Draft, Session, Workout, WorkoutTimings } from './types';
 
@@ -67,6 +69,7 @@ export const useStore = create<StoreState>()(
         const now = new Date().toISOString();
         const copy: Workout = {
           ...source,
+          steps: cloneSteps(source.steps),
           id: newId(),
           name: `${source.name} copy`,
           isPreset: false,
@@ -101,11 +104,18 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 'hangboard',
-      version: 2,
-      // v1 persisted cue settings that no longer exist.
-      migrate: (persisted) => {
+      version: 3,
+      migrate: (persisted, version) => {
         const state = { ...(persisted as Record<string, unknown>) };
+        // v1 persisted cue settings that no longer exist.
         delete state.settings;
+        // v2 stored workouts as prep + blocks; v3 stores steps.
+        if (version < 3) {
+          const records = (key: string) =>
+            Array.isArray(state[key]) ? (state[key] as Record<string, unknown>[]) : [];
+          state.workouts = records('workouts').map(migrateWorkoutRecord);
+          state.sessions = records('sessions').map(migrateSessionRecord);
+        }
         return state;
       },
       storage: createJSONStorage(() => AsyncStorage),

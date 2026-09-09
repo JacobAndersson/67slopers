@@ -1,8 +1,14 @@
+import { PlusIcon, RepeatIcon } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { Screen } from '@/components/screen';
-import { Stepper } from '@/components/stepper';
+import {
+  StepEditorProvider,
+  StepList,
+  type ReorderTarget,
+  type StepListActions,
+} from '@/components/step-list';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,16 +21,33 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
-import { formatClock, formatShort } from '@/lib/dates';
-import { PRESETS } from '@/lib/store/presets';
-import type { Block, Workout, WorkoutTimings } from '@/lib/store/types';
+import { formatClock } from '@/lib/dates';
+import { PRESETS, templateSteps } from '@/lib/store/presets';
+import type { Step, Workout } from '@/lib/store/types';
+import {
+  appendTo,
+  duplicateStep,
+  moveIntoRepeat,
+  moveOutOfRepeat,
+  moveStep,
+  newRepeat,
+  newTimedStep,
+  removeStep,
+  reorderWithin,
+  stripIds,
+  updateStep,
+  validate,
+  withIds,
+  type EditableStep,
+} from '@/lib/workout-steps';
 import { estimateDuration } from '@/lib/workout-summary';
 
-export type WorkoutFormValues = { name: string } & WorkoutTimings;
+export type WorkoutFormValues = { name: string; steps: Step[] };
 
 type WorkoutFormProps = {
   initial?: Workout;
@@ -36,15 +59,7 @@ type WorkoutFormProps = {
   onDelete?: () => void;
 };
 
-const DEFAULT_BLOCK: Block = {
-  hangSeconds: 7,
-  pauseSeconds: 3,
-  reps: 6,
-  restSeconds: 180,
-  sets: 6,
-};
-
-/** Simple-mode editor: one block of identical sets. Multi-set editing reuses `blocks` later. */
+/** Garmin-style builder: an ordered list of steps and repeat groups. */
 export function WorkoutForm({
   initial,
   submitLabel,
@@ -53,23 +68,44 @@ export function WorkoutForm({
   onDelete,
 }: WorkoutFormProps) {
   const [name, setName] = useState(initial?.name ?? '');
-  const [prep, setPrep] = useState(initial?.prepSeconds ?? 10);
-  const [block, setBlock] = useState<Block>(initial?.blocks[0] ?? DEFAULT_BLOCK);
-
-  const timings: WorkoutTimings = useMemo(
-    () => ({ prepSeconds: prep, blocks: [block] }),
-    [prep, block]
+  const [steps, setSteps] = useState<EditableStep[]>(() =>
+    withIds(initial ? initial.steps : templateSteps())
   );
-  const total = estimateDuration(timings);
-  const canSave = name.trim().length > 0;
-  const values = (): WorkoutFormValues => ({ name: name.trim(), ...timings });
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [reorderTarget, setReorderTarget] = useState<ReorderTarget | undefined>(undefined);
 
-  const patch = (p: Partial<Block>) => setBlock((b) => ({ ...b, ...p }));
+  const plain = useMemo(() => stripIds(steps), [steps]);
+  const total = estimateDuration({ steps: plain });
+  const errors = validate(plain);
+  const valid = errors.length === 0;
+  const canSave = valid && name.trim().length > 0;
+  const values = (): WorkoutFormValues => ({ name: name.trim(), steps: plain });
+  const reordering = reorderTarget !== undefined;
+
+  const actions = useMemo<StepListActions>(
+    () => ({
+      update: (id, patch) => setSteps((s) => updateStep(s, id, patch)),
+      remove: (id) => setSteps((s) => removeStep(s, id)),
+      duplicate: (id) => setSteps((s) => duplicateStep(s, id)),
+      move: (id, direction) => setSteps((s) => moveStep(s, id, direction)),
+      moveOut: (id) => setSteps((s) => moveOutOfRepeat(s, id)),
+      moveInto: (id, repeatId) => setSteps((s) => moveIntoRepeat(s, id, repeatId)),
+      addStep: (parentId) => {
+        const step = newTimedStep('hang');
+        setSteps((s) => appendTo(s, parentId, step));
+        setExpandedId(step.id);
+      },
+      addRepeat: (parentId) => setSteps((s) => appendTo(s, parentId, newRepeat())),
+      reorder: (parentId, ids) => setSteps((s) => reorderWithin(s, parentId, ids)),
+    }),
+    []
+  );
+
   const applyPreset = (index: number) => {
     const preset = PRESETS[index];
     if (!name.trim() || PRESETS.some((p) => p.name === name)) setName(preset.name);
-    setPrep(preset.prepSeconds);
-    setBlock(preset.blocks[0]);
+    setSteps(withIds(preset.steps));
+    setExpandedId(null);
   };
 
   return (
@@ -85,7 +121,11 @@ export function WorkoutForm({
               onPress={() => onSubmit(values())}>
               <Text>{submitLabel}</Text>
             </Button>
-            <Button size="lg" className="flex-1" onPress={() => onStart(values())}>
+            <Button
+              size="lg"
+              className="flex-1"
+              disabled={!valid}
+              onPress={() => onStart(values())}>
               <Text>Start</Text>
             </Button>
           </View>
@@ -126,62 +166,38 @@ export function WorkoutForm({
 
       <Separator />
 
-      <Stepper
-        label="Prep"
-        hint="Before the first hang"
-        value={prep}
-        onChange={setPrep}
-        min={0}
-        max={60}
-        step={10}
-        format={formatShort}
-      />
-      <Stepper
-        label="Hang"
-        value={block.hangSeconds}
-        onChange={(v) => patch({ hangSeconds: v })}
-        min={1}
-        max={120}
-        format={formatShort}
-      />
-      <Stepper
-        label="Reps"
-        hint="Hangs per set"
-        value={block.reps}
-        onChange={(v) => patch({ reps: v })}
-        min={1}
-        max={30}
-      />
-      <Stepper
-        label="Pause"
-        hint={block.reps > 1 ? 'Between reps' : 'Not used with one rep'}
-        value={block.pauseSeconds}
-        onChange={(v) => patch({ pauseSeconds: v })}
-        min={0}
-        max={60}
-        format={formatShort}
-      />
-      <Stepper
-        label="Sets"
-        value={block.sets}
-        onChange={(v) => patch({ sets: v })}
-        min={1}
-        max={30}
-      />
-      <Stepper
-        label="Rest"
-        hint="Between sets"
-        value={block.restSeconds}
-        onChange={(v) => patch({ restSeconds: v })}
-        min={0}
-        max={600}
-        step={10}
-        format={formatClock}
-        inputMode="clock"
-      />
+      <View className="flex-row items-center justify-between">
+        <Text className="text-lg font-semibold">Steps</Text>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={!reordering && steps.length < 2}
+          onPress={() => setReorderTarget(reordering ? undefined : null)}>
+          <Text>{reordering ? 'Done' : 'Reorder'}</Text>
+        </Button>
+      </View>
+
+      <StepEditorProvider
+        value={{ steps, actions, expandedId, setExpandedId, reorderTarget, setReorderTarget }}>
+        <StepList steps={steps} parentId={null} depth={0} />
+      </StepEditorProvider>
+
+      {reordering ? null : (
+        <View className="flex-row gap-3">
+          <Button variant="secondary" className="flex-1" onPress={() => actions.addStep(null)}>
+            <Icon as={PlusIcon} className="size-4" />
+            <Text>Add step</Text>
+          </Button>
+          <Button variant="secondary" className="flex-1" onPress={() => actions.addRepeat(null)}>
+            <Icon as={RepeatIcon} className="size-4" />
+            <Text>Add repeat</Text>
+          </Button>
+        </View>
+      )}
 
       <Separator />
 
+      {errors.length ? <Text className="text-destructive">{errors[0]}</Text> : null}
       <View className="flex-row items-center justify-between">
         <Text variant="muted">Total</Text>
         <Text className="text-xl font-semibold">≈ {formatClock(total)}</Text>

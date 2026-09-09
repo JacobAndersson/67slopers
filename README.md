@@ -79,7 +79,7 @@ src/
     ui/                     shadcn-style components added via the reusables CLI
     calendar.tsx, workout-card.tsx, latest-session-card.tsx, session-row.tsx,
     section-header.tsx, feel.tsx,
-    stepper.tsx, workout-form.tsx
+    stepper.tsx, step-list.tsx, workout-form.tsx
     runner.tsx              The timer screen itself
     screen.tsx              Shared page frame with an optional pinned footer
   lib/

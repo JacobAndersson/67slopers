@@ -7,7 +7,7 @@ import type { Session, Workout } from './types';
 const session = (date: Date): Session => ({
   id: date.toISOString(),
   workoutName: 'Repeaters',
-  snapshot: { prepSeconds: 10, blocks: [] },
+  snapshot: { steps: [] },
   startedAt: date.toISOString(),
   completedAt: date.toISOString(),
   completedSets: 6,
@@ -41,8 +41,7 @@ test('sortWorkoutsByLastUsed puts the most recently run workout first, new ones 
   const w = (id: string, createdAt: string): Workout => ({
     id,
     name: id,
-    prepSeconds: 10,
-    blocks: [],
+    steps: [],
     isPreset: false,
     createdAt,
     updatedAt: '2026-09-08T20:00:00.000Z', // a recent edit must not affect the order

@@ -1,31 +1,45 @@
+import { cloneSteps } from '../workout-steps';
 import { newId } from './ids';
-import type { Workout, WorkoutTimings } from './types';
+import type { RepeatStep, Step, TimedStep, Workout, WorkoutTimings } from './types';
 
 type Preset = { name: string } & WorkoutTimings;
+
+const prep = (seconds: number): TimedStep => ({ kind: 'prep', seconds });
+const hang = (seconds: number): TimedStep => ({ kind: 'hang', seconds });
+const rest = (seconds: number): TimedStep => ({ kind: 'rest', seconds });
+const repeat = (times: number, steps: Step[]): RepeatStep => ({
+  kind: 'repeat',
+  times,
+  skipLastRest: true,
+  steps,
+});
 
 /** Built-in workouts seeded on first launch. Users can edit or delete them. */
 export const PRESETS: Preset[] = [
   {
     name: 'Repeaters 7:3',
-    prepSeconds: 10,
-    blocks: [{ hangSeconds: 7, pauseSeconds: 3, reps: 6, restSeconds: 180, sets: 6 }],
+    steps: [prep(10), repeat(6, [repeat(6, [hang(7), rest(3)]), rest(180)])],
   },
   {
     name: 'Max hangs',
-    prepSeconds: 10,
-    blocks: [{ hangSeconds: 10, pauseSeconds: 0, reps: 1, restSeconds: 180, sets: 5 }],
+    steps: [prep(10), repeat(5, [hang(10), rest(180)])],
   },
   {
     name: 'Density hangs',
-    prepSeconds: 10,
-    blocks: [{ hangSeconds: 30, pauseSeconds: 0, reps: 1, restSeconds: 120, sets: 4 }],
+    steps: [prep(10), repeat(4, [hang(30), rest(120)])],
   },
 ];
+
+/** What a new workout starts from: the repeaters preset. */
+export function templateSteps(): Step[] {
+  return cloneSteps(PRESETS[0].steps);
+}
 
 export function makePresetWorkouts(now = new Date()): Workout[] {
   const iso = now.toISOString();
   return PRESETS.map((preset) => ({
-    ...preset,
+    name: preset.name,
+    steps: cloneSteps(preset.steps),
     id: newId(),
     isPreset: true,
     createdAt: iso,

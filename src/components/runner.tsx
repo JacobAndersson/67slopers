@@ -200,6 +200,9 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
               <Text className="text-lg uppercase tracking-wide text-muted-foreground font-semibold">
                 {PHASE_LABEL[interval.phase]}
               </Text>
+              {interval.label ? (
+                <Text className="text-lg text-muted-foreground">{interval.label}</Text>
+              ) : null}
               {showRep ? (
                 <Text className="text-3xl font-semibold">
                   Rep {interval.repIndex + 1}/{interval.repCount}
@@ -225,6 +228,7 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
                   {timer.nextInterval.seconds >= 60
                     ? formatClock(timer.nextInterval.seconds)
                     : `${timer.nextInterval.seconds}s`}
+                  {timer.nextInterval.label ? ` · ${timer.nextInterval.label}` : ''}
                 </Text>
               ) : (
                 <Text className="text-xl text-foreground/60">Last one</Text>

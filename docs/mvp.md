@@ -21,22 +21,22 @@ which is the worst possible moment for it. Those gaps are the MVP's reason to ex
 
 ### Workout builder
 
-Parity with BoulderFIT:
+Parity with BoulderFIT, done the Garmin Connect way:
 
-- Simple mode: prep, hang, pause (between reps), reps, rest (between sets), sets, with a
-  live estimate of total duration.
-- Complex mode: an ordered list of named sets, each with its own hang, pause, reps and a
-  rest after the set. One prep time for the whole workout.
-- Save the current configuration as a named workout and reload it later (BoulderFIT's
-  "favorites"). A name is only needed to save: Start runs the configuration as is, and the
-  finish screen offers to save it afterwards.
+- A workout is an ordered list of **steps** (Get ready, Hang, Rest, each timed, with an optional
+  label such as "20 mm half crimp") and **repeats** that run a group of steps N times. Repeats
+  nest one level: sets × (reps × (hang, rest), rest between sets). "Skip last rest" drops the
+  trailing rest of the final round, like Garmin's skip last recovery.
+- New workouts start from the repeaters template; preset chips (7:3 repeaters, max hangs, density
+  hangs) replace the steps. A live estimate of the total duration.
+- Save the current configuration as a named workout and reload it later. A name is only needed to
+  save: Start runs the configuration as is, and the finish screen offers to save it afterwards.
 
-Improvements:
+Improvements over BoulderFIT:
 
-- Duplicate, reorder and delete sets in complex mode.
-- Steppers or wheel pickers with sane bounds instead of raw text fields.
-- A handful of built-in presets to start from (7:3 repeaters, max hangs, density hangs).
-  Keep BoulderFIT's warning that hangboarding is not for beginners.
+- Duplicate, move and delete steps and repeats; drag to reorder in a Reorder mode.
+- Steppers with sane bounds and direct entry instead of raw text fields.
+- Keep BoulderFIT's warning that hangboarding is not for beginners.
 
 ### Timer execution
 
@@ -102,10 +102,11 @@ a possible later optimisation, not an MVP dependency.
 Entities:
 
 ```
-Workout   id, name, prepSeconds, sets[], createdAt, updatedAt, isPreset
-Set       label, hangSeconds, pauseSeconds, reps, restSeconds
+Workout   id, name, steps[], createdAt, updatedAt, isPreset
+Step      kind (prep | hang | rest), seconds, label?
+Repeat    kind = repeat, times, skipLastRest, steps[]
 Session   id, workoutId?, name, startedAt, completedAt, snapshot (the workout as run),
-          completed (bool), note
+          completed (bool), feel, note
 ```
 
 Sessions store a snapshot of the workout so editing or deleting a workout never rewrites
@@ -113,8 +114,8 @@ history.
 
 ## Milestones
 
-Simple mode ships first: the workout model already uses `blocks[]`, so multi-set editing
-is an editor change, not a data or timer change.
+Simple mode shipped first as one block of identical sets; the step and repeat model replaced it
+once the builder landed, with a migration for stored workouts and sessions.
 
 1. **Timer core.** Simple-mode configuration, execution screen, keep-awake,
    pause and skip. Usable for a real session end to end. Measure startup time.

@@ -25,7 +25,8 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   runs the store's unsaved `draft` (Start from the setup screen, or "Do it again" on a deleted
   workout) and offers to save it at the end. `workouts.tsx` and `sessions.tsx` are the
   "View all" index screens; `session/[id].tsx` shows one session with "Do it again".
-  `workout/new.tsx` and `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`.
+  `workout/new.tsx` and `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`; the
+  overview renders the same step list read-only.
 - Grades (`feel`) are shown on session and overview screens and in the sessions index, never
   on the home screen.
 - State lives in `src/lib/store/` (zustand + AsyncStorage, persisted as one JSON blob). Select
@@ -35,7 +36,18 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. The app is
   silent by design: no audio, no haptics. Screens only render; put behaviour in `src/lib` where
   `npm test` can reach it.
-- Workouts use `blocks[]`; simple mode is one block. Do not add flat timing fields.
+- A workout is `steps[]`: timed steps (`prep`, `hang`, `rest`, each with seconds and an optional
+  label) and `repeat` groups (`times`, `skipLastRest`, nested `steps`). Repeats nest at most one
+  level deep: the rounds of a top-level repeat are the sets, the rounds of a repeat inside it are
+  the reps. The stored model has no ids; the editor adds them through `withIds`/`stripIds` in
+  `src/lib/workout-steps.ts`, which also holds every tree edit (`updateStep`, `moveStep`,
+  `reorderWithin`, `validate`, `LIMITS`). `src/lib/workout-codec.ts` encodes a workout as short
+  text (`v1 p10 6(6(h7 r3) r180)`) for sharing by link or QR code. Persist version 3 migrates the
+  old `prepSeconds` + `blocks[]` shape in `src/lib/store/migrate.ts`.
+- The builder (`src/components/workout-form.tsx` with `step-list.tsx`) is Garmin-style: step
+  cards, repeat groups, inline editing, a ⋮ menu per step and a Reorder mode that drags rows with
+  `react-native-sortables` (one sortable list at a time, never nested). The root layout wraps the
+  app in `GestureHandlerRootView` for it.
 
 ## Native project
 

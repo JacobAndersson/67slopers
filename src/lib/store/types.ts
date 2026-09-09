@@ -1,19 +1,30 @@
-/** One group of identical sets. Simple mode is a workout with exactly one block. */
-export type Block = {
+/** Timed step kinds: `prep` is the get-ready countdown, `hang` is work, `rest` is passive. */
+export type StepKind = 'prep' | 'hang' | 'rest';
+
+export type TimedStep = {
+  kind: StepKind;
+  seconds: number;
+  /** Free text shown on the timer, e.g. "20 mm half crimp". */
   label?: string;
-  hangSeconds: number;
-  /** Rest between reps inside a set. Irrelevant when reps is 1. */
-  pauseSeconds: number;
-  reps: number;
-  /** Rest after each set, except the last one of the workout. */
-  restSeconds: number;
-  sets: number;
 };
 
-export type WorkoutTimings = {
-  prepSeconds: number;
-  blocks: Block[];
+/** Runs its steps `times` rounds in a row. May contain one more level of repeats, no deeper. */
+export type RepeatStep = {
+  kind: 'repeat';
+  times: number;
+  /** Drop trailing rest steps on the final round (Garmin's "skip last recovery"). */
+  skipLastRest: boolean;
+  steps: Step[];
 };
+
+export type Step = TimedStep | RepeatStep;
+
+/**
+ * The canonical, id-free workout structure: an ordered list of steps and repeats. This is what
+ * gets persisted, snapshotted on sessions and encoded for sharing. Editors add ids on top; see
+ * `src/lib/workout-steps.ts`.
+ */
+export type WorkoutTimings = { steps: Step[] };
 
 export type Workout = WorkoutTimings & {
   id: string;
