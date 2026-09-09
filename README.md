@@ -3,6 +3,11 @@
 A cross-platform hangboard training app for iOS, Android and web, built with
 [Expo](https://expo.dev) and [Expo Router](https://docs.expo.dev/router/introduction/).
 
+## App icon
+
+All icon assets come from one vector design. Edit `scripts/gen-icons.mjs` and run
+`npm run icons` to regenerate the PNGs and the iOS icon layer.
+
 ## Requirements
 
 - Node.js 20 or newer (this repo was set up with Node 24)

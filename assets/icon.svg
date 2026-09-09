@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><rect width="1024" height="1024" fill="#F6F1EA"/><g transform="translate(-20.6403855421687 -25.637012048192787) scale(0.9993253012048193)">
+  <defs><filter id="chalk" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+  <path d="M 250 230 C 420 120 700 140 850 280 C 970 400 940 640 820 760 C 700 880 420 900 280 800 C 130 700 90 480 160 340 C 190 280 220 250 250 230 Z" fill="#EBA747" transform="translate(0 44)"/>
+  <path d="M 250 230 C 420 120 700 140 850 280 C 970 400 940 640 820 760 C 700 880 420 900 280 800 C 130 700 90 480 160 340 C 190 280 220 250 250 230 Z" fill="#FFC16B"/>
+  <circle cx="530" cy="560" r="58" fill="#CC8C33"/>
+  <circle cx="530" cy="560" r="29" fill="#8F6D3D"/>
+  <ellipse cx="372" cy="340" rx="44" ry="64" transform="rotate(170.9 372 340)" fill="#FFFFFF" opacity="0.92" filter="url(#chalk)"/><ellipse cx="520" cy="330" rx="44" ry="64" transform="rotate(197.9 520 330)" fill="#FFFFFF" opacity="0.92" filter="url(#chalk)"/><ellipse cx="655" cy="400" rx="44" ry="64" transform="rotate(224.4 655 400)" fill="#FFFFFF" opacity="0.92" filter="url(#chalk)"/><ellipse cx="730" cy="530" rx="44" ry="64" transform="rotate(250.5 730 530)" fill="#FFFFFF" opacity="0.92" filter="url(#chalk)"/><ellipse cx="268" cy="548" rx="48" ry="68" transform="rotate(108.8 268 548)" fill="#FFFFFF" opacity="0.92" filter="url(#chalk)"/>
+</g></svg>

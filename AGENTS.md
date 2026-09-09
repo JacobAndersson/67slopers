@@ -63,6 +63,9 @@ the release APK locally; there is no EAS or cloud build.
   `font-*` weight utilities, which a plugin in `tailwind.config.js` maps to the per-weight family
   names. Never set `fontFamily`/`fontWeight` by hand; use `font-medium`, `font-semibold`, etc.
   Weights available: 400, 500, 600, 700, 800. Add a weight in both files if you need another.
+- App icon, splash image and favicon are generated, never hand-edited: `npm run icons` renders
+  every PNG and the iOS `.icon` layer from the vector design in `scripts/gen-icons.mjs` (a chalked
+  sloper in the palette colours). Change the design there and re-run it.
 - Platform-specific files use the `.web.tsx` / `.ios.tsx` / `.android.tsx` suffix convention.
 - Native tabs (`expo-router/unstable-native-tabs`) on iOS/Android; web uses the headless tabs in
   `src/components/app-tabs.web.tsx`. Keep both in sync when adding a tab.
