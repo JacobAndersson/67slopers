@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Hangboard",
-    "slug": "hangboard",
+    "name": "Sloppy Slopers",
+    "slug": "sloppy-slopers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hangboard",
+    "scheme": "sloppyslopers",
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.hangboard.app"
+      "bundleIdentifier": "com.sloppyslopers.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.hangboard.app"
+      "package": "com.sloppyslopers.app"
     },
     "web": {
       "output": "static",
