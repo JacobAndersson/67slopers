@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { PRESETS } from './store/presets';
+import { findPreset } from './store/presets';
 import { estimateDuration, setsLine, summaryLine } from './workout-summary';
 
-const [repeaters, maxHangs, density] = PRESETS;
+const repeaters = findPreset('repeaters-7-3')!;
+const maxHangs = findPreset('max-hangs')!;
+const density = findPreset('density-hangs')!;
 
 test('summaryLine reads sets, reps and rests', () => {
   assert.equal(summaryLine(repeaters), '6 × (6 × 7s / 3s · rest 3:00)');

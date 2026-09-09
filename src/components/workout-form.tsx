@@ -1,4 +1,5 @@
-import { PlusIcon, RepeatIcon } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { LibraryIcon, PlusIcon, RepeatIcon } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -27,7 +28,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import { formatClock } from '@/lib/dates';
-import { PRESETS, templateSteps } from '@/lib/store/presets';
+import { templateSteps } from '@/lib/store/presets';
 import type { Step, Workout } from '@/lib/store/types';
 import {
   appendTo,
@@ -51,6 +52,8 @@ export type WorkoutFormValues = { name: string; steps: Step[] };
 
 type WorkoutFormProps = {
   initial?: Workout;
+  /** Prefill a new workout, e.g. from the presets library. Ignored when `initial` is set. */
+  template?: { name: string; steps: Step[] };
   submitLabel: string;
   /** Save. Needs a name. */
   onSubmit: (values: WorkoutFormValues) => void;
@@ -62,14 +65,16 @@ type WorkoutFormProps = {
 /** Garmin-style builder: an ordered list of steps and repeat groups. */
 export function WorkoutForm({
   initial,
+  template,
   submitLabel,
   onSubmit,
   onStart,
   onDelete,
 }: WorkoutFormProps) {
-  const [name, setName] = useState(initial?.name ?? '');
+  const router = useRouter();
+  const [name, setName] = useState(initial?.name ?? template?.name ?? '');
   const [steps, setSteps] = useState<EditableStep[]>(() =>
-    withIds(initial ? initial.steps : templateSteps())
+    withIds(initial?.steps ?? template?.steps ?? templateSteps())
   );
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [reorderTarget, setReorderTarget] = useState<ReorderTarget | undefined>(undefined);
@@ -100,13 +105,6 @@ export function WorkoutForm({
     }),
     []
   );
-
-  const applyPreset = (index: number) => {
-    const preset = PRESETS[index];
-    if (!name.trim() || PRESETS.some((p) => p.name === name)) setName(preset.name);
-    setSteps(withIds(preset.steps));
-    setExpandedId(null);
-  };
 
   return (
     <Screen
@@ -148,20 +146,11 @@ export function WorkoutForm({
       </View>
 
       {initial ? null : (
-        <View className="gap-2">
-          <Text variant="muted">Start from a preset</Text>
-          <View className="flex-row flex-wrap gap-2">
-            {PRESETS.map((preset, i) => (
-              <Button
-                key={preset.name}
-                variant="secondary"
-                size="sm"
-                onPress={() => applyPreset(i)}>
-                <Text>{preset.name}</Text>
-              </Button>
-            ))}
-          </View>
-        </View>
+        // Swap this screen for the library so picking a preset does not stack two builders.
+        <Button variant="outline" className="self-start" onPress={() => router.replace('/presets')}>
+          <Icon as={LibraryIcon} className="size-4" />
+          <Text>Start from a classic workout</Text>
+        </Button>
       )}
 
       <Separator />

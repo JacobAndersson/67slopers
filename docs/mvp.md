@@ -27,8 +27,11 @@ Parity with BoulderFIT, done the Garmin Connect way:
   label such as "20 mm half crimp") and **repeats** that run a group of steps N times. Repeats
   nest one level: sets × (reps × (hang, rest), rest between sets). "Skip last rest" drops the
   trailing rest of the final round, like Garmin's skip last recovery.
-- New workouts start from the repeaters template; preset chips (7:3 repeaters, max hangs, density
-  hangs) replace the steps. A live estimate of the total duration.
+- New workouts start from the repeaters template, or from the classic-workouts library: ten
+  protocols across beginner, intermediate and advanced (10:50 first hangs, Emil-style no-hangs,
+  density hangs, 7:3 repeaters, max hangs, minimum edge, two-grip repeaters, Hörst 7/53, one-arm
+  hangs, three-grip max hangs), each with its usual numbers and a short description. A live
+  estimate of the total duration.
 - Save the current configuration as a named workout and reload it later. A name is only needed to
   save: Start runs the configuration as is, and the finish screen offers to save it afterwards.
 

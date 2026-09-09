@@ -32,9 +32,18 @@ export default function HomeScreen() {
   return (
     <Screen
       footer={
-        <Button size="lg" onPress={() => router.push('/workout/new')}>
-          <Text>New workout</Text>
-        </Button>
+        <View className="flex-row gap-3">
+          <Button
+            size="lg"
+            variant="outline"
+            className="flex-1"
+            onPress={() => router.push('/presets')}>
+            <Text>Presets</Text>
+          </Button>
+          <Button size="lg" className="flex-1" onPress={() => router.push('/workout/new')}>
+            <Text>New workout</Text>
+          </Button>
+        </View>
       }>
       <CalendarStats sessions={sessions} />
       <WeekCalendar sessions={sessions} />

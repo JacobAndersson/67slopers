@@ -277,7 +277,8 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
           {editor ? (
             <Icon
               as={ChevronDownIcon}
-              className={cn('size-4 text-muted-foreground', editingCount && 'rotate-180')}
+              className="size-4 text-muted-foreground"
+              style={{ transform: [{ rotate: editingCount ? '180deg' : '0deg' }] }}
             />
           ) : null}
         </Pressable>

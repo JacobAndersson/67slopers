@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { PRESETS } from './store/presets';
+import { findPreset, PRESETS } from './store/presets';
 import type { Step } from './store/types';
 import { decodeWorkout, encodeWorkout } from './workout-codec';
 
@@ -18,7 +18,7 @@ test('presets round-trip and stay short', () => {
     assert.equal(decoded.name, preset.name);
     assert.deepEqual(decoded.steps, preset.steps);
   }
-  const repeaters = encodeWorkout({ steps: PRESETS[0].steps });
+  const repeaters = encodeWorkout({ steps: findPreset('repeaters-7-3')!.steps });
   assert.equal(repeaters, 'v1 p10 6(6(h7 r3) r180)');
   assert.ok(repeaters.length < 32);
 });
@@ -49,7 +49,7 @@ test('labels, skipped rests and nesting survive the trip', () => {
 });
 
 test('whitespace is optional and names are optional', () => {
-  assert.deepEqual(ok('v1p10 6( 6(h7 r3)r180 )').steps, PRESETS[0].steps);
+  assert.deepEqual(ok('v1p10 6( 6(h7 r3)r180 )').steps, findPreset('repeaters-7-3')!.steps);
   assert.equal(ok('v1 h7').name, undefined);
   assert.deepEqual(ok('  v1  "  Spaced  "  h7  ').name, 'Spaced');
 });

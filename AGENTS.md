@@ -26,7 +26,10 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   workout) and offers to save it at the end. `workouts.tsx` and `sessions.tsx` are the
   "View all" index screens; `session/[id].tsx` shows one session with "Do it again".
   `workout/new.tsx` and `workout/[id]/edit.tsx` share `src/components/workout-form.tsx`; the
-  overview renders the same step list read-only.
+  overview renders the same step list read-only. `presets.tsx` is the built-in library
+  (`src/lib/store/presets.ts`: classic protocols by level with a description); opening one lands
+  in `workout/new?preset=<id>`. Only the three ids in `SEEDED_PRESET_IDS` are copied into "Your
+  workouts" on first launch.
 - Grades (`feel`) are shown on session and overview screens and in the sessions index, never
   on the home screen.
 - State lives in `src/lib/store/` (zustand + AsyncStorage, persisted as one JSON blob). Select
