@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -14 608 178" width="1216" height="356" font-family="Geist Mono, ui-monospace, monospace">
+<title>Beastmaker 1000 Series</title>
+<rect id="board" x="0" y="0" width="580" height="150" rx="60" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>
+<g id="holds">
+<rect id="jug-l" data-type="jug" data-fingers="4" data-pair="jug-r" x="17" y="0" width="111" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Jug</title></rect>
+<rect id="sloper-35-l" data-type="sloper" data-fingers="4" data-angle="35" data-pair="sloper-35-r" x="128" y="0" width="90" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>35° sloper</title></rect>
+<rect id="sloper-20" data-type="sloper" data-fingers="4" data-angle="20" x="218" y="0" width="144" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>20° sloper</title></rect>
+<rect id="sloper-35-r" data-type="sloper" data-fingers="4" data-angle="35" data-pair="sloper-35-l" x="362" y="0" width="90" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>35° sloper</title></rect>
+<rect id="jug-r" data-type="jug" data-fingers="4" data-pair="jug-l" x="452" y="0" width="111" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Jug</title></rect>
+<path id="edge-small-l" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-small-r" d="M51 32h52a10 10 0 0 1 0 20h-52a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Small edge</title></path>
+<path id="pocket-4f-deep-l" data-type="pocket" data-fingers="4" data-depth="30" data-pair="pocket-4f-deep-r" d="M233 32h35a10 10 0 0 1 0 20h-35a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 4-finger pocket</title></path>
+<path id="pocket-4f-deep-r" data-type="pocket" data-fingers="4" data-depth="30" data-pair="pocket-4f-deep-l" d="M312 32h35a10 10 0 0 1 0 20h-35a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 4-finger pocket</title></path>
+<path id="edge-small-r" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-small-l" d="M477 32h52a10 10 0 0 1 0 20h-52a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Small edge</title></path>
+<path id="edge-large-l" data-type="edge" data-fingers="4" data-depth="45" data-pair="edge-large-r" d="M43 67h56a11 11 0 0 1 0 22h-56a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Large edge</title></path>
+<path id="pocket-2f-deep-l" data-type="pocket" data-fingers="2" data-depth="50" data-pair="pocket-2f-deep-r" d="M136 67h15a11 11 0 0 1 0 22h-15a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 2-finger pocket</title></path>
+<path id="pocket-3f-deep-l" data-type="pocket" data-fingers="3" data-depth="45" data-pair="pocket-3f-deep-r" d="M185 67h36a11 11 0 0 1 0 22h-36a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 3-finger pocket</title></path>
+<path id="slot-flat" data-type="pocket" data-fingers="4" data-depth="53" d="M257 67h66a11 11 0 0 1 0 22h-66a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Big flat slot (very deep 4-finger)</title></path>
+<path id="pocket-3f-deep-r" data-type="pocket" data-fingers="3" data-depth="45" data-pair="pocket-3f-deep-l" d="M359 67h36a11 11 0 0 1 0 22h-36a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 3-finger pocket</title></path>
+<path id="pocket-2f-deep-r" data-type="pocket" data-fingers="2" data-depth="50" data-pair="pocket-2f-deep-l" d="M429 67h15a11 11 0 0 1 0 22h-15a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 2-finger pocket</title></path>
+<path id="edge-large-r" data-type="edge" data-fingers="4" data-depth="45" data-pair="edge-large-l" d="M481 67h56a11 11 0 0 1 0 22h-56a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Large edge</title></path>
+<path id="edge-medium-l" data-type="edge" data-fingers="4" data-depth="20" data-pair="edge-medium-r" d="M87 109h58a12 12 0 0 1 0 24h-58a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Medium edge</title></path>
+<path id="pocket-2f-shallow-l" data-type="pocket" data-fingers="2" data-depth="25" data-pair="pocket-2f-shallow-r" d="M185 109h16a12 12 0 0 1 0 24h-16a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Shallow 2-finger pocket</title></path>
+<path id="pocket-3f-shallow-l" data-type="pocket" data-fingers="3" data-depth="20" data-pair="pocket-3f-shallow-r" d="M238 109h31a12 12 0 0 1 0 24h-31a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Shallow 3-finger pocket</title></path>
+<path id="pocket-3f-shallow-r" data-type="pocket" data-fingers="3" data-depth="20" data-pair="pocket-3f-shallow-l" d="M311 109h31a12 12 0 0 1 0 24h-31a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Shallow 3-finger pocket</title></path>
+<path id="pocket-2f-shallow-r" data-type="pocket" data-fingers="2" data-depth="25" data-pair="pocket-2f-shallow-l" d="M379 109h16a12 12 0 0 1 0 24h-16a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Shallow 2-finger pocket</title></path>
+<path id="edge-medium-r" data-type="edge" data-fingers="4" data-depth="20" data-pair="edge-medium-l" d="M435 109h58a12 12 0 0 1 0 24h-58a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Medium edge</title></path>
+</g>
+<circle cx="78" cy="41" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="502" cy="41" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="250" cy="41" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="330" cy="41" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="118" cy="121" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="462" cy="121" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<g id="labels" font-size="5" fill="#1f1a12" text-anchor="middle">
+<text x="72.5" y="21.5" fill="#1f1a12">jug</text>
+<text x="173" y="21.5" fill="#1f1a12">35°</text>
+<text x="290" y="21.5" fill="#1f1a12">20°</text>
+<text x="407" y="21.5" fill="#1f1a12">35°</text>
+<text x="507.5" y="21.5" fill="#1f1a12">jug</text>
+<text x="77" y="49.5" fill="#f6f0e4">15</text>
+<text x="250.5" y="49.5" fill="#f6f0e4">30</text>
+<text x="329.5" y="49.5" fill="#f6f0e4">30</text>
+<text x="503" y="49.5" fill="#f6f0e4">15</text>
+<text x="71" y="85.5" fill="#f6f0e4">45</text>
+<text x="143.5" y="85.5" fill="#f6f0e4">50</text>
+<text x="203" y="85.5" fill="#f6f0e4">45</text>
+<text x="290" y="85.5" fill="#f6f0e4">53</text>
+<text x="377" y="85.5" fill="#f6f0e4">45</text>
+<text x="436.5" y="85.5" fill="#f6f0e4">50</text>
+<text x="509" y="85.5" fill="#f6f0e4">45</text>
+<text x="116" y="128.5" fill="#f6f0e4">20</text>
+<text x="193" y="128.5" fill="#f6f0e4">25</text>
+<text x="253.5" y="128.5" fill="#f6f0e4">20</text>
+<text x="326.5" y="128.5" fill="#f6f0e4">20</text>
+<text x="387" y="128.5" fill="#f6f0e4">25</text>
+<text x="464" y="128.5" fill="#f6f0e4">20</text>
+</g>
+<text x="290" y="159" font-size="5" fill="#5a4a30" text-anchor="middle">Beastmaker 1000 Series · 580 × 150 × 45 mm · numbers are hold depths in mm (community measured)</text>
+</svg>

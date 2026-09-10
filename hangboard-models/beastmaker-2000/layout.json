@@ -1,0 +1,51 @@
+{
+  "id": "beastmaker-2000",
+  "brand": "Beastmaker",
+  "model": "2000 Series",
+  "url": "https://www.beastmaker.co.uk/products/beastmaker-2000-series",
+  "material": "wood (tulipwood; beech variant also sold)",
+  "size_mm": { "width": 580, "height": 150, "depth": 58 },
+  "weight_g": 1700,
+  "screw_holes": [
+    { "x": 250, "y": 44 }, { "x": 330, "y": 44 },
+    { "x": 47, "y": 80 }, { "x": 533, "y": 80 },
+    { "x": 47, "y": 125 }, { "x": 533, "y": 125 }
+  ],
+  "coordinate_system": "x from the left edge, y from the top edge, millimetres, front view as the climber sees it",
+  "notes": [
+    "Hold positions are traced from the official product photo and scaled to the 580 x 150 mm footprint; expect +-3 mm.",
+    "Depths are community measurements (r/climbharder thread cek236, atamanroman.dev diagram, OutdoorGearLab review), not manufacturer numbers. Beastmaker publishes only the 22 mm middle edge and the 45/35/20 degree sloper angles.",
+    "The 2000 is deliberately asymmetric in places: the two edges under the 20 degree sloper measure about 40 mm (left) and 20 mm (right), and the 2-finger pockets differ left/right (about 32-35 mm deep with an offset back hole on row 3, 19 mm and a sloping 22 mm on row 4). Swap hands to train both sides.",
+    "The top strip is the sloper surface on top of the board; in the front view it is drawn as a strip along the top edge. The centre 20 degree sloper stands proud of the 35 and 45 degree slopers."
+  ],
+  "holds": [
+    { "id": "sloper-45-l", "pair": "sloper-45-r", "side": "left", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 45, "depth_mm": null, "label": "45° sloper", "x": 0, "y": 0, "w": 99, "h": 32, "shape": "rect" },
+    { "id": "sloper-35-l", "pair": "sloper-35-r", "side": "left", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 35, "depth_mm": null, "label": "35° sloper", "x": 99, "y": 0, "w": 100, "h": 32, "shape": "rect" },
+    { "id": "sloper-20", "pair": null, "side": "center", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 20, "depth_mm": null, "label": "20° sloper", "x": 199, "y": 0, "w": 182, "h": 32, "shape": "rect" },
+    { "id": "sloper-35-r", "pair": "sloper-35-l", "side": "right", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 35, "depth_mm": null, "label": "35° sloper", "x": 381, "y": 0, "w": 100, "h": 32, "shape": "rect" },
+    { "id": "sloper-45-r", "pair": "sloper-45-l", "side": "right", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 45, "depth_mm": null, "label": "45° sloper", "x": 481, "y": 0, "w": 99, "h": 32, "shape": "rect" },
+
+    { "id": "edge-top-deep-l", "pair": "edge-top-shallow-r", "side": "left", "row": 2, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 40, "label": "Top edge, deep (~40 mm)", "x": 218, "y": 34, "w": 60, "h": 21, "shape": "stadium" },
+    { "id": "edge-top-shallow-r", "pair": "edge-top-deep-l", "side": "right", "row": 2, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 20, "label": "Top edge, shallow (~20 mm)", "x": 302, "y": 34, "w": 60, "h": 21, "shape": "stadium" },
+
+    { "id": "edge-big-l", "pair": "edge-big-r", "side": "left", "row": 3, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 33, "label": "Big edge", "x": 8, "y": 68, "w": 78, "h": 25, "shape": "stadium" },
+    { "id": "mono-deep-l", "pair": "mono-deep-r", "side": "left", "row": 3, "type": "mono", "fingers": 1, "angle_deg": null, "depth_mm": 55, "label": "Deep mono", "x": 97, "y": 68, "w": 24, "h": 25, "shape": "circle" },
+    { "id": "pocket-2f-big-l", "pair": "pocket-2f-big-r", "side": "left", "row": 3, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 35, "depth_back_mm": 50, "label": "Big 2-finger pocket (offset back hole ~50 mm)", "x": 129, "y": 68, "w": 48, "h": 25, "shape": "stadium" },
+    { "id": "pocket-3f-medium-l", "pair": "pocket-3f-medium-r", "side": "left", "row": 3, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 30, "label": "Medium 3-finger pocket", "x": 187, "y": 68, "w": 47, "h": 25, "shape": "stadium" },
+    { "id": "pocket-4f-deep", "pair": null, "side": "center", "row": 3, "type": "pocket", "fingers": 4, "angle_deg": null, "depth_mm": 52, "label": "Deep 4-finger pocket", "x": 246, "y": 68, "w": 88, "h": 25, "shape": "stadium" },
+    { "id": "pocket-3f-medium-r", "pair": "pocket-3f-medium-l", "side": "right", "row": 3, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 30, "label": "Medium 3-finger pocket", "x": 346, "y": 68, "w": 47, "h": 25, "shape": "stadium" },
+    { "id": "pocket-2f-big-r", "pair": "pocket-2f-big-l", "side": "right", "row": 3, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 32, "depth_back_mm": 50, "label": "Big 2-finger pocket (offset back hole ~50 mm)", "x": 403, "y": 68, "w": 48, "h": 25, "shape": "stadium" },
+    { "id": "mono-deep-r", "pair": "mono-deep-l", "side": "right", "row": 3, "type": "mono", "fingers": 1, "angle_deg": null, "depth_mm": 55, "label": "Deep mono", "x": 459, "y": 68, "w": 24, "h": 25, "shape": "circle" },
+    { "id": "edge-big-r", "pair": "edge-big-l", "side": "right", "row": 3, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 33, "label": "Big edge", "x": 494, "y": 68, "w": 78, "h": 25, "shape": "stadium" },
+
+    { "id": "edge-little-l", "pair": "edge-little-r", "side": "left", "row": 4, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 15, "label": "Little edge", "x": 8, "y": 114, "w": 81, "h": 23, "shape": "stadium" },
+    { "id": "mono-1pad-l", "pair": "mono-1pad-r", "side": "left", "row": 4, "type": "mono", "fingers": 1, "angle_deg": null, "depth_mm": 27, "label": "1-pad mono", "x": 97, "y": 114, "w": 22, "h": 23, "shape": "circle" },
+    { "id": "pocket-2f-little-l", "pair": "pocket-2f-sloping-r", "side": "left", "row": 4, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 20, "label": "Little 2-finger pocket", "x": 130, "y": 114, "w": 47, "h": 23, "shape": "stadium" },
+    { "id": "pocket-3f-small-l", "pair": "pocket-3f-small-r", "side": "left", "row": 4, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 22, "label": "Small 3-finger pocket", "x": 187, "y": 114, "w": 50, "h": 23, "shape": "stadium" },
+    { "id": "edge-22", "pair": null, "side": "center", "row": 4, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 22, "label": "22 mm middle edge", "x": 242, "y": 114, "w": 96, "h": 23, "shape": "stadium" },
+    { "id": "pocket-3f-small-r", "pair": "pocket-3f-small-l", "side": "right", "row": 4, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 22, "label": "Small 3-finger pocket", "x": 343, "y": 114, "w": 50, "h": 23, "shape": "stadium" },
+    { "id": "pocket-2f-sloping-r", "pair": "pocket-2f-little-l", "side": "right", "row": 4, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 22, "label": "Sloping 2-finger pocket", "x": 403, "y": 114, "w": 47, "h": 23, "shape": "stadium" },
+    { "id": "mono-1pad-r", "pair": "mono-1pad-l", "side": "right", "row": 4, "type": "mono", "fingers": 1, "angle_deg": null, "depth_mm": 27, "label": "1-pad mono", "x": 461, "y": 114, "w": 22, "h": 23, "shape": "circle" },
+    { "id": "edge-little-r", "pair": "edge-little-l", "side": "right", "row": 4, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 15, "label": "Little edge", "x": 491, "y": 114, "w": 81, "h": 23, "shape": "stadium" }
+  ]
+}

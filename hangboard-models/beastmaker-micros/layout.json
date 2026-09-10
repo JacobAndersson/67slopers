@@ -1,0 +1,23 @@
+{
+  "id": "beastmaker-micros",
+  "brand": "Beastmaker",
+  "model": "Micros",
+  "url": "https://www.beastmaker.co.uk/pages/micros",
+  "material": "wood",
+  "size_mm": { "width": 110, "height": 40, "depth": 12 },
+  "weight_g": null,
+  "screw_holes": [ { "x": 20, "y": 20 }, { "x": 90, "y": 20 } ],
+  "coordinate_system": "x from the left edge, y from the top edge, millimetres, front view as the climber sees it. Each Micro is a separate 110 x 40 mm block; six blocks (three depth pairs) are sold as a set and mounted wherever the user likes, typically under or beside a 1000/2000.",
+  "notes": [
+    "Only the 110 x 40 mm footprint and the 10 / 8 / 6 mm edge depths are published by Beastmaker. Block thickness and screw positions are estimates from the product photos.",
+    "Because the blocks are mounted freely, an app should let the user place the three pairs relative to the main board rather than assuming fixed positions; the layout below is one block with the edge along its top."
+  ],
+  "variants": [
+    { "id": "micro-10", "depth_mm": 10, "label": "10 mm micro" },
+    { "id": "micro-8", "depth_mm": 8, "label": "8 mm micro" },
+    { "id": "micro-6", "depth_mm": 6, "label": "6 mm micro" }
+  ],
+  "holds": [
+    { "id": "edge", "pair": null, "side": "center", "row": 1, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Micro edge (10 / 8 / 6 mm)", "x": 5, "y": 0, "w": 100, "h": 12, "shape": "rect" }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "beastmaker-1000",
+  "brand": "Beastmaker",
+  "model": "1000 Series",
+  "url": "https://www.beastmaker.co.uk/products/beastmaker-1000-series",
+  "material": "wood (tulipwood; beech variant also sold)",
+  "size_mm": { "width": 580, "height": 150, "depth": 45 },
+  "weight_g": 1700,
+  "screw_holes": [
+    { "x": 78, "y": 41 }, { "x": 502, "y": 41 },
+    { "x": 250, "y": 41 }, { "x": 330, "y": 41 },
+    { "x": 118, "y": 121 }, { "x": 462, "y": 121 }
+  ],
+  "coordinate_system": "x from the left edge, y from the top edge, millimetres, front view as the climber sees it",
+  "notes": [
+    "Hold positions are traced from the official product photo and scaled to the 580 x 150 mm footprint; expect +-3 mm.",
+    "Depths are community measurements (r/climbharder thread cek236, atamanroman.dev diagram), not manufacturer numbers. Beastmaker publishes only '10mm' for the small 4-finger pockets.",
+    "The top strip is the sloper/jug surface on top of the board; in the front view it is drawn as a strip along the top edge.",
+    "Holds come in mirrored pairs; 'pair' links the left and right hold. Holds with side 'center' are used by both hands."
+  ],
+  "holds": [
+    { "id": "jug-l", "pair": "jug-r", "side": "left", "row": 1, "type": "jug", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Jug", "x": 17, "y": 0, "w": 111, "h": 28, "shape": "rect" },
+    { "id": "sloper-35-l", "pair": "sloper-35-r", "side": "left", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 35, "depth_mm": null, "label": "35° sloper", "x": 128, "y": 0, "w": 90, "h": 28, "shape": "rect" },
+    { "id": "sloper-20", "pair": null, "side": "center", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 20, "depth_mm": null, "label": "20° sloper", "x": 218, "y": 0, "w": 144, "h": 28, "shape": "rect" },
+    { "id": "sloper-35-r", "pair": "sloper-35-l", "side": "right", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 35, "depth_mm": null, "label": "35° sloper", "x": 362, "y": 0, "w": 90, "h": 28, "shape": "rect" },
+    { "id": "jug-r", "pair": "jug-l", "side": "right", "row": 1, "type": "jug", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Jug", "x": 452, "y": 0, "w": 111, "h": 28, "shape": "rect" },
+
+    { "id": "edge-small-l", "pair": "edge-small-r", "side": "left", "row": 2, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 15, "depth_official_mm": 10, "label": "Small edge", "x": 41, "y": 32, "w": 72, "h": 20, "shape": "stadium" },
+    { "id": "pocket-4f-deep-l", "pair": "pocket-4f-deep-r", "side": "left", "row": 2, "type": "pocket", "fingers": 4, "angle_deg": null, "depth_mm": 30, "label": "Deep 4-finger pocket", "x": 223, "y": 32, "w": 55, "h": 20, "shape": "stadium" },
+    { "id": "pocket-4f-deep-r", "pair": "pocket-4f-deep-l", "side": "right", "row": 2, "type": "pocket", "fingers": 4, "angle_deg": null, "depth_mm": 30, "label": "Deep 4-finger pocket", "x": 302, "y": 32, "w": 55, "h": 20, "shape": "stadium" },
+    { "id": "edge-small-r", "pair": "edge-small-l", "side": "right", "row": 2, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 15, "depth_official_mm": 10, "label": "Small edge", "x": 467, "y": 32, "w": 72, "h": 20, "shape": "stadium" },
+
+    { "id": "edge-large-l", "pair": "edge-large-r", "side": "left", "row": 3, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 45, "label": "Large edge", "x": 32, "y": 67, "w": 78, "h": 22, "shape": "stadium" },
+    { "id": "pocket-2f-deep-l", "pair": "pocket-2f-deep-r", "side": "left", "row": 3, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 50, "label": "Deep 2-finger pocket", "x": 125, "y": 67, "w": 37, "h": 22, "shape": "stadium" },
+    { "id": "pocket-3f-deep-l", "pair": "pocket-3f-deep-r", "side": "left", "row": 3, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 45, "label": "Deep 3-finger pocket", "x": 174, "y": 67, "w": 58, "h": 22, "shape": "stadium" },
+    { "id": "slot-flat", "pair": null, "side": "center", "row": 3, "type": "pocket", "fingers": 4, "angle_deg": null, "depth_mm": 53, "label": "Big flat slot (very deep 4-finger)", "x": 246, "y": 67, "w": 88, "h": 22, "shape": "stadium" },
+    { "id": "pocket-3f-deep-r", "pair": "pocket-3f-deep-l", "side": "right", "row": 3, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 45, "label": "Deep 3-finger pocket", "x": 348, "y": 67, "w": 58, "h": 22, "shape": "stadium" },
+    { "id": "pocket-2f-deep-r", "pair": "pocket-2f-deep-l", "side": "right", "row": 3, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 50, "label": "Deep 2-finger pocket", "x": 418, "y": 67, "w": 37, "h": 22, "shape": "stadium" },
+    { "id": "edge-large-r", "pair": "edge-large-l", "side": "right", "row": 3, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 45, "label": "Large edge", "x": 470, "y": 67, "w": 78, "h": 22, "shape": "stadium" },
+
+    { "id": "edge-medium-l", "pair": "edge-medium-r", "side": "left", "row": 4, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 20, "label": "Medium edge", "x": 75, "y": 109, "w": 82, "h": 24, "shape": "stadium" },
+    { "id": "pocket-2f-shallow-l", "pair": "pocket-2f-shallow-r", "side": "left", "row": 4, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 25, "label": "Shallow 2-finger pocket", "x": 173, "y": 109, "w": 40, "h": 24, "shape": "stadium" },
+    { "id": "pocket-3f-shallow-l", "pair": "pocket-3f-shallow-r", "side": "left", "row": 4, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 20, "label": "Shallow 3-finger pocket", "x": 226, "y": 109, "w": 55, "h": 24, "shape": "stadium" },
+    { "id": "pocket-3f-shallow-r", "pair": "pocket-3f-shallow-l", "side": "right", "row": 4, "type": "pocket", "fingers": 3, "angle_deg": null, "depth_mm": 20, "label": "Shallow 3-finger pocket", "x": 299, "y": 109, "w": 55, "h": 24, "shape": "stadium" },
+    { "id": "pocket-2f-shallow-r", "pair": "pocket-2f-shallow-l", "side": "right", "row": 4, "type": "pocket", "fingers": 2, "angle_deg": null, "depth_mm": 25, "label": "Shallow 2-finger pocket", "x": 367, "y": 109, "w": 40, "h": 24, "shape": "stadium" },
+    { "id": "edge-medium-r", "pair": "edge-medium-l", "side": "right", "row": 4, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 20, "label": "Medium edge", "x": 423, "y": 109, "w": 82, "h": 24, "shape": "stadium" }
+  ]
+}
