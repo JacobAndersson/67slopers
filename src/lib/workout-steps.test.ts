@@ -5,10 +5,12 @@ import type { Step } from './store/types';
 import {
   appendTo,
   canNest,
+  clearHolds,
   countTimedSteps,
   depthOf,
   duplicateStep,
   findStep,
+  holdsInWorkout,
   LIMITS,
   maxDepth,
   moveIntoRepeat,
@@ -200,4 +202,27 @@ test('validate reports missing hangs, size, depth and ranges', () => {
       { kind: 'repeat', times: 100, skipLastRest: true, steps: [{ kind: 'hang', seconds: 7 }] },
     ]).some((e) => e.includes('range'))
   );
+});
+
+test('holds survive ids, cloning and patches, and can be cleared', () => {
+  const withHolds: Step[] = [
+    {
+      kind: 'repeat',
+      times: 2,
+      skipLastRest: true,
+      steps: [
+        { kind: 'hang', seconds: 7, holds: ['edge-medium-l', 'edge-medium-r'] },
+        { kind: 'rest', seconds: 3 },
+      ],
+    },
+    { kind: 'hang', seconds: 10, holds: ['sloper-20'] },
+  ];
+  const editable = withIds(withHolds);
+  assert.deepEqual(stripIds(editable), withHolds);
+  assert.deepEqual(holdsInWorkout(withHolds), ['edge-medium-l', 'edge-medium-r', 'sloper-20']);
+  const patched = updateStep(editable, editable[1].id, { holds: ['jug-l', 'jug-r'] });
+  assert.deepEqual(holdsInWorkout(stripIds(patched)).slice(-2), ['jug-l', 'jug-r']);
+  const cleared = clearHolds(editable);
+  assert.deepEqual(holdsInWorkout(stripIds(cleared)), []);
+  assert.equal(stripIds(cleared).length, 2);
 });

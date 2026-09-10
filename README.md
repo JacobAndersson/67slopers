@@ -8,6 +8,12 @@ A cross-platform hangboard training app for iOS, Android and web, built with
 All icon assets come from one vector design. Edit `scripts/gen-icons.mjs` and run
 `npm run icons` to regenerate the PNGs and the iOS icon layer.
 
+## Hangboards
+
+Board images come from `hangboard-models/` (hold layouts traced in millimetres). Run
+`npm run boards` after editing a `layout.json` to regenerate the base and highlight images and
+the manifests. The 3D meshes in that folder are stored with git LFS, so clone with LFS installed.
+
 ## Requirements
 
 - Node.js 20 or newer (this repo was set up with Node 24)

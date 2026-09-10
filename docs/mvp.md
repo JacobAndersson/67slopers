@@ -89,7 +89,8 @@ Improvements:
 - Added-weight or bodyweight logging (natural next layer after the timer).
 - Grade converter. BoulderFIT ships one; it is unrelated to the timer.
 - Watch apps, tablet layouts beyond what the responsive layout gives for free.
-- Force-sensor or board integrations.
+- Force-sensor integrations. (Board layouts with per-hang hold highlighting shipped after the
+  MVP for the Beastmaker 1000 and 2000.)
 
 ## Data and storage
 

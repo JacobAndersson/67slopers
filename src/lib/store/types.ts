@@ -1,3 +1,5 @@
+import type { BoardId } from '../boards/generated';
+
 /** Timed step kinds: `prep` is the get-ready countdown, `hang` is work, `rest` is passive. */
 export type StepKind = 'prep' | 'hang' | 'rest';
 
@@ -6,6 +8,8 @@ export type TimedStep = {
   seconds: number;
   /** Free text shown on the timer, e.g. "20 mm half crimp". */
   label?: string;
+  /** Hold ids on the workout's board for a hang: a mirrored pair or one centre hold. */
+  holds?: string[];
 };
 
 /** Runs its steps `times` rounds in a row. May contain one more level of repeats, no deeper. */
@@ -24,7 +28,11 @@ export type Step = TimedStep | RepeatStep;
  * gets persisted, snapshotted on sessions and encoded for sharing. Editors add ids on top; see
  * `src/lib/workout-steps.ts`.
  */
-export type WorkoutTimings = { steps: Step[] };
+export type WorkoutTimings = {
+  /** The hangboard the holds refer to; absent means no board. */
+  board?: BoardId;
+  steps: Step[];
+};
 
 export type Workout = WorkoutTimings & {
   id: string;

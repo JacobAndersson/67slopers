@@ -98,6 +98,18 @@ test('top-level hangs count as sets and top-level rests belong to the set before
   assert.equal('label' in intervals[2], false, 'unlabelled steps carry no label key');
 });
 
+test('holds pass through to hang intervals only when set', () => {
+  const steps: Step[] = [
+    { kind: 'hang', seconds: 7, holds: ['edge-medium-l', 'edge-medium-r'] },
+    rest(3),
+    hang(7),
+  ];
+  const intervals = expandWorkout({ steps });
+  assert.deepEqual(intervals[0].holds, ['edge-medium-l', 'edge-medium-r']);
+  assert.equal('holds' in intervals[1], false);
+  assert.equal('holds' in intervals[2], false);
+});
+
 test('zero-length steps are skipped and an empty workout is just done', () => {
   assert.deepEqual(phases([prep(0), hang(7), rest(0)]), ['hang', 'done']);
   const empty = expandWorkout({ steps: [] });

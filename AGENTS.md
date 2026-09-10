@@ -47,6 +47,15 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   `reorderWithin`, `validate`, `LIMITS`). `src/lib/workout-codec.ts` encodes a workout as short
   text (`v1 p10 6(6(h7 r3) r180)`) for sharing by link or QR code. Persist version 3 migrates the
   old `prepSeconds` + `blocks[]` shape in `src/lib/store/migrate.ts`.
+- Hangboards: `hangboard-models/` is the source of truth (one `layout.json` per board, hold boxes
+  in mm, mirrored pairs; 3D files live in git LFS). `npm run boards` (`scripts/gen-board-images.mjs`)
+  rasterises each board into `assets/boards/<id>/base.png` plus one highlight overlay per hold and
+  writes the manifests in `src/lib/boards/generated/` (pure data) and `generated/images.ts`
+  (the `require`s, imported only by `src/components/board-view.tsx`). A workout may carry
+  `board` and each hang `holds`; selection is symmetric, one _grip_ per hang (a mirrored pair or a
+  centre hold, see `grips()` in `src/lib/boards/index.ts`). `BoardView` composes base + overlays
+  with percentage positions and never draws at runtime; the timer keeps every overlay it will
+  need mounted and fades opacity. Keep `src/lib/boards` off the Home path.
 - The builder (`src/components/workout-form.tsx` with `step-list.tsx`) is Garmin-style: step
   cards, repeat groups, inline editing, a ⋮ menu per step and a Reorder mode that drags rows with
   `react-native-sortables` (one sortable list at a time, never nested). The root layout wraps the

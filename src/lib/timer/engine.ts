@@ -51,6 +51,14 @@ export function current(state: EngineState): Interval {
   return state.intervals[state.index];
 }
 
+/** The next hang after the current interval, if any: what to set up for during a rest. */
+export function nextHang(state: EngineState): Interval | undefined {
+  for (let i = state.index + 1; i < state.intervals.length; i++) {
+    if (state.intervals[i].phase === 'hang') return state.intervals[i];
+  }
+  return undefined;
+}
+
 export function next(state: EngineState): Interval | undefined {
   return state.intervals[state.index + 1];
 }

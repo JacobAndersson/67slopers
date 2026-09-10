@@ -1,11 +1,12 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { useNavigation, useRouter } from 'expo-router';
 import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, XIcon } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
+import { BoardView } from '@/components/board-view';
 import { FeelPicker } from '@/components/feel';
 import {
   AlertDialog,
@@ -21,12 +22,14 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
+import { getBoard, gripName } from '@/lib/boards';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import type { Phase } from '@/lib/timer/intervals';
 import { useTimer } from '@/lib/timer/useTimer';
+import { holdsInWorkout } from '@/lib/workout-steps';
 import { setsLine } from '@/lib/workout-summary';
 
 /**
@@ -135,8 +138,18 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const interval = timer.interval;
   const secondsLeft = Math.ceil(timer.remainingSeconds);
   const countdown = interval.seconds >= 60 ? formatClock(secondsLeft) : String(secondsLeft);
+  const board = getBoard(timings.board);
+  const allHolds = useMemo(() => holdsInWorkout(timings.steps), [timings]);
+  // During a hang the board shows its holds; otherwise the ones to set up for next.
+  const shownHolds = (interval.phase === 'hang' ? interval.holds : timer.nextHang?.holds) ?? [];
+  const holdsCaption = board ? gripName(board, shownHolds) : '';
+  const nextHoldsName =
+    board && timer.nextInterval?.holds ? gripName(board, timer.nextInterval.holds) : '';
   // Geist Mono glyphs are about 0.62 em wide: size the digits to fit the width on one line.
-  const digitSize = Math.min((width * 0.9) / (countdown.length * 0.62), height * 0.28);
+  const digitSize = Math.min(
+    (width * 0.9) / (countdown.length * 0.62),
+    height * (board ? 0.22 : 0.28)
+  );
   const showRep = interval.repCount > 1 && interval.phase !== 'rest';
 
   const background = idle || finished ? THEME.background : PHASE_COLOR[interval.phase];
@@ -213,6 +226,17 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
               </Text>
             </View>
 
+            {board ? (
+              <View className="mt-4 gap-1">
+                <BoardView board={board} holds={shownHolds} mounted={allHolds} animated />
+                {holdsCaption ? (
+                  <Text className="text-center text-muted-foreground">
+                    {interval.phase === 'hang' ? holdsCaption : `Next: ${holdsCaption}`}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
+
             <View className="flex-1 items-center justify-center">
               <Text
                 className="tracking-tight font-bold"
@@ -228,7 +252,11 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
                   {timer.nextInterval.seconds >= 60
                     ? formatClock(timer.nextInterval.seconds)
                     : `${timer.nextInterval.seconds}s`}
-                  {timer.nextInterval.label ? ` · ${timer.nextInterval.label}` : ''}
+                  {timer.nextInterval.label
+                    ? ` · ${timer.nextInterval.label}`
+                    : nextHoldsName
+                      ? ` · ${nextHoldsName}`
+                      : ''}
                 </Text>
               ) : (
                 <Text className="text-xl text-foreground/60">Last one</Text>

@@ -12,6 +12,8 @@ export type Interval = {
   repIndex: number;
   repCount: number;
   label?: string;
+  /** Hold ids on the workout's board, for hangs that chose them. */
+  holds?: string[];
 };
 
 /**
@@ -79,6 +81,7 @@ export function expandWorkout(timings: WorkoutTimings): Interval[] {
           repIndex: ctx.repIndex,
           repCount: ctx.repCount,
           ...(step.label ? { label: step.label } : {}),
+          ...(step.holds?.length ? { holds: step.holds } : {}),
         });
       }
       if (ctx.depth === 0 && step.kind === 'hang') setDone = true;

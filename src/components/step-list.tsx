@@ -8,6 +8,7 @@ import { createContext, useCallback, useContext, useState, type ReactNode } from
 import { Pressable, View } from 'react-native';
 import Sortable from 'react-native-sortables';
 
+import { BoardView } from '@/components/board-view';
 import { useScreenScroll } from '@/components/screen';
 import { Stepper } from '@/components/stepper';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { gripName, type Board } from '@/lib/boards';
 import { formatShort } from '@/lib/dates';
 import type { StepKind } from '@/lib/store/types';
 import { cn } from '@/lib/utils';
@@ -57,6 +59,8 @@ export type StepListActions = {
 type EditorState = {
   steps: EditableStep[];
   actions: StepListActions;
+  /** Opens the hold picker for a hang step; only offered when the workout has a board. */
+  openHoldPicker: (stepId: string) => void;
   expandedId: string | null;
   setExpandedId: (id: string | null) => void;
   /** `undefined` when nothing is being reordered. */
@@ -66,6 +70,19 @@ type EditorState = {
 
 /** Absent below a read-only list; present in the builder. */
 const EditorContext = createContext<EditorState | null>(null);
+
+/** The workout's board, so hang cards can show their holds. Provided by the builder and overview. */
+const BoardContext = createContext<Board | undefined>(undefined);
+
+export function StepListBoardProvider({
+  board,
+  children,
+}: {
+  board: Board | undefined;
+  children: ReactNode;
+}) {
+  return <BoardContext.Provider value={board}>{children}</BoardContext.Provider>;
+}
 
 export function StepEditorProvider({
   value,
@@ -171,9 +188,14 @@ function ReorderRow({ step }: { step: EditableStep }) {
 
 function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
   const editor = useContext(EditorContext);
+  const board = useContext(BoardContext);
   const expanded = editor?.expandedId === step.id;
   const title = step.label || STEP_NAMES[step.kind];
-  const subtitle = step.label ? `${STEP_NAMES[step.kind]} · ${duration(step)}` : duration(step);
+  const grip = board && step.kind === 'hang' ? gripName(board, step.holds) : '';
+  const subtitle = [step.label ? STEP_NAMES[step.kind] : null, duration(step), grip || null]
+    .filter(Boolean)
+    .join(' · ');
+  const showBoard = board && step.kind === 'hang';
 
   return (
     <View className="gap-2">
@@ -181,7 +203,7 @@ function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
         disabled={!editor}
         onPress={() => editor?.setExpandedId(expanded ? null : step.id)}
         accessibilityRole="button"
-        accessibilityLabel={`${title}, ${duration(step)}`}
+        accessibilityLabel={`${title}, ${duration(step)}${grip ? `, ${grip}` : ''}`}
         className={cn(
           'flex-row overflow-hidden rounded-lg border bg-card',
           expanded ? 'border-foreground' : 'border-border',
@@ -192,6 +214,7 @@ function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
           <Text className="font-medium">{title}</Text>
           <Text variant="muted">{subtitle}</Text>
         </View>
+        {showBoard ? <HoldThumb board={board} step={step} /> : null}
         {editor ? <StepMenu step={step} /> : null}
       </Pressable>
       {expanded && editor ? <StepEditor step={step} depth={depth} /> : null}
@@ -199,9 +222,34 @@ function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
   );
 }
 
-/** Inline editor under an expanded step: kind, length and label. */
+/** Small board on a hang card: the step's grip, or a placeholder inviting a choice. */
+function HoldThumb({ board, step }: { board: Board; step: EditableTimedStep }) {
+  const editor = useContext(EditorContext);
+  const content = step.holds?.length ? (
+    <BoardView board={board} holds={step.holds} className="rounded-sm" />
+  ) : (
+    <View className="w-full items-center justify-center rounded-sm border border-dashed border-border py-1.5">
+      <Text variant="small" className="text-muted-foreground">
+        {editor ? 'Pick holds' : 'Any holds'}
+      </Text>
+    </View>
+  );
+  if (!editor) return <View className="w-24 justify-center py-2">{content}</View>;
+  return (
+    <Pressable
+      onPress={() => editor.openHoldPicker(step.id)}
+      accessibilityRole="button"
+      accessibilityLabel="Choose holds"
+      className="w-24 justify-center py-2 active:opacity-70">
+      {content}
+    </Pressable>
+  );
+}
+
+/** Inline editor under an expanded step: kind, length, holds and label. */
 function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number }) {
-  const { actions } = useContext(EditorContext)!;
+  const { actions, openHoldPicker } = useContext(EditorContext)!;
+  const board = useContext(BoardContext);
   const range = LIMITS.seconds[step.kind];
   const setKind = (kind: StepKind) => {
     const next = LIMITS.seconds[kind];
@@ -244,6 +292,23 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
         format={formatShort}
         inputMode={coarse ? 'clock' : 'number'}
       />
+      {board && step.kind === 'hang' ? (
+        <Pressable
+          onPress={() => openHoldPicker(step.id)}
+          accessibilityRole="button"
+          className="flex-row items-center gap-3 rounded-md border border-border bg-background px-3 py-2 active:bg-accent">
+          <View className="w-28">
+            <BoardView board={board} holds={step.holds ?? []} className="rounded-sm" />
+          </View>
+          <View className="flex-1">
+            <Text className="font-medium">
+              {step.holds?.length ? gripName(board, step.holds) : 'Choose holds'}
+            </Text>
+            <Text variant="muted">{board.name}</Text>
+          </View>
+          <Icon as={ChevronDownIcon} className="size-4 -rotate-90 text-muted-foreground" />
+        </Pressable>
+      ) : null}
       <Input
         value={step.label ?? ''}
         onChangeText={(text) => actions.update(step.id, { label: text || undefined })}

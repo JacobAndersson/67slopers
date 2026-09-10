@@ -26,13 +26,17 @@ export type EditableRepeatStep = Omit<RepeatStep, 'steps'> & { id: string; steps
 export type EditableStep = EditableTimedStep | EditableRepeatStep;
 
 export type StepPatch =
-  | Partial<Pick<TimedStep, 'kind' | 'seconds' | 'label'>>
+  | Partial<Pick<TimedStep, 'kind' | 'seconds' | 'label' | 'holds'>>
   | Partial<Pick<RepeatStep, 'times' | 'skipLastRest'>>;
 
 // --- Conversions -------------------------------------------------------------------------
 
 export function cloneSteps(steps: Step[]): Step[] {
-  return steps.map((s) => (s.kind === 'repeat' ? { ...s, steps: cloneSteps(s.steps) } : { ...s }));
+  return steps.map((s) =>
+    s.kind === 'repeat'
+      ? { ...s, steps: cloneSteps(s.steps) }
+      : { ...s, ...(s.holds ? { holds: [...s.holds] } : {}) }
+  );
 }
 
 export function withIds(steps: Step[]): EditableStep[] {
@@ -53,6 +57,7 @@ export function stripIds(steps: EditableStep[]): Step[] {
     }
     const out: TimedStep = { kind: s.kind, seconds: s.seconds };
     if (s.label) out.label = s.label;
+    if (s.holds?.length) out.holds = [...s.holds];
     return out;
   });
 }
@@ -129,6 +134,29 @@ export function maxDepth(steps: Step[]): number {
 
 export function countTimedSteps(steps: Step[]): number {
   return steps.reduce((n, s) => n + (s.kind === 'repeat' ? countTimedSteps(s.steps) : 1), 0);
+}
+
+/** Every hold id used by any hang, in order of first use. */
+export function holdsInWorkout(steps: Step[]): string[] {
+  const out: string[] = [];
+  const walk = (list: Step[]) => {
+    for (const s of list) {
+      if (s.kind === 'repeat') walk(s.steps);
+      else for (const id of s.holds ?? []) if (!out.includes(id)) out.push(id);
+    }
+  };
+  walk(steps);
+  return out;
+}
+
+/** Drops every hold choice, for when the board changes. */
+export function clearHolds<T extends Step | EditableStep>(steps: T[]): T[] {
+  return steps.map((s) => {
+    if (s.kind === 'repeat') return { ...s, steps: clearHolds(s.steps) };
+    if (!s.holds) return s;
+    const { holds: _holds, ...rest } = s;
+    return rest as T;
+  });
 }
 
 export function hasHang(steps: Step[]): boolean {

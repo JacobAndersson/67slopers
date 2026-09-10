@@ -10,6 +10,7 @@ import {
   pause,
   remainingSeconds,
   resume,
+  nextHang,
   skip,
   start,
   tick,
@@ -130,4 +131,16 @@ test('idle waits on the first interval until start is called', () => {
   assert.equal(s.status, 'running');
   assert.equal(s.startedAt, 20_000);
   assert.equal(remainingSeconds(s, 24_000), 6);
+});
+
+test('nextHang looks past pauses and rests to the coming hang', () => {
+  const e = running(twoSets, 0);
+  // Interval 0 is prep; the first hang is next, then a pause, then the second hang.
+  assert.equal(nextHang(e)?.phase, 'hang');
+  const onHang = skip(e, 1000);
+  assert.equal(nextHang(onHang)?.phase, 'hang');
+  assert.equal(nextHang(onHang)?.repIndex, 1);
+  let last = onHang;
+  for (let i = 0; i < 20; i++) last = skip(last, 2000 + i);
+  assert.equal(nextHang(last), undefined, 'no hang after the end');
 });

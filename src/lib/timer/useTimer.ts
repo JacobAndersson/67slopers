@@ -44,6 +44,7 @@ export function useTimer(timings: WorkoutTimings) {
     status: state.status,
     interval: engine.current(state),
     nextInterval: engine.next(state),
+    nextHang: engine.nextHang(state),
     remainingSeconds: engine.remainingSeconds(state, clock),
     progress: engine.progress(state, clock),
     completedSets: engine.completedSets(state),

@@ -3,16 +3,18 @@ import { CopyIcon } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
+import { BoardView } from '@/components/board-view';
 import { FeelBadge } from '@/components/feel';
 import { Screen } from '@/components/screen';
-import { StepList } from '@/components/step-list';
+import { StepList, StepListBoardProvider } from '@/components/step-list';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { getBoard } from '@/lib/boards';
 import { formatClock, relativeDay } from '@/lib/dates';
 import { lastSessionForWorkout } from '@/lib/store/selectors';
 import { useStore } from '@/lib/store/store';
-import { withIds } from '@/lib/workout-steps';
+import { holdsInWorkout, withIds } from '@/lib/workout-steps';
 import { estimateDuration, setsLine } from '@/lib/workout-summary';
 
 export default function WorkoutOverviewScreen() {
@@ -42,6 +44,7 @@ export default function WorkoutOverviewScreen() {
   }
 
   const total = estimateDuration(workout);
+  const board = getBoard(workout.board);
 
   return (
     <>
@@ -64,7 +67,16 @@ export default function WorkoutOverviewScreen() {
             <Text className="text-lg">Start</Text>
           </Button>
         }>
-        <StepList steps={steps} parentId={null} depth={0} />
+        {board ? (
+          <View className="gap-1">
+            <BoardView board={board} holds={holdsInWorkout(workout.steps)} />
+            <Text variant="muted">{board.name}</Text>
+          </View>
+        ) : null}
+
+        <StepListBoardProvider board={board}>
+          <StepList steps={steps} parentId={null} depth={0} />
+        </StepListBoardProvider>
 
         <Text variant="muted">About {formatClock(total)} in total.</Text>
 

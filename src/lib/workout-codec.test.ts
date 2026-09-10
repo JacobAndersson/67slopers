@@ -68,3 +68,39 @@ test('bad input is refused with a message and never throws', () => {
   const times = decodeWorkout('v1 100(h7)');
   assert.equal(times.ok, false);
 });
+
+test('board and holds round-trip and are checked against the board', () => {
+  const steps: Step[] = [
+    { kind: 'prep', seconds: 10 },
+    {
+      kind: 'repeat',
+      times: 5,
+      skipLastRest: true,
+      steps: [
+        { kind: 'hang', seconds: 10, holds: ['edge-22'], label: 'half crimp' },
+        { kind: 'rest', seconds: 180 },
+      ],
+    },
+    { kind: 'hang', seconds: 10, holds: ['edge-big-l', 'edge-big-r'] },
+  ];
+  const text = encodeWorkout({ name: 'Max hangs', board: 'beastmaker-2000', steps });
+  assert.equal(
+    text,
+    'v1 "Max hangs" @beastmaker-2000 p10 5(h10[edge-22]"half crimp" r180) h10[edge-big-l,edge-big-r]'
+  );
+  const decoded = decodeWorkout(text);
+  assert.ok(decoded.ok);
+  assert.equal(decoded.board, 'beastmaker-2000');
+  assert.deepEqual(decoded.steps, steps);
+
+  assert.equal(decodeWorkout('v1 @beastmaker-3000 h7').ok, false);
+  assert.equal(
+    decodeWorkout('v1 @beastmaker-1000 h7[edge-22]').ok,
+    false,
+    'hold from the other board'
+  );
+  assert.equal(decodeWorkout('v1 h7[sloper-20]').ok, false, 'holds need a board');
+  assert.equal(decodeWorkout('v1 @beastmaker-1000 h7[sloper-20').ok, false, 'unterminated');
+  const plain = decodeWorkout('v1 @beastmaker-1000 h7');
+  assert.ok(plain.ok && plain.board === 'beastmaker-1000' && !('holds' in plain.steps[0]));
+});
