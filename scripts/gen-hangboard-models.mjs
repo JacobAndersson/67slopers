@@ -67,6 +67,18 @@ function thicknessAt(board, x, y) {
   const D = board.size_mm.depth;
   let z = D;
   for (const h of board.holds) {
+    if (h.shape === 'corner') {
+      const inner = h.inner ?? { w: 30, h: 28 };
+      if (x < h.x || x > h.x + h.w || y < h.y || y > h.y + h.h) continue;
+      const side = h.side === 'right' ? h.x + h.w - x : x - h.x;
+      const inTop = y - h.y <= inner.h;
+      const inSide = side <= inner.w;
+      if (!inTop && !inSide) continue;
+      // 0 at the outer edge of the board, 1 where the jug meets the flat front face.
+      const t = Math.min(1, inTop ? (y - h.y) / inner.h : 1, inSide ? side / inner.w : 1);
+      z = Math.min(z, D - 24 * Math.cos((t * Math.PI) / 2) ** 0.7);
+      continue;
+    }
     if (h.type === 'sloper' || h.type === 'jug') {
       if (x < h.x || x > h.x + h.w || y > h.y + h.h) continue;
       if (h.type === 'sloper') {
@@ -184,7 +196,7 @@ function buildMesh(board) {
 function holdMarker(board, h) {
   const D = board.size_mm.depth;
   const H = board.size_mm.height;
-  const pts = outlinePoints(h);
+  const pts = outlinePoints(h, 12, board);
   const positions = [];
   const normals = [];
   const indices = [];
@@ -203,8 +215,29 @@ function holdMarker(board, h) {
 }
 
 // Polygon outline (clockwise in screen space) for a hold shape.
-function outlinePoints(h, segs = 12) {
+function outlinePoints(h, segs = 12, board) {
   const pts = [];
+  if (h.shape === 'corner') {
+    const r = board?.corner_radius_mm ?? 8;
+    const W = board?.size_mm.width ?? h.x + h.w;
+    const inner = h.inner ?? { w: 30, h: 28 };
+    const right = h.side === 'right';
+    const ox = right ? W : h.x; // the outer edge of the board
+    const dir = right ? -1 : 1; // inwards
+    const far = right ? h.x : h.x + h.w;
+    pts.push([far, h.y]);
+    for (let s = 0; s <= segs; s++) {
+      const a = (s / segs) * (Math.PI / 2);
+      pts.push([ox + dir * r * (1 - Math.sin(a)), h.y + r * (1 - Math.cos(a))]);
+    }
+    pts.push(
+      [ox, h.y + h.h],
+      [ox + dir * inner.w, h.y + h.h],
+      [ox + dir * inner.w, h.y + inner.h],
+      [far, h.y + inner.h]
+    );
+    return right ? pts.reverse() : pts;
+  }
   if (h.shape === 'rect') {
     return [
       [h.x, h.y],
@@ -362,7 +395,23 @@ function writeGlb(file, board, mesh, markers) {
   writeFileSync(file, Buffer.concat([header, jsonHeader, jsonBuf, binHeader, bin]));
 }
 
-function holdPath(h) {
+/**
+ * SVG path for a jug that wraps the rounded end of the board (shape "corner"): the strip
+ * along the top (inner.h tall) plus the strip down the side (inner.w wide), rounded by the
+ * board's corner radius. Left jugs start at x = 0, right jugs end at x = W.
+ */
+function cornerPath(h, r, W) {
+  const inner = h.inner ?? { w: 30, h: 28 };
+  const top = h.y;
+  const bottom = h.y + h.h;
+  if (h.side === 'right') {
+    return `M${h.x} ${top}H${W - r}A${r} ${r} 0 0 1 ${W} ${top + r}V${bottom}H${W - inner.w}V${top + inner.h}H${h.x}Z`;
+  }
+  return `M${h.x + h.w} ${top}H${h.x + r}A${r} ${r} 0 0 0 ${h.x} ${top + r}V${bottom}H${h.x + inner.w}V${top + inner.h}H${h.x + h.w}Z`;
+}
+
+function holdPath(h, board) {
+  if (h.shape === 'corner') return cornerPath(h, board.corner_radius_mm ?? 8, board.size_mm.width);
   if (h.shape === 'rect') return `M${h.x} ${h.y}h${h.w}v${h.h}h${-h.w}z`;
   if (h.shape === 'circle') {
     const r = Math.min(h.w, h.h) / 2;
@@ -378,7 +427,7 @@ function writeSvg(file, board, labeled) {
   const W = board.size_mm.width;
   const H = board.size_mm.height;
   const pad = labeled ? 14 : 2;
-  const cornerR = board.id === 'beastmaker-1000' ? 60 : 8;
+  const cornerR = board.corner_radius_mm ?? 8;
   const parts = [];
   parts.push(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-pad} ${-pad} ${W + 2 * pad} ${H + 2 * pad}" width="${(W + 2 * pad) * 2}" height="${(H + 2 * pad) * 2}" font-family="Geist Mono, ui-monospace, monospace">`
@@ -390,6 +439,7 @@ function writeSvg(file, board, labeled) {
   parts.push('<g id="holds">');
   for (const h of board.holds) {
     const top = h.type === 'sloper' || h.type === 'jug';
+    const asRect = top && h.shape !== 'corner';
     const fill = top ? '#b8a57c' : '#5a4630';
     const stroke = top ? '#6b5a3a' : '#3b2d1c';
     const attrs = [
@@ -403,13 +453,13 @@ function writeSvg(file, board, labeled) {
       .filter(Boolean)
       .join(' ');
     const rx = top ? ` rx="${h.h / 4}"` : '';
-    if (top) {
+    if (asRect) {
       parts.push(
         `<rect ${attrs} x="${h.x}" y="${h.y}" width="${h.w}" height="${h.h}"${rx} fill="${fill}" stroke="${stroke}" stroke-width="0.8"><title>${h.label}</title></rect>`
       );
     } else {
       parts.push(
-        `<path ${attrs} d="${holdPath(h)}" fill="${fill}" stroke="${stroke}" stroke-width="0.8"><title>${h.label}</title></path>`
+        `<path ${attrs} d="${holdPath(h, board)}" fill="${fill}" stroke="${stroke}" stroke-width="0.8"><title>${h.label}</title></path>`
       );
     }
   }

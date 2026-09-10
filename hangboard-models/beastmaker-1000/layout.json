@@ -5,6 +5,7 @@
   "url": "https://www.beastmaker.co.uk/products/beastmaker-1000-series",
   "material": "wood (tulipwood; beech variant also sold)",
   "size_mm": { "width": 580, "height": 150, "depth": 45 },
+  "corner_radius_mm": 60,
   "weight_g": 1700,
   "screw_holes": [
     { "x": 78, "y": 41 }, { "x": 502, "y": 41 },
@@ -15,15 +16,16 @@
   "notes": [
     "Hold positions are traced from the official product photo and scaled to the 580 x 150 mm footprint; expect +-3 mm.",
     "Depths are community measurements (r/climbharder thread cek236, atamanroman.dev diagram), not manufacturer numbers. Beastmaker publishes only '10mm' for the small 4-finger pockets.",
-    "The top strip is the sloper/jug surface on top of the board; in the front view it is drawn as a strip along the top edge.",
+    "The top strip is the sloper surface on top of the board; in the front view it is drawn as a strip along the top edge.",
+    "The jugs are the rounded ends of the board: the raised block on top wraps around the corner and down the side, so each jug is a corner-shaped region (shape corner, inner = the strip widths along the top and the side).",
     "Holds come in mirrored pairs; 'pair' links the left and right hold. Holds with side 'center' are used by both hands."
   ],
   "holds": [
-    { "id": "jug-l", "pair": "jug-r", "side": "left", "row": 1, "type": "jug", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Jug", "x": 17, "y": 0, "w": 111, "h": 28, "shape": "rect" },
+    { "id": "jug-l", "pair": "jug-r", "side": "left", "row": 1, "type": "jug", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Jug", "x": 0, "y": 0, "w": 128, "h": 60, "shape": "corner", "inner": { "w": 30, "h": 28 } },
     { "id": "sloper-35-l", "pair": "sloper-35-r", "side": "left", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 35, "depth_mm": null, "label": "35° sloper", "x": 128, "y": 0, "w": 90, "h": 28, "shape": "rect" },
     { "id": "sloper-20", "pair": null, "side": "center", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 20, "depth_mm": null, "label": "20° sloper", "x": 218, "y": 0, "w": 144, "h": 28, "shape": "rect" },
     { "id": "sloper-35-r", "pair": "sloper-35-l", "side": "right", "row": 1, "type": "sloper", "fingers": 4, "angle_deg": 35, "depth_mm": null, "label": "35° sloper", "x": 362, "y": 0, "w": 90, "h": 28, "shape": "rect" },
-    { "id": "jug-r", "pair": "jug-l", "side": "right", "row": 1, "type": "jug", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Jug", "x": 452, "y": 0, "w": 111, "h": 28, "shape": "rect" },
+    { "id": "jug-r", "pair": "jug-l", "side": "right", "row": 1, "type": "jug", "fingers": 4, "angle_deg": null, "depth_mm": null, "label": "Jug", "x": 452, "y": 0, "w": 128, "h": 60, "shape": "corner", "inner": { "w": 30, "h": 28 } },
 
     { "id": "edge-small-l", "pair": "edge-small-r", "side": "left", "row": 2, "type": "edge", "fingers": 4, "angle_deg": null, "depth_mm": 15, "depth_official_mm": 10, "label": "Small edge", "x": 41, "y": 32, "w": 72, "h": 20, "shape": "stadium" },
     { "id": "pocket-4f-deep-l", "pair": "pocket-4f-deep-r", "side": "left", "row": 2, "type": "pocket", "fingers": 4, "angle_deg": null, "depth_mm": 30, "label": "Deep 4-finger pocket", "x": 223, "y": 32, "w": 55, "h": 20, "shape": "stadium" },

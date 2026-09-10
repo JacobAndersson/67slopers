@@ -187,7 +187,7 @@ export function WorkoutForm({
 
       <View className="gap-2">
         <Text variant="muted">Hangboard</Text>
-        <BoardPicker value={boardId} onChange={requestBoard} holds={usedHolds} />
+        <BoardPicker value={boardId} onChange={requestBoard} />
       </View>
 
       <Separator />

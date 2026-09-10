@@ -85,9 +85,13 @@ function HoldPickerBody({ board, initial, onDone, onClose }: Omit<HoldPickerProp
                         key={g.id}
                         size="sm"
                         variant={active ? 'default' : 'secondary'}
-                        className={cn(active && 'border border-foreground')}
+                        // Long names (the 2000's mixed top edges) wrap instead of clipping.
+                        className={cn(
+                          'h-auto min-h-9 py-1.5',
+                          active && 'border border-foreground'
+                        )}
                         onPress={() => setSelected(active ? undefined : g)}>
-                        <Text>{g.name}</Text>
+                        <Text className="shrink">{g.name}</Text>
                       </Button>
                     );
                   })}

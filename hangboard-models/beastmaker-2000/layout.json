@@ -5,6 +5,7 @@
   "url": "https://www.beastmaker.co.uk/products/beastmaker-2000-series",
   "material": "wood (tulipwood; beech variant also sold)",
   "size_mm": { "width": 580, "height": 150, "depth": 58 },
+  "corner_radius_mm": 8,
   "weight_g": 1700,
   "screw_holes": [
     { "x": 250, "y": 44 }, { "x": 330, "y": 44 },

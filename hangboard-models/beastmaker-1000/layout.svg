@@ -2,11 +2,11 @@
 <title>Beastmaker 1000 Series</title>
 <rect id="board" x="0" y="0" width="580" height="150" rx="60" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>
 <g id="holds">
-<rect id="jug-l" data-type="jug" data-fingers="4" data-pair="jug-r" x="17" y="0" width="111" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Jug</title></rect>
+<path id="jug-l" data-type="jug" data-fingers="4" data-pair="jug-r" d="M128 0H60A60 60 0 0 0 0 60V60H30V28H128Z" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Jug</title></path>
 <rect id="sloper-35-l" data-type="sloper" data-fingers="4" data-angle="35" data-pair="sloper-35-r" x="128" y="0" width="90" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>35° sloper</title></rect>
 <rect id="sloper-20" data-type="sloper" data-fingers="4" data-angle="20" x="218" y="0" width="144" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>20° sloper</title></rect>
 <rect id="sloper-35-r" data-type="sloper" data-fingers="4" data-angle="35" data-pair="sloper-35-l" x="362" y="0" width="90" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>35° sloper</title></rect>
-<rect id="jug-r" data-type="jug" data-fingers="4" data-pair="jug-l" x="452" y="0" width="111" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Jug</title></rect>
+<path id="jug-r" data-type="jug" data-fingers="4" data-pair="jug-l" d="M452 0H520A60 60 0 0 1 580 60V60H550V28H452Z" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Jug</title></path>
 <path id="edge-small-l" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-small-r" d="M51 32h52a10 10 0 0 1 0 20h-52a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Small edge</title></path>
 <path id="pocket-4f-deep-l" data-type="pocket" data-fingers="4" data-depth="30" data-pair="pocket-4f-deep-r" d="M233 32h35a10 10 0 0 1 0 20h-35a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 4-finger pocket</title></path>
 <path id="pocket-4f-deep-r" data-type="pocket" data-fingers="4" data-depth="30" data-pair="pocket-4f-deep-l" d="M312 32h35a10 10 0 0 1 0 20h-35a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>Deep 4-finger pocket</title></path>
@@ -32,11 +32,11 @@
 <circle cx="118" cy="121" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
 <circle cx="462" cy="121" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
 <g id="labels" font-size="5" fill="#1f1a12" text-anchor="middle">
-<text x="72.5" y="21.5" fill="#1f1a12">jug</text>
+<text x="64" y="37.5" fill="#1f1a12">jug</text>
 <text x="173" y="21.5" fill="#1f1a12">35°</text>
 <text x="290" y="21.5" fill="#1f1a12">20°</text>
 <text x="407" y="21.5" fill="#1f1a12">35°</text>
-<text x="507.5" y="21.5" fill="#1f1a12">jug</text>
+<text x="516" y="37.5" fill="#1f1a12">jug</text>
 <text x="77" y="49.5" fill="#f6f0e4">15</text>
 <text x="250.5" y="49.5" fill="#f6f0e4">30</text>
 <text x="329.5" y="49.5" fill="#f6f0e4">30</text>

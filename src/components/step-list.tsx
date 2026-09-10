@@ -229,7 +229,7 @@ function HoldThumb({ board, step }: { board: Board; step: EditableTimedStep }) {
     <BoardView board={board} holds={step.holds} className="rounded-sm" />
   ) : (
     <View className="w-full items-center justify-center rounded-sm border border-dashed border-border py-1.5">
-      <Text variant="small" className="text-muted-foreground">
+      <Text variant="small" className="text-xs text-muted-foreground" numberOfLines={1}>
         {editor ? 'Pick holds' : 'Any holds'}
       </Text>
     </View>

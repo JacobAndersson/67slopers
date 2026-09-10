@@ -1,7 +1,6 @@
 import { Image } from 'expo-image';
 import { Pressable, View } from 'react-native';
 
-import { BoardView } from '@/components/board-view';
 import { Text } from '@/components/ui/text';
 import { BOARD_IDS, getBoard, type BoardId } from '@/lib/boards';
 import { BOARD_IMAGES } from '@/lib/boards/generated/images';
@@ -10,28 +9,22 @@ import { cn } from '@/lib/utils';
 type BoardPickerProps = {
   value: BoardId | undefined;
   onChange: (id: BoardId | undefined) => void;
-  /** Every hold used in the workout, drawn on the map under the chips. */
-  holds: string[];
 };
 
-/** Chips for "no board" and each known board, plus a map of the holds the workout uses. */
-export function BoardPicker({ value, onChange, holds }: BoardPickerProps) {
-  const board = getBoard(value);
+/** Chips for "no board" and each known board. The hang cards show where the holds are. */
+export function BoardPicker({ value, onChange }: BoardPickerProps) {
   return (
-    <View className="gap-3">
-      <View className="flex-row flex-wrap gap-2">
-        <Chip label="No board" active={value === undefined} onPress={() => onChange(undefined)} />
-        {BOARD_IDS.map((id) => (
-          <Chip
-            key={id}
-            label={getBoard(id)!.name}
-            thumb={BOARD_IMAGES[id].base}
-            active={value === id}
-            onPress={() => onChange(id)}
-          />
-        ))}
-      </View>
-      {board ? <BoardView board={board} holds={holds} /> : null}
+    <View className="flex-row flex-wrap gap-2">
+      <Chip label="No board" active={value === undefined} onPress={() => onChange(undefined)} />
+      {BOARD_IDS.map((id) => (
+        <Chip
+          key={id}
+          label={getBoard(id)!.name}
+          thumb={BOARD_IMAGES[id].base}
+          active={value === id}
+          onPress={() => onChange(id)}
+        />
+      ))}
     </View>
   );
 }

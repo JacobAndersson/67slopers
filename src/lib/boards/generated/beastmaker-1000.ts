@@ -17,8 +17,8 @@ const board: BoardManifest = {
       fingers: 4,
       depth: null,
       angle: null,
-      box: { x: 0.02931, y: 0, w: 0.19138, h: 0.18667 },
-      overlay: { x: 0.01552, y: 0, w: 0.21897, h: 0.24 },
+      box: { x: 0, y: 0, w: 0.22069, h: 0.4 },
+      overlay: { x: 0, y: 0, w: 0.23448, h: 0.45333 },
     },
     {
       id: 'sloper-35-l',
@@ -69,8 +69,8 @@ const board: BoardManifest = {
       fingers: 4,
       depth: null,
       angle: null,
-      box: { x: 0.77931, y: 0, w: 0.19138, h: 0.18667 },
-      overlay: { x: 0.76552, y: 0, w: 0.21897, h: 0.24 },
+      box: { x: 0.77931, y: 0, w: 0.22069, h: 0.4 },
+      overlay: { x: 0.76552, y: 0, w: 0.23448, h: 0.45333 },
     },
     {
       id: 'edge-small-l',

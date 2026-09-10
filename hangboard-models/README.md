@@ -38,7 +38,7 @@ The generator is dependency-free Node. The PNGs are rasterised with ImageMagick 
 
 - `layout.json` and the SVGs: origin at the top-left corner of the board as the climber sees
   it, x to the right, y downwards, millimetres. `x, y, w, h` is the hold's bounding box;
-  `shape` is `stadium` (rounded slot), `circle` (mono) or `rect` (top sloper strip).
+  `shape` is `stadium` (rounded slot), `circle` (mono), `rect` (top sloper strip) or `corner` (a jug that wraps the rounded end of the board: `inner` gives the strip widths along the top and the side, `corner_radius_mm` on the board rounds it).
 - 3D files: X to the right, Y up, Z towards the climber; Z = 0 is the wall. The board sits in
   `0 ≤ X ≤ width`, `0 ≤ Y ≤ height`, `0 ≤ Z ≤ depth`.
 - Sloper and jug holds are the top surface of the board. In the 2D views they are drawn as a
