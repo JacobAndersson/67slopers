@@ -1,11 +1,146 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 150" width="1160" height="300">
-<defs><clipPath id="clip-sloper-45-l"><rect x="0" y="0" width="99" height="32" rx="7" /></clipPath><linearGradient id="grad-sloper-45-l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6C3A9"/><stop offset="0.35" stop-color="#D6C3A9"/><stop offset="1" stop-color="#a88f6c"/></linearGradient><clipPath id="clip-sloper-35-l"><rect x="99" y="0" width="100" height="32" rx="7" /></clipPath><linearGradient id="grad-sloper-35-l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6C3A9"/><stop offset="0.45" stop-color="#D6C3A9"/><stop offset="1" stop-color="#b29b7a"/></linearGradient><clipPath id="clip-sloper-20"><rect x="199" y="0" width="182" height="32" rx="7" /></clipPath><linearGradient id="grad-sloper-20" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6C3A9"/><stop offset="0.60" stop-color="#D6C3A9"/><stop offset="1" stop-color="#c2ac8e"/></linearGradient><clipPath id="clip-sloper-35-r"><rect x="381" y="0" width="100" height="32" rx="7" /></clipPath><linearGradient id="grad-sloper-35-r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6C3A9"/><stop offset="0.45" stop-color="#D6C3A9"/><stop offset="1" stop-color="#b29b7a"/></linearGradient><clipPath id="clip-sloper-45-r"><rect x="481" y="0" width="99" height="32" rx="7" /></clipPath><linearGradient id="grad-sloper-45-r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6C3A9"/><stop offset="0.35" stop-color="#D6C3A9"/><stop offset="1" stop-color="#a88f6c"/></linearGradient><clipPath id="clip-edge-top-deep-l"><rect x="218" y="34" width="60" height="21" rx="10.5" /></clipPath><clipPath id="clip-edge-top-shallow-r"><rect x="302" y="34" width="60" height="21" rx="10.5" /></clipPath><clipPath id="clip-edge-big-l"><rect x="8" y="68" width="78" height="25" rx="12.5" /></clipPath><clipPath id="clip-mono-deep-l"><circle cx="109" cy="80.5" r="12" /></clipPath><clipPath id="clip-pocket-2f-big-l"><rect x="129" y="68" width="48" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-3f-medium-l"><rect x="187" y="68" width="47" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-4f-deep"><rect x="246" y="68" width="88" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-3f-medium-r"><rect x="346" y="68" width="47" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-2f-big-r"><rect x="403" y="68" width="48" height="25" rx="12.5" /></clipPath><clipPath id="clip-mono-deep-r"><circle cx="471" cy="80.5" r="12" /></clipPath><clipPath id="clip-edge-big-r"><rect x="494" y="68" width="78" height="25" rx="12.5" /></clipPath><clipPath id="clip-edge-little-l"><rect x="8" y="114" width="81" height="23" rx="11.5" /></clipPath><clipPath id="clip-mono-1pad-l"><circle cx="108" cy="125.5" r="11" /></clipPath><clipPath id="clip-pocket-2f-little-l"><rect x="130" y="114" width="47" height="23" rx="11.5" /></clipPath><clipPath id="clip-pocket-3f-small-l"><rect x="187" y="114" width="50" height="23" rx="11.5" /></clipPath><clipPath id="clip-edge-22"><rect x="242" y="114" width="96" height="23" rx="11.5" /></clipPath><clipPath id="clip-pocket-3f-small-r"><rect x="343" y="114" width="50" height="23" rx="11.5" /></clipPath><clipPath id="clip-pocket-2f-sloping-r"><rect x="403" y="114" width="47" height="23" rx="11.5" /></clipPath><clipPath id="clip-mono-1pad-r"><circle cx="472" cy="125.5" r="11" /></clipPath><clipPath id="clip-edge-little-r"><rect x="491" y="114" width="81" height="23" rx="11.5" /></clipPath></defs>
-<rect x="0.5" y="0.5" width="579" height="149" rx="8" fill="#E8DBC9" stroke="#8F6D3D" stroke-width="1"/>
-<rect x="0" y="0" width="99" height="32" rx="7" fill="url(#grad-sloper-45-l)"/><rect x="0" y="0" width="99" height="32" rx="7" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
-<rect x="99" y="0" width="100" height="32" rx="7" fill="url(#grad-sloper-35-l)"/><rect x="99" y="0" width="100" height="32" rx="7" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
-<rect x="199" y="0" width="182" height="32" rx="7" fill="url(#grad-sloper-20)"/><rect x="199" y="0" width="182" height="32" rx="7" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
-<rect x="381" y="0" width="100" height="32" rx="7" fill="url(#grad-sloper-35-r)"/><rect x="381" y="0" width="100" height="32" rx="7" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
-<rect x="481" y="0" width="99" height="32" rx="7" fill="url(#grad-sloper-45-r)"/><rect x="481" y="0" width="99" height="32" rx="7" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
+<defs><mask id="board-silhouette"><rect width="580" height="150" fill="white"/><path d="M0 0 H0 L0 0 Z" transform="translate(0 0)" fill="black"/><path d="M0 0 H0 L0 0 Z" transform="translate(99 0)" fill="black"/><path d="M0 0 H0 L0 0 Z" transform="translate(481 0) scale(-1 1)" fill="black"/><path d="M0 0 H0 L0 0 Z" transform="translate(580 0) scale(-1 1)" fill="black"/></mask><clipPath id="body-clip"><rect x="0.5" y="0.5" width="579" height="149" rx="8"/></clipPath><linearGradient id="lower-face" gradientUnits="userSpaceOnUse" x1="0" y1="106.64999999999999" x2="0" y2="150">
+      <stop offset="0" stop-color="#A88F6C"/>
+      <stop offset="0.28" stop-color="#D6C3A9"/>
+      <stop offset="1" stop-color="#e0d0bb"/>
+    </linearGradient><linearGradient id="ledge-roll" gradientUnits="userSpaceOnUse" x1="0" y1="100.35" x2="0" y2="106.64999999999999">
+      <stop offset="0" stop-color="#E8DBC9"/>
+      <stop offset="0.4" stop-color="#D6C3A9"/>
+      <stop offset="1" stop-color="#A88F6C"/>
+    </linearGradient><clipPath id="clip-edge-top-deep-l"><rect x="218" y="34" width="60" height="21" rx="10.5" /></clipPath><clipPath id="clip-edge-top-shallow-r"><rect x="302" y="34" width="60" height="21" rx="10.5" /></clipPath><clipPath id="clip-edge-big-l"><rect x="8" y="68" width="78" height="25" rx="12.5" /></clipPath><clipPath id="clip-mono-deep-l"><circle cx="109" cy="80.5" r="12" /></clipPath><clipPath id="clip-pocket-2f-big-l"><rect x="129" y="68" width="48" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-3f-medium-l"><rect x="187" y="68" width="47" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-4f-deep"><rect x="246" y="68" width="88" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-3f-medium-r"><rect x="346" y="68" width="47" height="25" rx="12.5" /></clipPath><clipPath id="clip-pocket-2f-big-r"><rect x="403" y="68" width="48" height="25" rx="12.5" /></clipPath><clipPath id="clip-mono-deep-r"><circle cx="471" cy="80.5" r="12" /></clipPath><clipPath id="clip-edge-big-r"><rect x="494" y="68" width="78" height="25" rx="12.5" /></clipPath><clipPath id="clip-edge-little-l"><rect x="8" y="114" width="81" height="23" rx="11.5" /></clipPath><clipPath id="clip-mono-1pad-l"><circle cx="108" cy="125.5" r="11" /></clipPath><clipPath id="clip-pocket-2f-little-l"><rect x="130" y="114" width="47" height="23" rx="11.5" /></clipPath><clipPath id="clip-pocket-3f-small-l"><rect x="187" y="114" width="50" height="23" rx="11.5" /></clipPath><clipPath id="clip-edge-22"><rect x="242" y="114" width="96" height="23" rx="11.5" /></clipPath><clipPath id="clip-pocket-3f-small-r"><rect x="343" y="114" width="50" height="23" rx="11.5" /></clipPath><clipPath id="clip-pocket-2f-sloping-r"><rect x="403" y="114" width="47" height="23" rx="11.5" /></clipPath><clipPath id="clip-mono-1pad-r"><circle cx="472" cy="125.5" r="11" /></clipPath><clipPath id="clip-edge-little-r"><rect x="491" y="114" width="81" height="23" rx="11.5" /></clipPath></defs>
+<rect x="0.5" y="0.5" width="579" height="149" rx="8" fill="#E8DBC9" stroke="#8F6D3D" stroke-width="1" mask="url(#board-silhouette)"/>
+<g clip-path="url(#body-clip)">
+    <path d="M0 96.75 Q2 100.35 8 100.35
+     H572 Q578 100.35 580 96.75 V150 H0 Z" fill="url(#lower-face)"/>
+    <path d="M0 96.75 Q2 100.35 8 100.35
+     H572 Q578 100.35 580 96.75 v6.3
+      Q578 106.64999999999999 572 106.64999999999999
+      H8 Q2 106.64999999999999 0 103.05 Z" fill="url(#ledge-roll)"/>
+    <path d="M0 96.75 Q2 100.35 8 100.35
+     H572 Q578 100.35 580 96.75" fill="none" stroke="#F6F1EA" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M0 103.05 Q2 106.64999999999999 8 106.64999999999999
+     H572 Q578 106.64999999999999 580 103.05" fill="none" stroke="#8F6D3D" stroke-width="0.8" opacity="0.55"/>
+  </g>
+<defs>
+    <linearGradient id="surface-sloper-45-l-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9dfd0"/>
+      <stop offset="0.35" stop-color="#c8b397"/>
+      <stop offset="0.8" stop-color="#b49c7b"/>
+      <stop offset="1" stop-color="#D6C3A9"/>
+    </linearGradient>
+    <clipPath id="surface-clip-sloper-45-l-base"><path d="M0 8 Q0 0 8 0 H99 V26.999999999999996
+      Q99 31.999999999999996 94 31.999999999999996
+      H5 Q0 31.999999999999996 0 26.999999999999996 Z" transform="translate(0 0)" /></clipPath>
+  </defs>
+  <path d="M0 8 Q0 0 8 0 H99 V26.999999999999996
+      Q99 31.999999999999996 94 31.999999999999996
+      H5 Q0 31.999999999999996 0 26.999999999999996 Z" transform="translate(0 0)" fill="url(#surface-sloper-45-l-base)"/>
+  <g clip-path="url(#surface-clip-sloper-45-l-base)">
+    <g transform="translate(0 0)">
+      <path d="M1 3 V26.999999999999996 Q1 30.999999999999996 6 30.999999999999996 H93 Q98 30.999999999999996 98 26.999999999999996 V3"
+        fill="none" stroke="#8F6D3D" stroke-width="0.9" opacity="0.45"/>
+      <path d="M4 26.999999999999996 Q4 28.999999999999996 8 28.999999999999996 H91 Q95 28.999999999999996 95 26.999999999999996"
+        fill="none" stroke="#F6F1EA" stroke-width="2.5" opacity="0.7"/>
+    </g>
+  </g>
+  <text x="49.5" y="19"
+    text-anchor="middle" font-family="Geist Mono" font-size="11.5" fill="#5A4B39">45°</text>
+<defs>
+    <linearGradient id="surface-sloper-35-l-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9dfd0"/>
+      <stop offset="0.35" stop-color="#ceba9e"/>
+      <stop offset="0.8" stop-color="#bfa88a"/>
+      <stop offset="1" stop-color="#D6C3A9"/>
+    </linearGradient>
+    <clipPath id="surface-clip-sloper-35-l-base"><path d="M0 0 Q0 0 0 0 H100 V21.243984733626426
+      Q100 26.243984733626426 95 26.243984733626426
+      H5 Q0 26.243984733626426 0 21.243984733626426 Z" transform="translate(99 0)" /></clipPath>
+  </defs>
+  <path d="M0 0 Q0 0 0 0 H100 V21.243984733626426
+      Q100 26.243984733626426 95 26.243984733626426
+      H5 Q0 26.243984733626426 0 21.243984733626426 Z" transform="translate(99 0)" fill="url(#surface-sloper-35-l-base)"/>
+  <g clip-path="url(#surface-clip-sloper-35-l-base)">
+    <g transform="translate(99 0)">
+      <path d="M1 3 V21.243984733626426 Q1 25.243984733626426 6 25.243984733626426 H94 Q99 25.243984733626426 99 21.243984733626426 V3"
+        fill="none" stroke="#8F6D3D" stroke-width="0.9" opacity="0.45"/>
+      <path d="M4 21.243984733626426 Q4 23.243984733626426 8 23.243984733626426 H92 Q96 23.243984733626426 96 21.243984733626426"
+        fill="none" stroke="#F6F1EA" stroke-width="2.5" opacity="0.7"/>
+    </g>
+  </g>
+  <text x="149" y="16.121992366813213"
+    text-anchor="middle" font-family="Geist Mono" font-size="11.5" fill="#5A4B39">35°</text>
+<defs>
+    <linearGradient id="surface-sloper-20-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9dfd0"/>
+      <stop offset="0.35" stop-color="#d6c3a9"/>
+      <stop offset="0.8" stop-color="#cfbba0"/>
+      <stop offset="1" stop-color="#D6C3A9"/>
+    </linearGradient>
+    <clipPath id="surface-clip-sloper-20-base"><path d="M0 0 Q0 0 0 0 H182 V14.788228497911085
+      Q182 19.788228497911085 177 19.788228497911085
+      H5 Q0 19.788228497911085 0 14.788228497911085 Z" transform="translate(199 0)" /></clipPath>
+  </defs>
+  <path d="M0 0 Q0 0 0 0 H182 V14.788228497911085
+      Q182 19.788228497911085 177 19.788228497911085
+      H5 Q0 19.788228497911085 0 14.788228497911085 Z" transform="translate(199 0)" fill="url(#surface-sloper-20-base)"/>
+  <g clip-path="url(#surface-clip-sloper-20-base)">
+    <g transform="translate(199 0)">
+      <path d="M1 3 V14.788228497911085 Q1 18.788228497911085 6 18.788228497911085 H176 Q181 18.788228497911085 181 14.788228497911085 V3"
+        fill="none" stroke="#8F6D3D" stroke-width="0.9" opacity="0.45"/>
+      <path d="M4 14.788228497911085 Q4 16.788228497911085 8 16.788228497911085 H174 Q178 16.788228497911085 178 14.788228497911085"
+        fill="none" stroke="#F6F1EA" stroke-width="2.5" opacity="0.7"/>
+    </g>
+  </g>
+  <text x="290" y="12.894114248955542"
+    text-anchor="middle" font-family="Geist Mono" font-size="11.5" fill="#5A4B39">20°</text>
+<defs>
+    <linearGradient id="surface-sloper-35-r-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9dfd0"/>
+      <stop offset="0.35" stop-color="#ceba9e"/>
+      <stop offset="0.8" stop-color="#bfa88a"/>
+      <stop offset="1" stop-color="#D6C3A9"/>
+    </linearGradient>
+    <clipPath id="surface-clip-sloper-35-r-base"><path d="M0 0 Q0 0 0 0 H100 V21.243984733626426
+      Q100 26.243984733626426 95 26.243984733626426
+      H5 Q0 26.243984733626426 0 21.243984733626426 Z" transform="translate(481 0) scale(-1 1)" /></clipPath>
+  </defs>
+  <path d="M0 0 Q0 0 0 0 H100 V21.243984733626426
+      Q100 26.243984733626426 95 26.243984733626426
+      H5 Q0 26.243984733626426 0 21.243984733626426 Z" transform="translate(481 0) scale(-1 1)" fill="url(#surface-sloper-35-r-base)"/>
+  <g clip-path="url(#surface-clip-sloper-35-r-base)">
+    <g transform="translate(481 0) scale(-1 1)">
+      <path d="M1 3 V21.243984733626426 Q1 25.243984733626426 6 25.243984733626426 H94 Q99 25.243984733626426 99 21.243984733626426 V3"
+        fill="none" stroke="#8F6D3D" stroke-width="0.9" opacity="0.45"/>
+      <path d="M4 21.243984733626426 Q4 23.243984733626426 8 23.243984733626426 H92 Q96 23.243984733626426 96 21.243984733626426"
+        fill="none" stroke="#F6F1EA" stroke-width="2.5" opacity="0.7"/>
+    </g>
+  </g>
+  <text x="431" y="16.121992366813213"
+    text-anchor="middle" font-family="Geist Mono" font-size="11.5" fill="#5A4B39">35°</text>
+<defs>
+    <linearGradient id="surface-sloper-45-r-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9dfd0"/>
+      <stop offset="0.35" stop-color="#c8b397"/>
+      <stop offset="0.8" stop-color="#b49c7b"/>
+      <stop offset="1" stop-color="#D6C3A9"/>
+    </linearGradient>
+    <clipPath id="surface-clip-sloper-45-r-base"><path d="M0 8 Q0 0 8 0 H99 V26.999999999999996
+      Q99 31.999999999999996 94 31.999999999999996
+      H5 Q0 31.999999999999996 0 26.999999999999996 Z" transform="translate(580 0) scale(-1 1)" /></clipPath>
+  </defs>
+  <path d="M0 8 Q0 0 8 0 H99 V26.999999999999996
+      Q99 31.999999999999996 94 31.999999999999996
+      H5 Q0 31.999999999999996 0 26.999999999999996 Z" transform="translate(580 0) scale(-1 1)" fill="url(#surface-sloper-45-r-base)"/>
+  <g clip-path="url(#surface-clip-sloper-45-r-base)">
+    <g transform="translate(580 0) scale(-1 1)">
+      <path d="M1 3 V26.999999999999996 Q1 30.999999999999996 6 30.999999999999996 H93 Q98 30.999999999999996 98 26.999999999999996 V3"
+        fill="none" stroke="#8F6D3D" stroke-width="0.9" opacity="0.45"/>
+      <path d="M4 26.999999999999996 Q4 28.999999999999996 8 28.999999999999996 H91 Q95 28.999999999999996 95 26.999999999999996"
+        fill="none" stroke="#F6F1EA" stroke-width="2.5" opacity="0.7"/>
+    </g>
+  </g>
+  <text x="530.5" y="19"
+    text-anchor="middle" font-family="Geist Mono" font-size="11.5" fill="#5A4B39">45°</text>
 <rect x="218" y="34" width="60" height="21" rx="10.5" fill="#7f6e56"/><rect x="218" y="34" width="60" height="6.3" fill="#5A4B39" opacity="0.5" clip-path="url(#clip-edge-top-deep-l)"/><rect x="218" y="50.38" width="60" height="4.62" fill="#F6F1EA" clip-path="url(#clip-edge-top-deep-l)"/><rect x="218" y="34" width="60" height="21" rx="10.5" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
 <rect x="302" y="34" width="60" height="21" rx="10.5" fill="#958166"/><rect x="302" y="34" width="60" height="6.3" fill="#5A4B39" opacity="0.5" clip-path="url(#clip-edge-top-shallow-r)"/><rect x="302" y="50.38" width="60" height="4.62" fill="#F6F1EA" clip-path="url(#clip-edge-top-shallow-r)"/><rect x="302" y="34" width="60" height="21" rx="10.5" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>
 <rect x="8" y="68" width="78" height="25" rx="12.5" fill="#87755c"/><rect x="8" y="68" width="78" height="7.5" fill="#5A4B39" opacity="0.5" clip-path="url(#clip-edge-big-l)"/><rect x="8" y="88" width="78" height="5" fill="#F6F1EA" clip-path="url(#clip-edge-big-l)"/><rect x="8" y="68" width="78" height="25" rx="12.5" fill="none" stroke="#8F6D3D" stroke-width="0.7"/>

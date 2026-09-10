@@ -45,28 +45,57 @@ const C = {
 
 const read = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
 
-// The board being rendered: corner radius and width, needed by corner-shaped jugs.
-let CURRENT = { rx: 12, W: 580 };
+// Corner radius of the board being rendered, needed by corner-shaped jugs.
+let CURRENT = { id: '', rx: 12, width: 580 };
 
-/**
- * Path for a jug that wraps the rounded end of the board (shape "corner"), mirroring
- * cornerPath() in gen-hangboard-models.mjs: the strip along the top plus the strip down the
- * side, rounded by the board's corner radius.
- */
+/** Rounded jug cap, with a curved inside corner instead of a square trim strip. */
 function cornerPath(h) {
-  const { rx: r, W } = CURRENT;
+  const r = Math.min(CURRENT.rx, h.h);
   const inner = h.inner ?? { w: 30, h: 28 };
-  const top = h.y;
-  const bottom = h.y + h.h;
-  if (h.side === 'right') {
-    return `M${h.x} ${top}H${W - r}A${r} ${r} 0 0 1 ${W} ${top + r}V${bottom}H${W - inner.w}V${top + inner.h}H${h.x}Z`;
-  }
-  return `M${h.x + h.w} ${top}H${h.x + r}A${r} ${r} 0 0 0 ${h.x} ${top + r}V${bottom}H${h.x + inner.w}V${top + inner.h}H${h.x + h.w}Z`;
+  // Draw in local coordinates and reflect the right jug to keep the pair identical.
+  return `M${h.w - 8} 0 Q${h.w} 0 ${h.w} 8
+    V${inner.h - 8} Q${h.w} ${inner.h} ${h.w - 8} ${inner.h}
+    H${inner.w + 20} Q${inner.w} ${inner.h} ${inner.w} ${inner.h + 20}
+    V${h.h - 4} Q${inner.w} ${h.h} ${inner.w - 4} ${h.h}
+    H0 A${r} ${r} 0 0 1 ${r} 0 Z`;
 }
 
-/** SVG element for a hold, mirroring holdPath() in gen-hangboard-models.mjs. */
+function holdTransform(h) {
+  return h.side === 'right'
+    ? `translate(${h.x + h.w} ${h.y}) scale(-1 1)`
+    : `translate(${h.x} ${h.y})`;
+}
+
+/** The projected front edge falls further down the board as the slope gets steeper. */
+function sloperGeometry(h) {
+  const slope = Math.tan(((h.angle_deg ?? 20) * Math.PI) / 180);
+  const drop = h.h * (0.4 + 0.6 * slope);
+  const run = CURRENT.id === 'beastmaker-2000' || h.side === 'center' ? 0 : 20;
+  const notch = run * slope;
+  return { drop, notch, run };
+}
+
+function sloperPath(h) {
+  const { drop, notch, run } = sloperGeometry(h);
+  if (CURRENT.id === 'beastmaker-2000') {
+    const outer = h.x === 0 || h.x + h.w === CURRENT.width;
+    const r = outer ? CURRENT.rx : 0;
+    // The 2000 has one continuous top. Only its front arris steps down between slopes.
+    return `M0 ${r} Q0 0 ${r} 0 H${h.w} V${drop - 5}
+      Q${h.w} ${drop} ${h.w - 5} ${drop}
+      H5 Q0 ${drop} 0 ${drop - 5} Z`;
+  }
+  return `M0 ${notch} L${run} 0 H${h.w - 3} Q${h.w} 0 ${h.w} 3
+    V${drop - 3} Q${h.w} ${drop} ${h.w - 3} ${drop}
+    H3 Q0 ${drop} 0 ${drop - 3} Z`;
+}
+
+/** Shared silhouette for the base artwork and its cropped selection overlay. */
 function holdShape(h, attrs) {
-  if (h.shape === 'corner') return `<path d="${cornerPath(h)}" ${attrs}/>`;
+  if (h.shape === 'corner')
+    return `<path d="${cornerPath(h)}" transform="${holdTransform(h)}" ${attrs}/>`;
+  if (h.type === 'sloper')
+    return `<path d="${sloperPath(h)}" transform="${holdTransform(h)}" ${attrs}/>`;
   if (h.shape === 'circle') {
     const r = Math.min(h.w, h.h) / 2;
     return `<circle cx="${h.x + h.w / 2}" cy="${h.y + h.h / 2}" r="${r}" ${attrs}/>`;
@@ -95,52 +124,82 @@ function mix(a, b, t) {
   return `#${out.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
 
-/**
- * One hold on the base board, drawn so the kind reads at a glance:
- * - slopers: a light top face that falls into a darker front band; the steeper the angle,
- *   the taller and darker the band (20° is a gentle shade, 45° a clear step)
- * - jugs: the light strip with a rounded highlight, an incut you can wrap
- * - edges: a cavity whose darkness grows with depth, with a bright flat lip along the
- *   bottom, so a 15 mm edge and a 45 mm edge look different and neither looks like a pocket
- * - pockets and monos: dark holes with a shadow under the top rim
- */
+/** Smooth carved planes on the 2000, with a rounded front arris and no cut-outs on top. */
+function carvedSloper(h, selected) {
+  const { drop } = sloperGeometry(h);
+  const steepness = ((h.angle_deg ?? 20) - 20) / 25;
+  const mid = selected ? C.primary : C.strip;
+  const shade = selected ? C.edge : C.stripDark;
+  const light = selected ? mix(C.primary, C.lip, 0.6) : C.lip;
+  const grad = `surface-${h.id}-${selected ? 'selected' : 'base'}`;
+  const clip = `surface-clip-${h.id}-${selected ? 'selected' : 'base'}`;
+  return `<defs>
+    <linearGradient id="${grad}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${mix(light, mid, 0.4)}"/>
+      <stop offset="0.35" stop-color="${mix(mid, shade, steepness * 0.3)}"/>
+      <stop offset="0.8" stop-color="${mix(mid, shade, 0.15 + steepness * 0.6)}"/>
+      <stop offset="1" stop-color="${mid}"/>
+    </linearGradient>
+    <clipPath id="${clip}">${holdShape(h, '')}</clipPath>
+  </defs>
+  ${holdShape(h, `fill="url(#${grad})"`)}
+  <g clip-path="url(#${clip})">
+    <g transform="${holdTransform(h)}">
+      <path d="M1 3 V${drop - 5} Q1 ${drop - 1} 6 ${drop - 1} H${h.w - 6} Q${h.w - 1} ${drop - 1} ${h.w - 1} ${drop - 5} V3"
+        fill="none" stroke="${selected ? C.edge : C.outline}" stroke-width="0.9" opacity="0.45"/>
+      <path d="M4 ${drop - 5} Q4 ${drop - 3} 8 ${drop - 3} H${h.w - 8} Q${h.w - 4} ${drop - 3} ${h.w - 4} ${drop - 5}"
+        fill="none" stroke="${light}" stroke-width="2.5" opacity="0.7"/>
+    </g>
+  </g>
+  <text x="${h.x + h.w / 2}" y="${h.y + drop / 2 + 3}"
+    text-anchor="middle" font-family="Geist Mono" font-size="11.5" fill="${C.recess}">${h.angle_deg}°</text>`;
+}
+
+/** Sculpted top holds share their geometry and shading with the selected overlay. */
+function topHold(h, selected = false) {
+  if (CURRENT.id === 'beastmaker-2000' && h.type === 'sloper') return carvedSloper(h, selected);
+  const outline = selected ? C.edge : C.outline;
+  const light = selected ? mix(C.primary, C.lip, 0.55) : C.lip;
+  const mid = selected ? C.primary : C.strip;
+  const shadow = selected ? C.edge : C.stripDark;
+  const stroke = `stroke="${outline}" stroke-width="0.8" stroke-linejoin="round"`;
+  if (h.type === 'jug') {
+    const inner = h.inner ?? { w: 30, h: 28 };
+    // The dark inside edge is the undercut; a broad lit roll sits in front of it.
+    const undercut = `M${inner.w - 5} ${h.h - 3} V${inner.h + 18}
+      Q${inner.w - 5} ${inner.h - 4} ${inner.w + 20} ${inner.h - 4}
+      H${h.w - 9}`;
+    const crest = `M10 ${h.h - 10} Q17 8 60 8 H${h.w - 12}`;
+    return `<g transform="${holdTransform(h)}">
+      <path d="${cornerPath(h)}" fill="${mid}" ${stroke}/>
+      <path d="${undercut}" fill="none" stroke="${selected ? C.outline : C.recess}" stroke-width="7" stroke-linecap="round"/>
+      <path d="${crest}" fill="none" stroke="${light}" stroke-width="9" stroke-linecap="round"/>
+      <path d="M17 ${h.h - 8} Q23 17 61 17 H${h.w - 10}" fill="none" stroke="${shadow}" stroke-width="1.2" stroke-linecap="round"/>
+    </g>`;
+  }
+  const { drop, notch, run } = sloperGeometry(h);
+  const angle = h.angle_deg ?? 20;
+  const face = mix(mid, shadow, (angle - 20) / 35);
+  // A triangular end cheek exposes the actual ramp, and the front edge steps down by angle.
+  const cheek = notch
+    ? `<path d="M0 ${notch} L${run} 0 L${run} ${drop - 4} L0 ${drop - 3} Z" fill="${shadow}"/>
+       <path d="M0 ${notch} L${run} 0" stroke="${light}" stroke-width="2"/>`
+    : '';
+  return `<g transform="${holdTransform(h)}">
+    <path d="${sloperPath(h)}" fill="${face}" ${stroke}/>
+    ${cheek}<path d="M${run + 3} 2 H${h.w - 5}" stroke="${light}" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M4 ${drop - 2} H${h.w - 4}" stroke="${shadow}" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="${h.x + h.w / 2 + (h.side === 'left' ? 5 : h.side === 'right' ? -5 : 0)}" y="${h.y + drop / 2 + 4.5}"
+    text-anchor="middle" font-family="Geist Mono" font-size="13" fill="${C.recess}">${angle}°</text>`;
+}
+
+/** One hold on the base board: sculpted top holds, recessed edges and dark pockets. */
 function baseHold(h, defs) {
+  if (h.type === 'sloper' || h.type === 'jug') return topHold(h);
   const id = `clip-${h.id}`;
   defs.push(`<clipPath id="${id}">${holdShape(h, '')}</clipPath>`);
   const outline = holdShape(h, `fill="none" stroke="${C.outline}" stroke-width="0.7"`);
-  if (h.type === 'sloper') {
-    const angle = h.angle_deg ?? 20;
-    const band = Math.min(0.75, 0.2 + (angle / 45) * 0.45); // fraction of the strip in shadow
-    const dark = mix(C.strip, C.stripDark, Math.min(1, angle / 45));
-    const gid = `grad-${h.id}`;
-    defs.push(
-      `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">` +
-        `<stop offset="0" stop-color="${C.strip}"/>` +
-        `<stop offset="${(1 - band).toFixed(2)}" stop-color="${C.strip}"/>` +
-        `<stop offset="1" stop-color="${dark}"/></linearGradient>`
-    );
-    return `${holdShape(h, `fill="url(#${gid})"`)}${outline}`;
-  }
-  if (h.type === 'jug') {
-    let glow;
-    if (h.shape === 'corner') {
-      // A bright rim that follows the top and wraps around the end of the board, so the jug
-      // reads as the rounded bulge you grab rather than another strip of the top.
-      const { rx: r, W } = CURRENT;
-      const inset = 5;
-      const ri = Math.max(1, r - inset);
-      const right = h.side === 'right';
-      const xOuter = right ? W - inset : h.x + inset;
-      const xFar = right ? h.x + 4 : h.x + h.w - 4;
-      const xArc = right ? W - r : h.x + r;
-      const sweep = right ? 1 : 0;
-      const d = `M${xFar} ${h.y + inset}H${xArc}A${ri} ${ri} 0 0 ${sweep} ${xOuter} ${h.y + r}V${h.y + h.h - 6}`;
-      glow = `<path d="${d}" fill="none" stroke="${C.lip}" stroke-width="${inset * 1.6}" stroke-linecap="round" opacity="0.75" clip-path="url(#${id})"/>`;
-    } else {
-      glow = `<rect x="${h.x + 6}" y="${h.y + 4}" width="${h.w - 12}" height="${h.h * 0.45}" rx="6" fill="${C.lip}" opacity="0.7" clip-path="url(#${id})"/>`;
-    }
-    return `${holdShape(h, `fill="${C.strip}"`)}${glow}${outline}`;
-  }
   if (h.type === 'edge') {
     const depth = h.depth_mm ?? 20;
     const fill = mix(C.holdShallow, C.hold, Math.min(1, Math.max(0, (depth - 10) / 35)));
@@ -154,14 +213,61 @@ function baseHold(h, defs) {
   return `${holdShape(h, `fill="${C.hold}"`)}${rim}${outline}`;
 }
 
+/** The bottom row is carved into a second, recessed face below the main rounded ledge. */
+function lowerTier(layout, W, H, rx, defs) {
+  const upperBottom = Math.max(...layout.holds.filter((h) => h.row === 3).map((h) => h.y + h.h));
+  const lowerTop = Math.min(...layout.holds.filter((h) => h.row === 4).map((h) => h.y));
+  const gap = lowerTop - upperBottom;
+  const crest = upperBottom + gap * 0.35;
+  const step = gap * 0.3;
+  const turn = Math.min(rx, 32);
+  const lift = turn * 0.45;
+  const contour = (y) =>
+    `M0 ${y - lift} Q${turn * 0.25} ${y} ${turn} ${y}
+     H${W - turn} Q${W - turn * 0.25} ${y} ${W} ${y - lift}`;
+  defs.push(
+    `<clipPath id="body-clip"><rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="${rx}"/></clipPath>`,
+    `<linearGradient id="lower-face" gradientUnits="userSpaceOnUse" x1="0" y1="${crest + step}" x2="0" y2="${H}">
+      <stop offset="0" stop-color="${C.stripDark}"/>
+      <stop offset="0.28" stop-color="${C.strip}"/>
+      <stop offset="1" stop-color="${mix(C.strip, C.body, 0.55)}"/>
+    </linearGradient>`,
+    `<linearGradient id="ledge-roll" gradientUnits="userSpaceOnUse" x1="0" y1="${crest}" x2="0" y2="${crest + step}">
+      <stop offset="0" stop-color="${C.body}"/>
+      <stop offset="0.4" stop-color="${C.strip}"/>
+      <stop offset="1" stop-color="${C.stripDark}"/>
+    </linearGradient>`
+  );
+  // All relief stays behind the hold images, preserving their positions and hit targets.
+  return `<g clip-path="url(#body-clip)">
+    <path d="${contour(crest)} V${H} H0 Z" fill="url(#lower-face)"/>
+    <path d="${contour(crest)} v${step}
+      Q${W - turn * 0.25} ${crest + step} ${W - turn} ${crest + step}
+      H${turn} Q${turn * 0.25} ${crest + step} 0 ${crest + step - lift} Z" fill="url(#ledge-roll)"/>
+    <path d="${contour(crest)}" fill="none" stroke="${C.lip}" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="${contour(crest + step)}" fill="none" stroke="${C.outline}" stroke-width="0.8" opacity="0.55"/>
+  </g>`;
+}
+
 function baseSvg(layout, W, H) {
   const rx = boardCornerRadius(layout.id, layout);
-  CURRENT = { rx, W };
-  const defs = [];
+  CURRENT = { id: layout.id, rx, width: W };
+  const cuts = layout.holds
+    .filter((h) => h.type === 'sloper' && h.side !== 'center')
+    .map((h) => {
+      const { run, notch } = sloperGeometry(h);
+      return `<path d="M0 0 H${run} L0 ${notch} Z" transform="${holdTransform(h)}" fill="black"/>`;
+    })
+    .join('');
+  const defs = [
+    `<mask id="board-silhouette"><rect width="${W}" height="${H}" fill="white"/>${cuts}</mask>`,
+  ];
+  const tier = lowerTier(layout, W, H, rx, defs);
   const holds = layout.holds.map((h) => baseHold(h, defs)).join('\n');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W * SCALE}" height="${H * SCALE}">
 <defs>${defs.join('')}</defs>
-<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="${rx}" fill="${C.body}" stroke="${C.outline}" stroke-width="1"/>
+<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="${rx}" fill="${C.body}" stroke="${C.outline}" stroke-width="1" mask="url(#board-silhouette)"/>
+${tier}
 ${holds}
 </svg>`;
 }
@@ -175,7 +281,10 @@ function highlightShapes(h) {
     holdShape(
       h,
       `fill="${C.primary}" stroke="${C.primary}" stroke-width="6" opacity="0.55" filter="url(#glow)"`
-    ) + holdShape(h, `fill="${C.primary}" stroke="${C.edge}" stroke-width="1.2"`)
+    ) +
+    (h.type === 'sloper' || h.type === 'jug'
+      ? topHold(h, true)
+      : holdShape(h, `fill="${C.primary}" stroke="${C.edge}" stroke-width="1.2"`))
   );
 }
 
@@ -201,7 +310,17 @@ function highlightsSvg(layout, W, H) {
   return base.replace('</svg>', `${layer}\n</svg>`);
 }
 
-const png = (svg) => new Resvg(svg, { fitTo: { mode: 'original' } }).render().asPng();
+const png = (svg) =>
+  new Resvg(svg, {
+    fitTo: { mode: 'original' },
+    font: {
+      loadSystemFonts: false,
+      fontFiles: [join(root, 'assets/fonts/GeistMono_500Medium.ttf')],
+      defaultFontFamily: 'Geist Mono',
+    },
+  })
+    .render()
+    .asPng();
 
 function write(p, data) {
   mkdirSync(dirname(join(root, p)), { recursive: true });
@@ -217,7 +336,7 @@ for (const id of BOARDS) {
   const H = layout.size_mm.height;
   const assetDir = `assets/boards/${id}`;
   rmSync(join(root, assetDir), { recursive: true, force: true });
-  CURRENT = { rx: boardCornerRadius(id, layout), W };
+  CURRENT = { id, rx: boardCornerRadius(id, layout), width: W };
 
   const base = baseSvg(layout, W, H);
   write(`${assetDir}/base.png`, png(base));
