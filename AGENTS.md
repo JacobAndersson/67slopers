@@ -38,9 +38,12 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
 - Timer logic is pure and tested: `src/lib/timer/intervals.ts` expands a workout into intervals,
   `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. Cues are a
   beep and a heavy tap at every interval boundary (`cues.ts` computes the boundary on the engine
-  clock, `useCues.ts` schedules it, `cue-player.ts` wraps expo-audio and expo-haptics and is only
-  created by a mounted timer). Sound and vibration are global settings in the store, toggled on
-  the timer screen. Screens only render; put behaviour in `src/lib` where
+  clock, `useCues.ts` schedules it, `cue-player.ts` wraps expo-audio and is only created by a
+  mounted timer). On Android the buzz goes through the local module `modules/cue-vibration`
+  (Kotlin, `USAGE_ALARM`): untagged vibrations, expo-haptics and React Native's `Vibration`
+  alike, are filed under the touch-feedback setting and dropped when it is off. iOS uses
+  expo-haptics; Expo Go falls back to the plain vibration. Sound and vibration are global
+  settings in the store, toggled on the timer screen. Screens only render; put behaviour in `src/lib` where
   `npm test` can reach it.
 - A workout is `steps[]`: timed steps (`prep`, `hang`, `rest`, each with seconds and an optional
   label) and `repeat` groups (`times`, nested `steps`; a trailing rest is skipped on the final
