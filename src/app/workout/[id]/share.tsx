@@ -56,7 +56,7 @@ export default function ShareWorkoutScreen() {
             </View>
             <QrCode value={code.digits} size={size} />
             <View className="items-center gap-2">
-              <Text selectable className="text-center text-2xl tracking-wider font-semibold">
+              <Text selectable className="text-center text-xl tracking-wide font-semibold">
                 {groupDigits(code.digits)}
               </Text>
               <Text variant="muted" className="text-center">
