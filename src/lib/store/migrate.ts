@@ -23,12 +23,7 @@ export function isLegacyTimings(value: unknown): value is LegacyTimings {
 const timed = (kind: StepKind, seconds: number, label?: string): TimedStep =>
   label ? { kind, seconds, label } : { kind, seconds };
 
-const repeat = (times: number, steps: Step[]): RepeatStep => ({
-  kind: 'repeat',
-  times,
-  skipLastRest: true,
-  steps,
-});
+const repeat = (times: number, steps: Step[]): RepeatStep => ({ kind: 'repeat', times, steps });
 
 /**
  * Converts blocks to steps so that the timer runs exactly the same intervals: reps become an
@@ -68,11 +63,23 @@ export function blocksToSteps(legacy: LegacyTimings): WorkoutTimings {
   return { steps };
 }
 
-/** Accepts either shape. Anything unreadable becomes an empty workout rather than a crash. */
+/** v3 repeats carried a `skipLastRest` flag; skipping is now always on, so the key goes. */
+function dropSkipLastRest(steps: Step[]): Step[] {
+  return steps.map((s) => {
+    if (s.kind !== 'repeat') return s;
+    const { skipLastRest: _skip, ...rest } = s as RepeatStep & { skipLastRest?: boolean };
+    return { ...rest, steps: dropSkipLastRest(rest.steps) };
+  });
+}
+
+/** Accepts any earlier shape. Anything unreadable becomes an empty workout rather than a crash. */
 export function migrateTimings(value: unknown): WorkoutTimings {
   if (isLegacyTimings(value)) return blocksToSteps(value);
-  const steps = (value as { steps?: unknown } | null)?.steps;
-  return { steps: Array.isArray(steps) ? (steps as Step[]) : [] };
+  const record = value as { steps?: unknown; board?: unknown } | null;
+  const steps = Array.isArray(record?.steps) ? dropSkipLastRest(record.steps as Step[]) : [];
+  return typeof record?.board === 'string'
+    ? { board: record.board as WorkoutTimings['board'], steps }
+    : { steps };
 }
 
 /** A persisted workout: replaces `prepSeconds` and `blocks` with `steps`. */

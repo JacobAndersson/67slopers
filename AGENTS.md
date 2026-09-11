@@ -40,7 +40,8 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   silent by design: no audio, no haptics. Screens only render; put behaviour in `src/lib` where
   `npm test` can reach it.
 - A workout is `steps[]`: timed steps (`prep`, `hang`, `rest`, each with seconds and an optional
-  label) and `repeat` groups (`times`, `skipLastRest`, nested `steps`). Repeats nest at most one
+  label) and `repeat` groups (`times`, nested `steps`; a trailing rest is skipped on the final
+  round). Repeats nest at most one
   level deep: the rounds of a top-level repeat are the sets, the rounds of a repeat inside it are
   the reps. The stored model has no ids; the editor adds them through `withIds`/`stripIds` in
   `src/lib/workout-steps.ts`, which also holds every tree edit (`updateStep`, `moveStep`,

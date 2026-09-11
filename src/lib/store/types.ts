@@ -12,12 +12,14 @@ export type TimedStep = {
   holds?: string[];
 };
 
-/** Runs its steps `times` rounds in a row. May contain one more level of repeats, no deeper. */
+/**
+ * Runs its steps `times` rounds in a row. May contain one more level of repeats, no deeper.
+ * A rest at the end of the round is skipped on the final round, so "hang, rest" × 6 ends on
+ * the hang.
+ */
 export type RepeatStep = {
   kind: 'repeat';
   times: number;
-  /** Drop trailing rest steps on the final round (Garmin's "skip last recovery"). */
-  skipLastRest: boolean;
   steps: Step[];
 };
 

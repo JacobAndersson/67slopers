@@ -27,7 +27,7 @@ export type EditableStep = EditableTimedStep | EditableRepeatStep;
 
 export type StepPatch =
   | Partial<Pick<TimedStep, 'kind' | 'seconds' | 'label' | 'holds'>>
-  | Partial<Pick<RepeatStep, 'times' | 'skipLastRest'>>;
+  | Partial<Pick<RepeatStep, 'times'>>;
 
 // --- Conversions -------------------------------------------------------------------------
 
@@ -48,12 +48,7 @@ export function withIds(steps: Step[]): EditableStep[] {
 export function stripIds(steps: EditableStep[]): Step[] {
   return steps.map((s) => {
     if (s.kind === 'repeat') {
-      return {
-        kind: 'repeat',
-        times: s.times,
-        skipLastRest: s.skipLastRest,
-        steps: stripIds(s.steps),
-      };
+      return { kind: 'repeat', times: s.times, steps: stripIds(s.steps) };
     }
     const out: TimedStep = { kind: s.kind, seconds: s.seconds };
     if (s.label) out.label = s.label;
@@ -75,13 +70,12 @@ export function newTimedStep(kind: StepKind, seconds = DEFAULT_SECONDS[kind]): E
   return { id: newId(), kind, seconds };
 }
 
-/** Garmin's "add repeat" default, translated: 6 × (hang 7 s, rest 3 s), last rest skipped. */
+/** Garmin's "add repeat" default, translated: 6 × (hang 7 s, rest 3 s). */
 export function newRepeat(): EditableRepeatStep {
   return {
     id: newId(),
     kind: 'repeat',
     times: 6,
-    skipLastRest: true,
     steps: [newTimedStep('hang', 7), newTimedStep('rest', 3)],
   };
 }

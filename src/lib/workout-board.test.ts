@@ -15,7 +15,6 @@ test('validateWorkout accepts real grips on the chosen board', () => {
         {
           kind: 'repeat',
           times: 3,
-          skipLastRest: true,
           steps: [hangOn(['edge-medium-l', 'edge-medium-r']), { kind: 'rest', seconds: 3 }],
         },
         hangOn(['sloper-20']),

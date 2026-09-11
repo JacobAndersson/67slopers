@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { gripName, type Board } from '@/lib/boards';
@@ -324,7 +323,6 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
   const editor = useContext(EditorContext);
   const [editingCount, setEditingCount] = useState(false);
   const reorderingHere = editor?.reorderTarget === step.id;
-  const lastIsRest = step.steps.at(-1)?.kind === 'rest';
 
   return (
     <View className="rounded-lg border-2 border-border">
@@ -373,20 +371,6 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
       <View className="px-3 pb-3">
         <StepList steps={step.steps} parentId={step.id} depth={depth + 1} />
       </View>
-
-      {lastIsRest ? (
-        <View className="flex-row items-center justify-between border-t border-border px-3 py-2">
-          <Text variant="muted">Skip last rest</Text>
-          {editor ? (
-            <Switch
-              checked={step.skipLastRest}
-              onCheckedChange={(v) => editor.actions.update(step.id, { skipLastRest: v })}
-            />
-          ) : (
-            <Text variant="muted">{step.skipLastRest ? 'On' : 'Off'}</Text>
-          )}
-        </View>
-      ) : null}
     </View>
   );
 }
@@ -405,8 +389,7 @@ function StepMenu({ step }: { step: EditableStep }) {
   const intoAbove = above?.kind === 'repeat' && canNest(steps, above.id, step) ? above : null;
   const intoBelow = below?.kind === 'repeat' && canNest(steps, below.id, step) ? below : null;
   const canAddRepeat =
-    step.kind === 'repeat' &&
-    canNest(steps, step.id, { kind: 'repeat', times: 1, skipLastRest: true, steps: [] });
+    step.kind === 'repeat' && canNest(steps, step.id, { kind: 'repeat', times: 1, steps: [] });
 
   return (
     <DropdownMenu>

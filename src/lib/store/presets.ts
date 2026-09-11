@@ -25,12 +25,7 @@ const prep = (seconds: number): TimedStep => ({ kind: 'prep', seconds });
 const hang = (seconds: number, label?: string): TimedStep =>
   label ? { kind: 'hang', seconds, label } : { kind: 'hang', seconds };
 const rest = (seconds: number): TimedStep => ({ kind: 'rest', seconds });
-const repeat = (times: number, steps: Step[]): RepeatStep => ({
-  kind: 'repeat',
-  times,
-  skipLastRest: true,
-  steps,
-});
+const repeat = (times: number, steps: Step[]): RepeatStep => ({ kind: 'repeat', times, steps });
 
 /**
  * The classic protocols with their standard numbers. Every level gets a few; the three that

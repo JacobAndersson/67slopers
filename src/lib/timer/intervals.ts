@@ -24,7 +24,7 @@ export function countSets(steps: Step[]): number {
   return steps.reduce((n, s) => n + (s.kind === 'repeat' ? s.times : s.kind === 'hang' ? 1 : 0), 0);
 }
 
-/** The final round of a repeat with `skipLastRest`: trailing rest steps are dropped. */
+/** The final round of a repeat: trailing rest steps are dropped. */
 export function trimTrailingRests(steps: Step[]): Step[] {
   let end = steps.length;
   while (end > 0 && steps[end - 1].kind === 'rest') end--;
@@ -59,7 +59,7 @@ export function expandWorkout(timings: WorkoutTimings): Interval[] {
       if (step.kind === 'repeat') {
         for (let r = 0; r < step.times; r++) {
           const last = r === step.times - 1;
-          const inner = last && step.skipLastRest ? trimTrailingRests(step.steps) : step.steps;
+          const inner = last ? trimTrailingRests(step.steps) : step.steps;
           if (ctx.depth === 0) {
             openSet();
             walk(inner, { depth: 1, repIndex: 0, repCount: 1 });

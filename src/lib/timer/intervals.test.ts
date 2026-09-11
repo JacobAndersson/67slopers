@@ -8,12 +8,7 @@ const prep = (seconds: number): TimedStep => ({ kind: 'prep', seconds });
 const hang = (seconds: number, label?: string): TimedStep =>
   label ? { kind: 'hang', seconds, label } : { kind: 'hang', seconds };
 const rest = (seconds: number): TimedStep => ({ kind: 'rest', seconds });
-const repeat = (times: number, steps: Step[], skipLastRest = true): RepeatStep => ({
-  kind: 'repeat',
-  times,
-  skipLastRest,
-  steps,
-});
+const repeat = (times: number, steps: Step[]): RepeatStep => ({ kind: 'repeat', times, steps });
 
 const repeaters = { steps: [prep(10), repeat(6, [repeat(6, [hang(7), rest(3)]), rest(180)])] };
 const maxHangs = { steps: [prep(10), repeat(5, [hang(10), rest(180)])] };
@@ -67,12 +62,8 @@ test('a single-level repeat has no reps and its rests stay rests', () => {
   ]);
 });
 
-test('skipLastRest drops only the trailing rest of the final round', () => {
+test('the final round drops only its trailing rest', () => {
   assert.equal(phases([repeat(3, [hang(7), rest(3)])]).filter((p) => p === 'rest').length, 2);
-  assert.equal(
-    phases([repeat(3, [hang(7), rest(3)], false)]).filter((p) => p === 'rest').length,
-    3
-  );
   // Rests that are not trailing survive the final round.
   assert.deepEqual(phases([repeat(2, [rest(5), hang(7), rest(3)])]), [
     'rest',

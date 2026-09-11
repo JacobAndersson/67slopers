@@ -28,12 +28,10 @@ const twoSets = expandWorkout({
     {
       kind: 'repeat',
       times: 2,
-      skipLastRest: true,
       steps: [
         {
           kind: 'repeat',
           times: 2,
-          skipLastRest: true,
           steps: [
             { kind: 'hang', seconds: 7 },
             { kind: 'rest', seconds: 3 },

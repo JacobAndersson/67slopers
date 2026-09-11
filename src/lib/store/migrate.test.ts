@@ -66,19 +66,17 @@ for (const [name, timings] of Object.entries(legacy)) {
   });
 }
 
-test('blocksToSteps builds nested repeats with the last rest skipped', () => {
+test('blocksToSteps builds nested repeats', () => {
   assert.deepEqual(blocksToSteps(legacy.repeaters), {
     steps: [
       { kind: 'prep', seconds: 10 },
       {
         kind: 'repeat',
         times: 6,
-        skipLastRest: true,
         steps: [
           {
             kind: 'repeat',
             times: 6,
-            skipLastRest: true,
             steps: [
               { kind: 'hang', seconds: 7 },
               { kind: 'rest', seconds: 3 },
@@ -110,6 +108,14 @@ test('records are rewritten and already-migrated or broken data passes through s
 
   const steps = [{ kind: 'hang', seconds: 7 }];
   assert.deepEqual(migrateTimings({ steps }), { steps });
+  // v3 repeats carried skipLastRest; it is dropped and the board is kept.
+  assert.deepEqual(
+    migrateTimings({
+      board: 'beastmaker-1000',
+      steps: [{ kind: 'repeat', times: 2, skipLastRest: false, steps }],
+    }),
+    { board: 'beastmaker-1000', steps: [{ kind: 'repeat', times: 2, steps }] }
+  );
   assert.deepEqual(migrateTimings(null), { steps: [] });
   assert.deepEqual(migrateTimings({ nonsense: true }), { steps: [] });
 });

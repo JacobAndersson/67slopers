@@ -23,22 +23,21 @@ test('presets round-trip and stay short', () => {
   assert.ok(repeaters.length < 32);
 });
 
-test('labels, skipped rests and nesting survive the trip', () => {
+test('labels and nesting survive the trip', () => {
   const steps: Step[] = [
     { kind: 'prep', seconds: 10 },
     { kind: 'hang', seconds: 10, label: 'Sloper "big" 🧗' },
     {
       kind: 'repeat',
       times: 3,
-      skipLastRest: false,
       steps: [
-        { kind: 'repeat', times: 2, skipLastRest: true, steps: [{ kind: 'hang', seconds: 7 }] },
+        { kind: 'repeat', times: 2, steps: [{ kind: 'hang', seconds: 7 }] },
         { kind: 'rest', seconds: 90, label: 'shake out' },
       ],
     },
   ];
   const text = encodeWorkout({ name: 'Mixed "bag"', steps });
-  assert.equal(text, `v1 "Mixed 'bag'" p10 h10"Sloper 'big' 🧗" 3*(2(h7) r90"shake out")`);
+  assert.equal(text, `v1 "Mixed 'bag'" p10 h10"Sloper 'big' 🧗" 3(2(h7) r90"shake out")`);
   const decoded = ok(text);
   assert.equal(decoded.name, "Mixed 'bag'");
   assert.deepEqual(decoded.steps, [
@@ -75,7 +74,6 @@ test('board and holds round-trip and are checked against the board', () => {
     {
       kind: 'repeat',
       times: 5,
-      skipLastRest: true,
       steps: [
         { kind: 'hang', seconds: 10, holds: ['edge-22'], label: 'half crimp' },
         { kind: 'rest', seconds: 180 },

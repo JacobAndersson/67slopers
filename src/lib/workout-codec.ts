@@ -11,9 +11,9 @@ import { LIMITS } from './workout-steps';
  *
  * Tokens: `p`/`h`/`r` + seconds for a get-ready, hang or rest step, optionally followed by
  * `[hold ids]` (comma separated, on the board named by the optional `@board` token after the
- * name) and a quoted label (`h10[edge-22]"half crimp"`); `N(` … `)` for a repeat, `N*(` when
- * the last rest is kept. Whitespace is optional except between two numbers. Percent-encode the
- * whole string when putting it in a URL.
+ * name) and a quoted label (`h10[edge-22]"half crimp"`); `N(` … `)` for a repeat. Whitespace
+ * is optional except between two numbers. Percent-encode the whole string when putting it in a
+ * URL.
  */
 const VERSION = 'v1';
 
@@ -33,7 +33,7 @@ export function encodeWorkout(workout: { name?: string; board?: BoardId; steps: 
 
 function encodeStep(step: Step): string {
   if (step.kind === 'repeat') {
-    return `${step.times}${step.skipLastRest ? '' : '*'}(${step.steps.map(encodeStep).join(' ')})`;
+    return `${step.times}(${step.steps.map(encodeStep).join(' ')})`;
   }
   const holds = step.holds?.length ? `[${step.holds.join(',')}]` : '';
   return `${KIND_CODE[step.kind]}${step.seconds}${holds}${step.label ? quote(step.label) : ''}`;
@@ -166,19 +166,9 @@ class Parser {
       if (depth + 1 > LIMITS.maxDepth)
         throw new Error('Repeats can only be nested one level deep.');
       const times = this.readInt();
-      let skipLastRest = true;
-      if (this.peek() === '*') {
-        skipLastRest = false;
-        this.pos++;
-      }
       if (this.peek() !== '(') throw new Error('Expected "(" after a repeat count.');
       this.pos++;
-      const repeat: RepeatStep = {
-        kind: 'repeat',
-        times,
-        skipLastRest,
-        steps: this.readSteps(depth + 1, ')'),
-      };
+      const repeat: RepeatStep = { kind: 'repeat', times, steps: this.readSteps(depth + 1, ')') };
       return repeat;
     }
     throw new Error(`Unexpected "${c}".`);

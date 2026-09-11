@@ -104,13 +104,13 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 'hangboard',
-      version: 3,
+      version: 4,
       migrate: (persisted, version) => {
         const state = { ...(persisted as Record<string, unknown>) };
         // v1 persisted cue settings that no longer exist.
         delete state.settings;
-        // v2 stored workouts as prep + blocks; v3 stores steps.
-        if (version < 3) {
+        // v2 stored workouts as prep + blocks; v3 stores steps; v4 dropped repeats' skipLastRest.
+        if (version < 4) {
           const records = (key: string) =>
             Array.isArray(state[key]) ? (state[key] as Record<string, unknown>[]) : [];
           state.workouts = records('workouts').map(migrateWorkoutRecord);

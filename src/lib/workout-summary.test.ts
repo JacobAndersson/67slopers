@@ -18,7 +18,7 @@ test('summaryLine reads sets, reps and rests', () => {
         { kind: 'prep', seconds: 10 },
         { kind: 'hang', seconds: 20, label: 'warm up' },
         { kind: 'rest', seconds: 60 },
-        { kind: 'repeat', times: 3, skipLastRest: true, steps: [{ kind: 'hang', seconds: 10 }] },
+        { kind: 'repeat', times: 3, steps: [{ kind: 'hang', seconds: 10 }] },
       ],
     }),
     '20s · rest 1:00 · 3 × 10s'

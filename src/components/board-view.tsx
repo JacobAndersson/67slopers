@@ -68,7 +68,9 @@ export function BoardView({
         source={images.base}
         style={StyleSheet.absoluteFill}
         contentFit="fill"
-        cachePolicy="memory-disk"
+        // Bundled assets keep the same resource name across app updates, so a disk cache would
+        // keep serving the previous build's artwork. Memory only.
+        cachePolicy="memory"
         accessibilityLabel={board.name}
       />
       {ids.map((id) => {
@@ -143,7 +145,7 @@ function Overlay({
         source={source}
         style={StyleSheet.absoluteFill}
         contentFit="fill"
-        cachePolicy="memory-disk"
+        cachePolicy="memory"
       />
     </Animated.View>
   );

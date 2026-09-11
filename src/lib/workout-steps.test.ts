@@ -35,12 +35,10 @@ const repeaters: Step[] = [
   {
     kind: 'repeat',
     times: 6,
-    skipLastRest: true,
     steps: [
       {
         kind: 'repeat',
         times: 6,
-        skipLastRest: true,
         steps: [
           { kind: 'hang', seconds: 7, label: '20 mm' },
           { kind: 'rest', seconds: 3 },
@@ -87,12 +85,10 @@ test('updateStep patches one node anywhere in the tree', () => {
   assert.deepEqual(stripIds(next)[1], {
     kind: 'repeat',
     times: 6,
-    skipLastRest: true,
     steps: [
       {
         kind: 'repeat',
         times: 6,
-        skipLastRest: true,
         steps: [
           { kind: 'hang', seconds: 10, label: 'sloper' },
           { kind: 'rest', seconds: 3 },
@@ -182,15 +178,11 @@ test('validate reports missing hangs, size, depth and ranges', () => {
     {
       kind: 'repeat',
       times: 2,
-      skipLastRest: true,
       steps: [
         {
           kind: 'repeat',
           times: 2,
-          skipLastRest: true,
-          steps: [
-            { kind: 'repeat', times: 2, skipLastRest: true, steps: [{ kind: 'hang', seconds: 7 }] },
-          ],
+          steps: [{ kind: 'repeat', times: 2, steps: [{ kind: 'hang', seconds: 7 }] }],
         },
       ],
     },
@@ -198,9 +190,9 @@ test('validate reports missing hangs, size, depth and ranges', () => {
   assert.ok(validate(tooDeep).some((e) => e.includes('nested')));
   assert.ok(validate([{ kind: 'hang', seconds: 0 }]).some((e) => e.includes('range')));
   assert.ok(
-    validate([
-      { kind: 'repeat', times: 100, skipLastRest: true, steps: [{ kind: 'hang', seconds: 7 }] },
-    ]).some((e) => e.includes('range'))
+    validate([{ kind: 'repeat', times: 100, steps: [{ kind: 'hang', seconds: 7 }] }]).some((e) =>
+      e.includes('range')
+    )
   );
 });
 
@@ -209,7 +201,6 @@ test('holds survive ids, cloning and patches, and can be cleared', () => {
     {
       kind: 'repeat',
       times: 2,
-      skipLastRest: true,
       steps: [
         { kind: 'hang', seconds: 7, holds: ['edge-medium-l', 'edge-medium-r'] },
         { kind: 'rest', seconds: 3 },
