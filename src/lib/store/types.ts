@@ -72,6 +72,14 @@ export type Session = {
   note?: string;
 };
 
+/** Timer cues, remembered across workouts. Both default to on. */
+export type Settings = {
+  sound: boolean;
+  vibration: boolean;
+};
+
+export const DEFAULT_SETTINGS: Settings = { sound: true, vibration: true };
+
 /** Timings to run without saving them first. Lives in memory only. */
 export type Draft = {
   name?: string;

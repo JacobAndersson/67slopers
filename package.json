@@ -17,9 +17,11 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "expo": "~57.0.20",
+    "expo-audio": "~57.0.4",
     "expo-constants": "~57.0.17",
     "expo-font": "~57.0.3",
     "expo-glass-effect": "~57.0.1",
+    "expo-haptics": "~57.0.2",
     "expo-image": "~57.0.4",
     "expo-keep-awake": "~57.0.1",
     "expo-linking": "~57.0.9",
@@ -71,7 +73,8 @@
     "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "build:android": "expo prebuild --platform android --no-install && cd android && ./gradlew :app:assembleRelease --console=plain",
     "icons": "node scripts/gen-icons.mjs",
-    "boards": "node scripts/gen-board-images.mjs"
+    "boards": "node scripts/gen-board-images.mjs",
+    "tones": "node scripts/gen-tones.mjs"
   },
   "private": true
 }

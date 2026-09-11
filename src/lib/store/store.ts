@@ -6,7 +6,14 @@ import { cloneSteps } from '../workout-steps';
 import { newId } from './ids';
 import { migrateSessionRecord, migrateWorkoutRecord } from './migrate';
 import { makePresetWorkouts } from './presets';
-import type { Draft, Session, Workout, WorkoutTimings } from './types';
+import {
+  DEFAULT_SETTINGS,
+  type Draft,
+  type Session,
+  type Settings,
+  type Workout,
+  type WorkoutTimings,
+} from './types';
 
 type WorkoutInput = { name: string } & WorkoutTimings;
 
@@ -19,6 +26,8 @@ type StoreState = {
   hydrated: boolean;
   /** An unsaved workout about to run (not persisted). */
   draft: Draft | null;
+  /** Sound and vibration on the timer; set once, remembered. */
+  settings: Settings;
 
   addWorkout: (input: WorkoutInput) => Workout;
   updateWorkout: (id: string, patch: Partial<WorkoutInput>) => void;
@@ -29,6 +38,7 @@ type StoreState = {
   updateSession: (id: string, patch: Partial<Pick<Session, 'feel'>>) => void;
   deleteSession: (id: string) => void;
   setDraft: (draft: Draft | null) => void;
+  setSettings: (patch: Partial<Settings>) => void;
   finishHydration: () => void;
 };
 
@@ -40,6 +50,7 @@ export const useStore = create<StoreState>()(
       seeded: false,
       hydrated: false,
       draft: null,
+      settings: DEFAULT_SETTINGS,
 
       addWorkout: (input) => {
         const now = new Date().toISOString();
@@ -93,6 +104,8 @@ export const useStore = create<StoreState>()(
 
       setDraft: (draft) => set({ draft }),
 
+      setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
+
       finishHydration: () => {
         const { seeded, workouts } = get();
         if (!seeded && workouts.length === 0) {
@@ -107,8 +120,8 @@ export const useStore = create<StoreState>()(
       version: 4,
       migrate: (persisted, version) => {
         const state = { ...(persisted as Record<string, unknown>) };
-        // v1 persisted cue settings that no longer exist.
-        delete state.settings;
+        // v1 persisted cue settings in another shape; v4 reintroduced `settings`.
+        if (version < 2) delete state.settings;
         // v2 stored workouts as prep + blocks; v3 stores steps; v4 dropped repeats' skipLastRest.
         if (version < 4) {
           const records = (key: string) =>
@@ -123,6 +136,7 @@ export const useStore = create<StoreState>()(
         workouts: s.workouts,
         sessions: s.sessions,
         seeded: s.seeded,
+        settings: s.settings,
       }),
       onRehydrateStorage: () => (state) => {
         state?.finishHydration();

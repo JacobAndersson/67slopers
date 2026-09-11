@@ -1,10 +1,25 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { useNavigation, useRouter } from 'expo-router';
-import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, XIcon } from 'lucide-react-native';
+import {
+  PauseIcon,
+  PlayIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
+  VibrateIcon,
+  VibrateOffIcon,
+  Volume2Icon,
+  VolumeXIcon,
+  XIcon,
+} from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { BoardView } from '@/components/board-view';
 import { FeelPicker } from '@/components/feel';
@@ -28,7 +43,9 @@ import { useStore } from '@/lib/store/store';
 import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import type { Phase } from '@/lib/timer/intervals';
+import { useCues } from '@/lib/timer/useCues';
 import { useTimer } from '@/lib/timer/useTimer';
+import { cn } from '@/lib/utils';
 import { holdsInWorkout } from '@/lib/workout-steps';
 import { setsLine } from '@/lib/workout-summary';
 
@@ -45,6 +62,13 @@ const PHASE_COLOR: Record<Phase, string> = {
 };
 
 const BG_TRANSITION_MS = 250;
+/** How long the board slot takes to open or close. */
+const SLOT_MS = 250;
+/** The display tick; the rising fill glides between ticks over the same span. */
+const FILL_STEP_MS = 100;
+
+const sameGrip = (a: string[] | undefined, b: string[] | undefined) =>
+  (a ?? []).join(',') === (b ?? []).join(',');
 
 const PHASE_LABEL: Record<Phase, string> = {
   prep: 'Get ready',
@@ -79,6 +103,9 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const addSession = useStore((s) => s.addSession);
   const addWorkout = useStore((s) => s.addWorkout);
   const timer = useTimer(timings);
+  const settings = useStore((s) => s.settings);
+  const setSettings = useStore((s) => s.setSettings);
+  useCues(timer.engineState, settings);
   const idle = timer.status === 'idle';
   const paused = timer.status === 'paused';
   const finished = timer.status === 'done' || timer.status === 'ended';
@@ -140,27 +167,80 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const countdown = interval.seconds >= 60 ? formatClock(secondsLeft) : String(secondsLeft);
   const board = getBoard(timings.board);
   const allHolds = useMemo(() => holdsInWorkout(timings.steps), [timings]);
-  // During a hang the board shows its holds; otherwise the ones to set up for next.
-  const shownHolds = (interval.phase === 'hang' ? interval.holds : timer.nextHang?.holds) ?? [];
+  // The board only appears when the hands have to move: before the first hang, and on a
+  // pause or rest whose next hang is on a different grip. Never during a hang.
+  const shownHolds = timer.nextHang?.holds ?? [];
+  const showBoard =
+    !!board &&
+    !finished &&
+    interval.phase !== 'hang' &&
+    !!timer.nextHang?.holds?.length &&
+    (!timer.previousHang || !sameGrip(timer.previousHang.holds, timer.nextHang.holds));
   const holdsCaption = board ? gripName(board, shownHolds) : '';
   const nextHoldsName =
     board && timer.nextInterval?.holds ? gripName(board, timer.nextInterval.holds) : '';
+  // The slot the board slides into: the board's aspect plus its caption line.
+  const slotHeight = board ? ((width - 48) * board.height) / board.width + 32 : 0;
+  const slotOpen = useSharedValue(showBoard ? 1 : 0);
+  useEffect(() => {
+    slotOpen.set(withTiming(showBoard ? 1 : 0, { duration: SLOT_MS }));
+  }, [showBoard, slotOpen]);
+  const slotStyle = useAnimatedStyle(() => ({
+    height: slotOpen.get() * slotHeight,
+    opacity: slotOpen.get(),
+  }));
   // Geist Mono glyphs are about 0.62 em wide: size the digits to fit the width on one line.
   const digitSize = Math.min(
     (width * 0.9) / (countdown.length * 0.62),
-    height * (board ? 0.22 : 0.28)
+    height * (board ? 0.24 : 0.28)
   );
   const showRep = interval.repCount > 1 && interval.phase !== 'rest';
 
+  const hanging = !idle && !finished && interval.phase === 'hang';
   const background = idle || finished ? THEME.background : PHASE_COLOR[interval.phase];
   const backgroundValue = useSharedValue(background);
+  // What the previous render showed, so a hang that ran to its end switches instantly: the
+  // rising fill has already painted the whole screen in the pause colour by then.
+  const last = useRef({ hanging, progress: timer.progress });
   useEffect(() => {
-    backgroundValue.set(withTiming(background, { duration: BG_TRANSITION_MS }));
-  }, [background, backgroundValue]);
+    const completedHang = last.current.hanging && last.current.progress >= 0.95 && !hanging;
+    backgroundValue.set(withTiming(background, { duration: completedHang ? 0 : BG_TRANSITION_MS }));
+  }, [background, backgroundValue, hanging]);
+  useEffect(() => {
+    last.current = { hanging, progress: timer.progress };
+  });
   const backgroundStyle = useAnimatedStyle(() => ({ backgroundColor: backgroundValue.get() }));
 
+  // During a hang the pause colour climbs from the bottom with the hang's progress. The root
+  // is measured because the window height leaves out the status bar on Android.
+  const [rootHeight, setRootHeight] = useState(height);
+  const fill = useSharedValue(0);
+  useEffect(() => {
+    if (!hanging) {
+      fill.set(0);
+      return;
+    }
+    fill.set(withTiming(timer.progress, { duration: FILL_STEP_MS, easing: Easing.linear }));
+  }, [hanging, timer.progress, fill]);
+  const fillStyle = useAnimatedStyle(() => ({ height: fill.get() * rootHeight }));
+
   return (
-    <Animated.View style={[{ flex: 1 }, backgroundStyle]}>
+    <Animated.View
+      style={[{ flex: 1 }, backgroundStyle]}
+      onLayout={(e) => setRootHeight(e.nativeEvent.layout.height)}>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: PHASE_COLOR.pause,
+          },
+          fillStyle,
+        ]}
+      />
       <View
         className="flex-1 px-6"
         style={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }}>
@@ -168,6 +248,32 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
           <Button variant="ghost" size="icon" accessibilityLabel="Close" onPress={onClose}>
             <Icon as={XIcon} className="size-6" />
           </Button>
+          {finished ? null : (
+            <View className="flex-row gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={settings.sound ? 'Turn sound off' : 'Turn sound on'}
+                accessibilityState={{ checked: settings.sound }}
+                onPress={() => setSettings({ sound: !settings.sound })}>
+                <Icon
+                  as={settings.sound ? Volume2Icon : VolumeXIcon}
+                  className={cn('size-6', !settings.sound && 'text-muted-foreground')}
+                />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={settings.vibration ? 'Turn vibration off' : 'Turn vibration on'}
+                accessibilityState={{ checked: settings.vibration }}
+                onPress={() => setSettings({ vibration: !settings.vibration })}>
+                <Icon
+                  as={settings.vibration ? VibrateIcon : VibrateOffIcon}
+                  className={cn('size-6', !settings.vibration && 'text-muted-foreground')}
+                />
+              </Button>
+            </View>
+          )}
         </View>
 
         {finished ? (
@@ -227,14 +333,14 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
             </View>
 
             {board ? (
-              <View className="mt-4 gap-1">
-                <BoardView board={board} holds={shownHolds} mounted={allHolds} animated />
-                {holdsCaption ? (
-                  <Text className="text-center text-muted-foreground">
-                    {interval.phase === 'hang' ? holdsCaption : `Next: ${holdsCaption}`}
-                  </Text>
-                ) : null}
-              </View>
+              <Animated.View style={[{ overflow: 'hidden' }, slotStyle]}>
+                <View className="gap-1 pt-4" style={{ height: slotHeight }}>
+                  <BoardView board={board} holds={shownHolds} mounted={allHolds} animated />
+                  {holdsCaption ? (
+                    <Text className="text-center text-muted-foreground">Next: {holdsCaption}</Text>
+                  ) : null}
+                </View>
+              </Animated.View>
             ) : null}
 
             <View className="flex-1 items-center justify-center">

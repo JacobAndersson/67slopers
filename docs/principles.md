@@ -68,7 +68,8 @@ Not principles, but defaults that follow from how a hangboard timer is actually 
   large rep and set counters. Never shrink these to fit more on screen.
 - Few taps to start: last workout is preselected, one tap starts it.
 - Timing you can trust: the clock is monotonic, not `setInterval`, so 7:3 repeaters stay
-  in sync. The app is silent: no beeps, no vibration.
+  in sync. One beep and one tap mark every interval change, nothing before it; both are
+  quick toggles on the timer and the choice is remembered.
 - One appearance. There are no themes and no dark mode; the palette is fixed.
 - Cross-platform from one codebase: iOS, Android and web, with native tab bars where the
   platform has them.

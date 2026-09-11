@@ -36,8 +36,11 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
   from a selector. Sessions store a snapshot of the workout they ran.
 - Timer logic is pure and tested: `src/lib/timer/intervals.ts` expands a workout into intervals,
-  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. The app is
-  silent by design: no audio, no haptics. Screens only render; put behaviour in `src/lib` where
+  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. Cues are a
+  beep and a heavy tap at every interval boundary (`cues.ts` computes the boundary on the engine
+  clock, `useCues.ts` schedules it, `cue-player.ts` wraps expo-audio and expo-haptics and is only
+  created by a mounted timer). Sound and vibration are global settings in the store, toggled on
+  the timer screen. Screens only render; put behaviour in `src/lib` where
   `npm test` can reach it.
 - A workout is `steps[]`: timed steps (`prep`, `hang`, `rest`, each with seconds and an optional
   label) and `repeat` groups (`times`, nested `steps`; a trailing rest is skipped on the final
@@ -50,7 +53,9 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   old `prepSeconds` + `blocks[]` shape in `src/lib/store/migrate.ts`.
 - Hangboards: `hangboard-models/` is the source of truth (one `layout.json` per board, hold boxes
   in mm, mirrored pairs; 3D files live in git LFS). `npm run boards` (`scripts/gen-board-images.mjs`)
-  rasterises each board into `assets/boards/<id>/base.png` plus one highlight overlay per hold and
+  rasterises each board: `assets/boards/<id>/base.svg` is the source (hand-edit it; `--draw`
+  regenerates it from the layout), `base.png` is rendered from it and a test fails when the two
+  drift, plus one highlight overlay per hold; the generator also
   writes the manifests in `src/lib/boards/generated/` (pure data) and `generated/images.ts`
   (the `require`s, imported only by `src/components/board-view.tsx`). A workout may carry
   `board` and each hang `holds`; selection is symmetric, one _grip_ per hang (a mirrored pair or a

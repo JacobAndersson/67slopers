@@ -51,6 +51,14 @@ export function current(state: EngineState): Interval {
   return state.intervals[state.index];
 }
 
+/** The last hang before the current interval, if any: what the hands were on. */
+export function previousHang(state: EngineState): Interval | undefined {
+  for (let i = state.index - 1; i >= 0; i--) {
+    if (state.intervals[i].phase === 'hang') return state.intervals[i];
+  }
+  return undefined;
+}
+
 /** The next hang after the current interval, if any: what to set up for during a rest. */
 export function nextHang(state: EngineState): Interval | undefined {
   for (let i = state.index + 1; i < state.intervals.length; i++) {

@@ -45,6 +45,9 @@ export function useTimer(timings: WorkoutTimings) {
     interval: engine.current(state),
     nextInterval: engine.next(state),
     nextHang: engine.nextHang(state),
+    previousHang: engine.previousHang(state),
+    /** The raw engine state, for cue scheduling on the same clock. */
+    engineState: state,
     remainingSeconds: engine.remainingSeconds(state, clock),
     progress: engine.progress(state, clock),
     completedSets: engine.completedSets(state),

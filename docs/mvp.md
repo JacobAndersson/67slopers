@@ -49,8 +49,9 @@ Parity:
   The timer opens ready on the first interval and starts when you press Play.
 - Colour-fill background that rises as the interval elapses.
 - Rep counter and set counter, plus a "next up" preview of the coming set.
-- No audio or haptic cues: the app is silent by design and the display carries the
-  timing. (BoulderFIT's beeps and vibration are deliberately not copied.)
+- A beep and a tap at every interval change, nothing before it, with sound and vibration as
+  quick toggles on the timer that are remembered. (Shipped after the MVP on user feedback; the
+  MVP itself was silent.)
 
 Improvements:
 
