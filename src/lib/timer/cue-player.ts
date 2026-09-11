@@ -1,6 +1,8 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
-import { Platform, Vibration } from 'react-native';
+import { Platform } from 'react-native';
+
+import { vibrateCue } from '../../../modules/cue-vibration/src/CueVibrationModule';
 
 import type { Settings } from '../store/types';
 import type { Cue } from './cues';
@@ -50,13 +52,13 @@ export function createCuePlayer(): CuePlayer {
     }
   };
 
-  // Android: expo-haptics tags its vibrations as touch feedback, which phones with "touch
-  // vibration" switched off silently drop. A plain vibration through React Native's own API
-  // is a normal vibration and gets through. iOS keeps the Taptic impact.
+  // Android files both expo-haptics and React Native's plain vibration under the "touch
+  // feedback" setting, which phones with touch vibration off silently drop. The local
+  // cue-vibration module tags the buzz as an alarm instead. iOS keeps the Taptic impact.
   const tap = () => {
     if (Platform.OS === 'android') {
       try {
-        Vibration.vibrate(TAP_MS);
+        vibrateCue(TAP_MS);
       } catch {
         // No vibrator.
       }
