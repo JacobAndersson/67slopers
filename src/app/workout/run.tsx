@@ -46,6 +46,7 @@ export default function RunDraftScreen() {
     <Runner
       timings={draft.timings}
       name={draft.name?.trim() || 'Quick workout'}
+      workoutId={draft.workoutId}
       saveNameDefault={draft.name ?? ''}
     />
   );

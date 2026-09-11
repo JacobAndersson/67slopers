@@ -9,6 +9,8 @@ import {
   countTimedSteps,
   depthOf,
   duplicateStep,
+  type EditableRepeatStep,
+  type EditableStep,
   findStep,
   holdsInWorkout,
   LIMITS,
@@ -21,13 +23,12 @@ import {
   parentOf,
   removeStep,
   reorderWithin,
+  sameTimings,
   stripIds,
   updateStep,
   validate,
   withFreshIds,
   withIds,
-  type EditableRepeatStep,
-  type EditableStep,
 } from './workout-steps';
 
 const repeaters: Step[] = [
@@ -216,4 +217,56 @@ test('holds survive ids, cloning and patches, and can be cleared', () => {
   const cleared = clearHolds(editable);
   assert.deepEqual(holdsInWorkout(stripIds(cleared)), []);
   assert.equal(stripIds(cleared).length, 2);
+});
+
+test('sameTimings compares everything the timer runs, but not the name', () => {
+  const steps = [
+    { kind: 'prep' as const, seconds: 10 },
+    {
+      kind: 'repeat' as const,
+      times: 5,
+      steps: [
+        { kind: 'hang' as const, seconds: 10, label: 'Half crimp', holds: ['edge-22'] },
+        { kind: 'rest' as const, seconds: 180 },
+      ],
+    },
+  ];
+  const base = { board: 'beastmaker-2000' as const, steps };
+  assert.ok(sameTimings(base, { ...base, name: 'Renamed' } as typeof base));
+  assert.ok(sameTimings(base, JSON.parse(JSON.stringify(base))));
+  const change = (edit: (copy: typeof base) => void) => {
+    const copy = JSON.parse(JSON.stringify(base));
+    edit(copy);
+    return sameTimings(base, copy);
+  };
+  assert.equal(
+    change((c) => (c.board = undefined as never)),
+    false
+  );
+  assert.equal(
+    change((c) => ((c.steps[1] as { times: number }).times = 6)),
+    false
+  );
+  assert.equal(
+    change((c) => ((c.steps[0] as { seconds: number }).seconds = 5)),
+    false
+  );
+  assert.equal(
+    change((c) => delete (c.steps[1] as { steps: { label?: string }[] }).steps[0].label),
+    false
+  );
+  assert.equal(
+    change(
+      (c) =>
+        ((c.steps[1] as { steps: { holds: string[] }[] }).steps[0].holds = [
+          'edge-big-l',
+          'edge-big-r',
+        ])
+    ),
+    false
+  );
+  assert.equal(
+    change((c) => c.steps.pop()),
+    false
+  );
 });

@@ -20,6 +20,7 @@ import { Text } from '@/components/ui/text';
 import { formatClock, formatTime, relativeDay } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { hangOutcomes, hangsLine, setsLine, summaryLine } from '@/lib/workout-summary';
+import { sameTimings } from '@/lib/workout-steps';
 
 export default function SessionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -43,25 +44,40 @@ export default function SessionScreen() {
 
   const seconds =
     (new Date(session.completedAt).getTime() - new Date(session.startedAt).getTime()) / 1000;
+  const changed = !!workout && !sameTimings(workout, session.snapshot);
 
   return (
     <>
       <Stack.Screen options={{ title: session.workoutName }} />
       <Screen
         footer={
-          <Button
-            size="lg"
-            onPress={() => {
-              if (workout) {
-                router.push(`/workout/${workout.id}/run`);
-              } else {
-                // The workout is gone (or was never saved): run the session's own copy.
-                setDraft({ name: session.workoutName, timings: session.snapshot });
-                router.push('/workout/run');
-              }
-            }}>
-            <Text className="text-lg">Do it again</Text>
-          </Button>
+          <View className="gap-2">
+            {changed ? (
+              <Text variant="muted">This workout has changed since this session.</Text>
+            ) : null}
+            <Button
+              size="lg"
+              onPress={() => {
+                if (workout && !changed) {
+                  router.push(`/workout/${workout.id}/run`);
+                } else {
+                  // Run exactly what this session ran. It still counts for the workout, if any.
+                  setDraft({
+                    name: session.workoutName,
+                    timings: session.snapshot,
+                    ...(workout ? { workoutId: workout.id } : {}),
+                  });
+                  router.push('/workout/run');
+                }
+              }}>
+              <Text className="text-lg">Do it again</Text>
+            </Button>
+            {workout && changed ? (
+              <Button variant="outline" onPress={() => router.push(`/workout/${workout.id}/run`)}>
+                <Text>Run the current version</Text>
+              </Button>
+            ) : null}
+          </View>
         }>
         <Card>
           <CardHeader>

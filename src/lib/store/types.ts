@@ -91,4 +91,6 @@ export const DEFAULT_SETTINGS: Settings = { sound: true, vibration: true, genZMo
 export type Draft = {
   name?: string;
   timings: WorkoutTimings;
+  /** The saved workout this is an earlier version of, so the run joins its history. */
+  workoutId?: string;
 };
