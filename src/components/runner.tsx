@@ -36,8 +36,10 @@ import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
+import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import type { Phase } from '@/lib/timer/intervals';
 import { useCues } from '@/lib/timer/useCues';
+import { useRunCheckpoint } from '@/lib/timer/useRunCheckpoint';
 import { useTimer } from '@/lib/timer/useTimer';
 import { cn } from '@/lib/utils';
 import { holdsInWorkout } from '@/lib/workout-steps';
@@ -82,6 +84,8 @@ type RunnerProps = {
   workoutId?: string;
   /** Prefill for the "save this workout" prompt shown after a temporary workout. */
   saveNameDefault?: string;
+  /** An unfinished run picked up from its checkpoint: opens paused where it stood. */
+  resume?: ActiveRun;
 };
 
 /**
@@ -89,7 +93,7 @@ type RunnerProps = {
  * only Pause is shown, Back and Skip appear when paused. Ending (or finishing) leads to
  * the grade step, plus an offer to save the workout when it was not a saved one.
  */
-export function Runner({ timings, name, workoutId, saveNameDefault = '' }: RunnerProps) {
+export function Runner({ timings, name, workoutId, saveNameDefault = '', resume }: RunnerProps) {
   useKeepAwake();
   const router = useRouter();
   const navigation = useNavigation();
@@ -102,7 +106,7 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const addSession = useStore((s) => s.addSession);
   const updateSession = useStore((s) => s.updateSession);
   const addWorkout = useStore((s) => s.addWorkout);
-  const timer = useTimer(timings);
+  const timer = useTimer(timings, resume);
   const settings = useStore((s) => s.settings);
   useCues(timer.engineState, settings);
   const idle = timer.status === 'idle';
@@ -110,13 +114,23 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const finished = timer.status === 'done' || timer.status === 'ended';
   const isDraft = !workoutId;
 
-  const [startedAt] = useState(() => new Date().toISOString());
+  const [startedAt] = useState(() => resume?.startedAt ?? new Date().toISOString());
   const [feel, setFeel] = useState<Feel | undefined>();
   const [saveName, setSaveName] = useState(saveNameDefault);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const leaving = useRef(false);
   /** Set once the finished run has been written to history. */
   const sessionId = useRef<string | null>(null);
+
+  // A checkpoint follows the run, so a closed app can pick it up again from Home. An older
+  // unfinished run still waiting there is kept in history as ended when this one starts.
+  const runInfo = useMemo(
+    () => ({ workoutId, name, saveNameDefault, timings, startedAt }),
+    [workoutId, name, saveNameDefault, timings, startedAt]
+  );
+  useRunCheckpoint(timer.engineState, runInfo, finished, (older) =>
+    addSession(sessionFromCheckpoint(older))
+  );
 
   // Leaving mid-workout (X, hardware back, gesture) asks first. Before Play, and after
   // finishing, leaving is free.

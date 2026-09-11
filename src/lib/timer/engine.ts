@@ -183,6 +183,47 @@ export function end(state: EngineState, now: number): EngineState {
   return { ...state, status: 'ended', pausedAt: null, performedMs };
 }
 
+/** Where a run stands: enough to pick it up again after the app was closed. */
+export type RunPosition = {
+  index: number;
+  /** Ms into the current interval, pauses excluded. */
+  phaseElapsedMs: number;
+  /** Ms since the start, earlier pauses included. */
+  elapsedMs: number;
+  performedMs: number[];
+};
+
+/** The position of a running or paused run at `now`; null when there is nothing to pick up. */
+export function position(state: EngineState, now: number): RunPosition | null {
+  if (state.status !== 'running' && state.status !== 'paused') return null;
+  const clock = state.status === 'paused' && state.pausedAt !== null ? state.pausedAt : now;
+  return {
+    index: state.index,
+    phaseElapsedMs: elapsedMs(state, now),
+    elapsedMs: Math.max(0, clock - state.startedAt),
+    performedMs: [...state.performedMs],
+  };
+}
+
+/**
+ * A run picked up again at `now`: paused on the interval it stood on, as far into it as it
+ * was, with its elapsed time carried over. The time the app was closed does not count.
+ */
+export function restore(intervals: Interval[], at: RunPosition, now: number): EngineState {
+  const index = Math.min(Math.max(0, Math.floor(at.index)), Math.max(0, intervals.length - 1));
+  const done = !intervals[index] || intervals[index].phase === 'done';
+  return {
+    intervals,
+    index,
+    status: done ? 'done' : 'paused',
+    startedAt: now - at.elapsedMs,
+    phaseStartedAt: now - at.phaseElapsedMs,
+    pausedAt: done ? null : now,
+    pausedTotal: 0,
+    performedMs: at.performedMs.slice(0, index),
+  };
+}
+
 /** Every hang that was started, in order, with its planned and actual seconds (0.1 s floor). */
 export function hangResults(state: EngineState): HangResult[] {
   const results: HangResult[] = [];

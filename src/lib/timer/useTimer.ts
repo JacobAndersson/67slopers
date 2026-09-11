@@ -10,11 +10,16 @@ const now = () => performance.now();
 
 /**
  * Drives the pure engine from a 100 ms display tick. All timing comes from the monotonic
- * clock, so the tick rate only affects how often the screen refreshes.
+ * clock, so the tick rate only affects how often the screen refreshes. `resumeFrom` picks up
+ * a run from its checkpoint, paused where it stood.
  */
-export function useTimer(timings: WorkoutTimings) {
+export function useTimer(timings: WorkoutTimings, resumeFrom?: engine.RunPosition) {
   const intervals = useMemo(() => expandWorkout(timings), [timings]);
-  const [state, setState] = useState(() => engine.createEngine(intervals, now()));
+  const [state, setState] = useState(() =>
+    resumeFrom
+      ? engine.restore(intervals, resumeFrom, now())
+      : engine.createEngine(intervals, now())
+  );
   const [clock, setClock] = useState(now);
 
   useEffect(() => {

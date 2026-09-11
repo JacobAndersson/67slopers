@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
+import { ActiveRunCard } from '@/components/active-run-card';
 import { LatestSessionCard } from '@/components/latest-session-card';
 import { Screen } from '@/components/screen';
 import { SectionHeader } from '@/components/section-header';
@@ -45,6 +46,7 @@ export default function HomeScreen() {
           </Button>
         </View>
       }>
+      <ActiveRunCard />
       <CalendarStats sessions={sessions} />
       <WeekCalendar sessions={sessions} />
 

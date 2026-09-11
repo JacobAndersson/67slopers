@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import type { ActiveRun } from '../timer/checkpoint';
 import { cloneSteps } from '../workout-steps';
 import { newId } from './ids';
 import { migrateStore } from './migrate';
@@ -27,6 +28,8 @@ type StoreState = {
   hydrated: boolean;
   /** An unsaved workout about to run (not persisted). */
   draft: Draft | null;
+  /** An unfinished run picked up from its checkpoint, about to run (not persisted). */
+  resume: ActiveRun | null;
   /** Sound and vibration on the timer; set once, remembered. */
   settings: Settings;
 
@@ -43,6 +46,7 @@ type StoreState = {
   ) => void;
   deleteSession: (id: string) => void;
   setDraft: (draft: Draft | null) => void;
+  setResume: (run: ActiveRun | null) => void;
   setSettings: (patch: Partial<Settings>) => void;
   finishHydration: () => void;
 };
@@ -55,6 +59,7 @@ export const useStore = create<StoreState>()(
       seeded: false,
       hydrated: false,
       draft: null,
+      resume: null,
       settings: DEFAULT_SETTINGS,
 
       addWorkout: (input) => {
@@ -108,6 +113,8 @@ export const useStore = create<StoreState>()(
       deleteSession: (id) => set((s) => ({ sessions: s.sessions.filter((x) => x.id !== id) })),
 
       setDraft: (draft) => set({ draft }),
+
+      setResume: (resume) => set({ resume }),
 
       setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
 

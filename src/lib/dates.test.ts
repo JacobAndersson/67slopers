@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { formatClock, formatShort, monthGrid, relativeDay, startOfWeek, weekDays } from './dates';
+import {
+  formatClock,
+  formatShort,
+  monthGrid,
+  relativeDay,
+  startOfWeek,
+  timeAgo,
+  weekDays,
+} from './dates';
 
 test('startOfWeek returns the Monday at local midnight', () => {
   const thursday = new Date(2026, 8, 10, 15, 30); // Thu 10 Sep 2026
@@ -49,4 +57,13 @@ test('monthGrid covers the month in full Monday-first weeks', () => {
   assert.equal(rows[4][6].getDate(), 4); // Sun 4 Oct
   assert.equal(rows[4][6].getMonth(), 9);
   for (const row of rows) assert.equal(row.length, 7);
+});
+
+test('timeAgo counts minutes and hours, then falls back to the day', () => {
+  const now = new Date(2026, 8, 11, 18, 0);
+  const ago = (minutes: number) => new Date(now.getTime() - minutes * 60_000).toISOString();
+  assert.equal(timeAgo(ago(0.5), now), 'just now');
+  assert.equal(timeAgo(ago(25), now), '25 min ago');
+  assert.equal(timeAgo(ago(150), now), '2 h ago');
+  assert.equal(timeAgo(ago(60 * 30), now), relativeDay(ago(60 * 30), now));
 });

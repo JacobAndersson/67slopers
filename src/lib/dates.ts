@@ -96,3 +96,13 @@ export function formatMonth(date: Date): string {
 export function addMonths(date: Date, offset: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + offset, 1);
 }
+
+/** "just now", "12 min ago", "3 h ago", and from twelve hours on the day, as `relativeDay`. */
+export function timeAgo(iso: string, now = new Date()): string {
+  const minutes = Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 12) return `${hours} h ago`;
+  return relativeDay(iso, now);
+}
