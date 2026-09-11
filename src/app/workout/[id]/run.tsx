@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useStore } from '@/lib/store/store';
 
-/** Runs a saved workout. */
+/** Runs a saved workout. `?autostart=1` (Start on Home) counts down straight away. */
 export default function RunScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, autostart } = useLocalSearchParams<{ id: string; autostart?: string }>();
   const router = useRouter();
   const workout = useStore((s) => s.workouts.find((w) => w.id === id));
 
@@ -23,5 +23,12 @@ export default function RunScreen() {
     );
   }
   // The store object is stable between edits, so the timer memoises on it directly.
-  return <Runner timings={workout} name={workout.name} workoutId={workout.id} />;
+  return (
+    <Runner
+      timings={workout}
+      name={workout.name}
+      workoutId={workout.id}
+      autoStart={autostart === '1'}
+    />
+  );
 }

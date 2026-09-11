@@ -9,6 +9,7 @@ type SectionHeaderProps = {
   /** Renders a "View all" style action on the right when provided. */
   actionLabel?: string;
   onAction?: () => void;
+  /** Extra actions, grouped on the right before the labelled one. */
   children?: ReactNode;
 };
 
@@ -16,12 +17,14 @@ export function SectionHeader({ title, actionLabel, onAction, children }: Sectio
   return (
     <View className="mt-2 flex-row items-center justify-between">
       <Text variant="h4">{title}</Text>
-      {children}
-      {actionLabel && onAction ? (
-        <Button variant="ghost" size="sm" onPress={onAction}>
-          <Text>{actionLabel}</Text>
-        </Button>
-      ) : null}
+      <View className="flex-row items-center gap-1">
+        {children}
+        {actionLabel && onAction ? (
+          <Button variant="ghost" size="sm" onPress={onAction}>
+            <Text>{actionLabel}</Text>
+          </Button>
+        ) : null}
+      </View>
     </View>
   );
 }

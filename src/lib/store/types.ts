@@ -39,6 +39,8 @@ export type WorkoutTimings = {
 export type Workout = WorkoutTimings & {
   id: string;
   name: string;
+  /** What it trains and how to pick the hold or load; copied from a built-in workout. */
+  description?: string;
   isPreset: boolean;
   /** ISO timestamps. */
   createdAt: string;

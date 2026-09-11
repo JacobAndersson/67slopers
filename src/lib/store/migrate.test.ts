@@ -8,7 +8,9 @@ import {
   migrateSessionRecord,
   migrateTimings,
   migrateWorkoutRecord,
+  migrateStore,
 } from './migrate';
+import { findPreset } from './presets';
 import type { LegacyTimings } from './migrate';
 
 /** What the v2 expander produced for each legacy workout, captured before the rewrite. */
@@ -118,4 +120,22 @@ test('records are rewritten and already-migrated or broken data passes through s
   );
   assert.deepEqual(migrateTimings(null), { steps: [] });
   assert.deepEqual(migrateTimings({ nonsense: true }), { steps: [] });
+});
+
+test('v6 gives seeded built-in workouts their description back', () => {
+  const out = migrateStore(
+    {
+      workouts: [
+        { id: 'a', name: 'Max hangs', isPreset: true, steps: [] },
+        { id: 'b', name: 'Max hangs', isPreset: false, steps: [] },
+        { id: 'c', name: 'Max hangs', isPreset: true, description: 'Mine', steps: [] },
+      ],
+      sessions: [],
+    },
+    5
+  );
+  const [seeded, own, edited] = out.workouts as { description?: string }[];
+  assert.equal(seeded.description, findPreset('max-hangs')!.description);
+  assert.equal(own.description, undefined);
+  assert.equal(edited.description, 'Mine');
 });

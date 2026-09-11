@@ -1,3 +1,4 @@
+import { PRESETS } from './presets';
 import { normalizeSettings } from './settings';
 import type { RepeatStep, Step, StepKind, TimedStep, WorkoutTimings } from './types';
 
@@ -96,7 +97,21 @@ export function migrateSessionRecord(record: Record<string, unknown>): Record<st
   return { ...record, snapshot: migrateTimings(record.snapshot) };
 }
 
-/** Persist v5 adds Gen Z mode without rewriting v4 workouts or sessions. */
+/** Built-in workouts seeded before descriptions were copied get their preset's description. */
+export function restorePresetDescriptions(
+  workouts: Record<string, unknown>[]
+): Record<string, unknown>[] {
+  return workouts.map((workout) => {
+    if (workout.isPreset !== true || typeof workout.description === 'string') return workout;
+    const preset = PRESETS.find((p) => p.name === workout.name);
+    return preset ? { ...workout, description: preset.description } : workout;
+  });
+}
+
+/**
+ * Persist v5 adds Gen Z mode without rewriting v4 workouts or sessions; v6 restores the
+ * descriptions of seeded built-in workouts.
+ */
 export function migrateStore(persisted: unknown, version: number): Record<string, unknown> {
   const state = { ...(persisted as Record<string, unknown>) };
   if (version < 2) delete state.settings;
@@ -105,6 +120,9 @@ export function migrateStore(persisted: unknown, version: number): Record<string
       Array.isArray(state[key]) ? (state[key] as Record<string, unknown>[]) : [];
     state.workouts = records('workouts').map(migrateWorkoutRecord);
     state.sessions = records('sessions').map(migrateSessionRecord);
+  }
+  if (version < 6 && Array.isArray(state.workouts)) {
+    state.workouts = restorePresetDescriptions(state.workouts as Record<string, unknown>[]);
   }
   state.settings = normalizeSettings(state.settings);
   return state;

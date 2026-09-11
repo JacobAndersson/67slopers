@@ -34,6 +34,7 @@ import { Text } from '@/components/ui/text';
 import { getBoard, gripName } from '@/lib/boards';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
+import { measure } from '@/lib/perf';
 import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
@@ -86,6 +87,8 @@ type RunnerProps = {
   saveNameDefault?: string;
   /** An unfinished run picked up from its checkpoint: opens paused where it stood. */
   resume?: ActiveRun;
+  /** Count down as soon as the timer opens (Start on Home) instead of waiting for Play. */
+  autoStart?: boolean;
 };
 
 /**
@@ -93,7 +96,14 @@ type RunnerProps = {
  * only Pause is shown, Back and Skip appear when paused. Ending (or finishing) leads to
  * the grade step, plus an offer to save the workout when it was not a saved one.
  */
-export function Runner({ timings, name, workoutId, saveNameDefault = '', resume }: RunnerProps) {
+export function Runner({
+  timings,
+  name,
+  workoutId,
+  saveNameDefault = '',
+  resume,
+  autoStart = false,
+}: RunnerProps) {
   useKeepAwake();
   const router = useRouter();
   const navigation = useNavigation();
@@ -131,6 +141,17 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '', resume 
   useRunCheckpoint(timer.engineState, runInfo, finished, (older) =>
     addSession(sessionFromCheckpoint(older))
   );
+
+  // Start on Home counts down at once; the overview's Start still opens ready and waits for Play.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autoStart || resume || autoStarted.current) return;
+    autoStarted.current = true;
+    timer.start();
+  }, [autoStart, resume, timer]);
+  useEffect(() => {
+    if (timer.status === 'running') measure('start', 'start → countdown');
+  }, [timer.status]);
 
   // Leaving mid-workout (X, hardware back, gesture) asks first. Before Play, and after
   // finishing, leaving is free.

@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
+import { Textarea } from '@/components/ui/textarea';
 import { getBoard, type BoardId } from '@/lib/boards';
 import { formatClock } from '@/lib/dates';
 import { templateSteps } from '@/lib/store/presets';
@@ -55,12 +56,17 @@ import {
 } from '@/lib/workout-steps';
 import { estimateDuration } from '@/lib/workout-summary';
 
-export type WorkoutFormValues = { name: string; board?: BoardId; steps: Step[] };
+export type WorkoutFormValues = {
+  name: string;
+  description?: string;
+  board?: BoardId;
+  steps: Step[];
+};
 
 type WorkoutFormProps = {
   initial?: Workout;
   /** Prefill a new workout, e.g. from the presets library. Ignored when `initial` is set. */
-  template?: { name: string; board?: BoardId; steps: Step[] };
+  template?: { name: string; description?: string; board?: BoardId; steps: Step[] };
   submitLabel: string;
   /** Save. Needs a name. */
   onSubmit: (values: WorkoutFormValues) => void;
@@ -80,6 +86,9 @@ export function WorkoutForm({
 }: WorkoutFormProps) {
   const router = useRouter();
   const [name, setName] = useState(initial?.name ?? template?.name ?? '');
+  const [description, setDescription] = useState(
+    initial?.description ?? template?.description ?? ''
+  );
   const [steps, setSteps] = useState<EditableStep[]>(() =>
     withIds(initial?.steps ?? template?.steps ?? templateSteps())
   );
@@ -97,9 +106,11 @@ export function WorkoutForm({
   const errors = validateWorkout({ board: boardId, steps: plain });
   const valid = errors.length === 0;
   const canSave = valid && name.trim().length > 0;
+  // Every key is present, even when empty, so saving an edit can also clear a field.
   const values = (): WorkoutFormValues => ({
     name: name.trim(),
-    ...(boardId ? { board: boardId } : {}),
+    description: description.trim() || undefined,
+    board: boardId,
     steps: plain,
   });
 
@@ -172,6 +183,17 @@ export function WorkoutForm({
           placeholder={onStart ? 'Optional. Needed to save.' : 'Repeaters 7:3'}
           autoCapitalize="sentences"
           returnKeyType="done"
+        />
+      </View>
+
+      <View className="gap-2">
+        <Label nativeID="workout-description">Description</Label>
+        <Textarea
+          aria-labelledby="workout-description"
+          value={description}
+          onChangeText={setDescription}
+          placeholder="Optional. What it trains, which hold or load to pick."
+          numberOfLines={4}
         />
       </View>
 

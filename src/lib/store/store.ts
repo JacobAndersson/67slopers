@@ -17,7 +17,7 @@ import {
   type WorkoutTimings,
 } from './types';
 
-type WorkoutInput = { name: string } & WorkoutTimings;
+type WorkoutInput = { name: string; description?: string } & WorkoutTimings;
 
 type StoreState = {
   workouts: Workout[];
@@ -129,7 +129,7 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 'hangboard',
-      version: 5,
+      version: 6,
       migrate: migrateStore,
       merge: (persisted, current) => {
         const saved = persisted as Partial<StoreState> | undefined;

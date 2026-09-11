@@ -15,13 +15,17 @@ export default function NewWorkoutScreen() {
   return (
     <WorkoutForm
       key={template?.id ?? 'blank'}
-      template={template ? { name: template.name, steps: template.steps } : undefined}
+      template={
+        template
+          ? { name: template.name, description: template.description, steps: template.steps }
+          : undefined
+      }
       submitLabel="Save"
       onSubmit={(values) => {
         const workout = addWorkout(values);
         router.replace(`/workout/${workout.id}`);
       }}
-      onStart={({ name, ...timings }) => {
+      onStart={({ name, description: _description, ...timings }) => {
         setDraft({ name: name || undefined, timings });
         router.push('/workout/run');
       }}

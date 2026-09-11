@@ -67,6 +67,8 @@ export default function WorkoutOverviewScreen() {
             <Text className="text-lg">Start</Text>
           </Button>
         }>
+        {workout.description ? <Text>{workout.description}</Text> : null}
+
         {board ? (
           <View className="gap-1">
             <BoardView board={board} holds={holdsInWorkout(workout.steps)} />

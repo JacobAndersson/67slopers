@@ -163,6 +163,7 @@ export function makePresetWorkouts(now = new Date()): Workout[] {
     const preset = findPreset(id)!;
     return {
       name: preset.name,
+      description: preset.description,
       steps: cloneSteps(preset.steps),
       id: newId(),
       isPreset: true,
