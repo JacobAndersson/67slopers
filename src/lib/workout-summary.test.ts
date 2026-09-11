@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { findPreset } from './store/presets';
-import { estimateDuration, setsLine, summaryLine } from './workout-summary';
+import {
+  estimateDuration,
+  hangOutcomes,
+  hangsLine,
+  setsLine,
+  summaryLine,
+} from './workout-summary';
 
 const repeaters = findPreset('repeaters-7-3')!;
 const maxHangs = findPreset('max-hangs')!;
@@ -30,4 +36,17 @@ test('estimateDuration counts prep, hangs, pauses and rests between sets', () =>
   assert.equal(estimateDuration(repeaters), 10 + 6 * (6 * 7 + 5 * 3) + 5 * 180);
   assert.equal(estimateDuration(maxHangs), 10 + 5 * 10 + 4 * 180);
   assert.equal(setsLine(4, 6), '4/6 sets');
+});
+
+test('hangOutcomes sorts hangs into done, cut short and skipped', () => {
+  const hangs = [
+    { planned: 10, actual: 10 },
+    { planned: 10, actual: 6.5 },
+    { planned: 10, actual: 0.4 },
+    { planned: 10, actual: 10 },
+  ];
+  const outcomes = hangOutcomes(maxHangs, hangs);
+  assert.deepEqual(outcomes, { planned: 5, done: 2, cutShort: 1, skipped: 1 });
+  assert.equal(hangsLine(outcomes), '2/5 hangs · 1 cut short · 1 skipped');
+  assert.equal(hangsLine(hangOutcomes(repeaters, [])), '0/36 hangs');
 });

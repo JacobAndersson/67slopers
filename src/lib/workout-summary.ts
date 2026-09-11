@@ -1,5 +1,5 @@
 import { formatShort } from './dates';
-import type { Step, WorkoutTimings } from './store/types';
+import type { HangResult, Step, WorkoutTimings } from './store/types';
 import { expandWorkout, totalSeconds } from './timer/intervals';
 
 /** Seconds from the first prep to the final hang, including rests. */
@@ -42,4 +42,35 @@ function describe(steps: Step[], depth: number): string[] {
 /** Sets completed out of the total, e.g. "4/6 sets". */
 export function setsLine(completed: number, total: number): string {
   return `${completed}/${total} sets`;
+}
+
+export type HangOutcomes = {
+  /** Hangs in the workout as planned. */
+  planned: number;
+  /** Ran their full length. */
+  done: number;
+  /** Stopped early, after at least a second. */
+  cutShort: number;
+  /** Skipped within the first second. */
+  skipped: number;
+};
+
+/** How a session's hangs went; hangs never reached (the workout was ended) are in none. */
+export function hangOutcomes(snapshot: WorkoutTimings, hangs: HangResult[]): HangOutcomes {
+  const planned = expandWorkout(snapshot).filter((i) => i.phase === 'hang').length;
+  const outcomes: HangOutcomes = { planned, done: 0, cutShort: 0, skipped: 0 };
+  for (const hang of hangs) {
+    if (hang.actual >= hang.planned) outcomes.done++;
+    else if (hang.actual < 1) outcomes.skipped++;
+    else outcomes.cutShort++;
+  }
+  return outcomes;
+}
+
+/** "34/36 hangs · 1 cut short · 1 skipped". */
+export function hangsLine(outcomes: HangOutcomes): string {
+  const parts = [`${outcomes.done}/${outcomes.planned} hangs`];
+  if (outcomes.cutShort) parts.push(`${outcomes.cutShort} cut short`);
+  if (outcomes.skipped) parts.push(`${outcomes.skipped} skipped`);
+  return parts.join(' · ');
 }

@@ -56,6 +56,9 @@ export const FEEL_LABELS: Record<Feel, string> = {
   strong: 'Strong',
 };
 
+/** One hang as it was done: planned seconds, and seconds actually hung (less when skipped). */
+export type HangResult = { planned: number; actual: number };
+
 export type Session = {
   id: string;
   /** Absent when the session ran an unsaved (temporary) workout. */
@@ -65,9 +68,12 @@ export type Session = {
   snapshot: WorkoutTimings;
   startedAt: string;
   completedAt: string;
+  /** Sets whose every hang ran its full length. */
   completedSets: number;
   totalSets: number;
   completed: boolean;
+  /** Every hang started, in order. Absent on sessions recorded before this was tracked. */
+  hangs?: HangResult[];
   feel?: Feel;
   note?: string;
 };

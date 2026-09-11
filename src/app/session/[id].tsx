@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Text } from '@/components/ui/text';
 import { formatClock, formatTime, relativeDay } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
-import { setsLine, summaryLine } from '@/lib/workout-summary';
+import { hangOutcomes, hangsLine, setsLine, summaryLine } from '@/lib/workout-summary';
 
 export default function SessionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -73,6 +73,11 @@ export default function SessionScreen() {
               {formatClock(seconds)}
               {session.completed ? '' : ' · ended early'}
             </CardDescription>
+            {session.hangs ? (
+              <CardDescription>
+                {hangsLine(hangOutcomes(session.snapshot, session.hangs))}
+              </CardDescription>
+            ) : null}
           </CardHeader>
           <CardContent>
             <Text variant="muted">{summaryLine(session.snapshot)}</Text>

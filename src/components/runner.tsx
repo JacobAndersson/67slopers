@@ -41,7 +41,7 @@ import { useCues } from '@/lib/timer/useCues';
 import { useTimer } from '@/lib/timer/useTimer';
 import { cn } from '@/lib/utils';
 import { holdsInWorkout } from '@/lib/workout-steps';
-import { setsLine } from '@/lib/workout-summary';
+import { hangOutcomes, hangsLine, setsLine } from '@/lib/workout-summary';
 
 /**
  * Flat background per phase, so the state reads from across the room without the digits.
@@ -142,6 +142,7 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
       completedSets: timer.completedSets,
       totalSets: timer.totalSets,
       completed: timer.status === 'done',
+      hangs: timer.hangResults,
       feel,
     });
     leaving.current = true;
@@ -290,6 +291,9 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
                 <Text className="text-2xl">
                   {setsLine(timer.completedSets, timer.totalSets)} ·{' '}
                   {formatClock(timer.elapsedSeconds)}
+                </Text>
+                <Text variant="muted" className="text-lg">
+                  {hangsLine(hangOutcomes(timings, timer.hangResults))}
                 </Text>
               </View>
               <View className="gap-3">

@@ -1,3 +1,4 @@
+import type { HangResult } from '../store/types';
 import type { Interval } from './intervals';
 
 export type TimerStatus = 'idle' | 'running' | 'paused' | 'done' | 'ended';
@@ -19,6 +20,12 @@ export type EngineState = {
   pausedAt: number | null;
   /** Total ms spent paused inside the current interval. */
   pausedTotal: number;
+  /**
+   * Ms actually spent in each interval already left, by index, pauses excluded. An interval
+   * that ran out is logged at its full length, a skipped one at the time it had run, and Back
+   * forgets the intervals it returns over, so the log is what was really done.
+   */
+  performedMs: number[];
 };
 
 /** The engine waits in `idle` on the first interval until `start` is called. */
@@ -32,6 +39,7 @@ export function createEngine(intervals: Interval[], now: number): EngineState {
     phaseStartedAt: now,
     pausedAt: null,
     pausedTotal: 0,
+    performedMs: [],
   };
 }
 
@@ -44,6 +52,7 @@ export function start(state: EngineState, now: number): EngineState {
     phaseStartedAt: now,
     pausedAt: null,
     pausedTotal: 0,
+    performedMs: [],
   };
 }
 
@@ -89,7 +98,19 @@ export function progress(state: EngineState, now: number): number {
   return Math.min(1, elapsedMs(state, now) / (seconds * 1000));
 }
 
-function moveTo(state: EngineState, index: number, startAt: number): EngineState {
+/** The log with the current interval recorded as `ms`. */
+function logCurrent(state: EngineState, ms: number): number[] {
+  const log = state.performedMs.slice(0, state.index);
+  log[state.index] = ms;
+  return log;
+}
+
+function moveTo(
+  state: EngineState,
+  index: number,
+  startAt: number,
+  performedMs: number[]
+): EngineState {
   const clamped = Math.min(index, state.intervals.length - 1);
   const isDone = state.intervals[clamped].phase === 'done';
   const paused = state.status === 'paused';
@@ -100,6 +121,7 @@ function moveTo(state: EngineState, index: number, startAt: number): EngineState
     phaseStartedAt: startAt,
     pausedAt: paused && !isDone ? startAt : null,
     pausedTotal: 0,
+    performedMs,
   };
 }
 
@@ -115,7 +137,12 @@ export function tick(state: EngineState, now: number): EngineState {
     const durationMs = cur.seconds * 1000;
     const elapsed = now - s.phaseStartedAt - s.pausedTotal;
     if (elapsed < durationMs) break;
-    s = moveTo(s, s.index + 1, s.phaseStartedAt + s.pausedTotal + durationMs);
+    s = moveTo(
+      s,
+      s.index + 1,
+      s.phaseStartedAt + s.pausedTotal + durationMs,
+      logCurrent(s, durationMs)
+    );
   }
   return s;
 }
@@ -138,29 +165,45 @@ export function resume(state: EngineState, now: number): EngineState {
 /** Jump to the next interval. Works while paused too (stays paused at its start). */
 export function skip(state: EngineState, now: number): EngineState {
   if (state.status !== 'running' && state.status !== 'paused') return state;
-  return moveTo(state, state.index + 1, now);
+  return moveTo(state, state.index + 1, now, logCurrent(state, elapsedMs(state, now)));
 }
 
 /** Restart the current interval if more than two seconds in, otherwise go back one. */
 export function back(state: EngineState, now: number): EngineState {
   if (state.status !== 'running' && state.status !== 'paused') return state;
   const target = elapsedMs(state, now) > 2000 ? state.index : Math.max(0, state.index - 1);
-  return moveTo(state, target, now);
+  return moveTo(state, target, now, state.performedMs.slice(0, target));
 }
 
-export function end(state: EngineState): EngineState {
-  if (state.status === 'done') return state;
-  return { ...state, status: 'ended', pausedAt: null };
+/** Stops for good; the interval in progress is logged with the time it had run. */
+export function end(state: EngineState, now: number): EngineState {
+  if (state.status === 'done' || state.status === 'ended') return state;
+  const performedMs =
+    state.status === 'idle' ? state.performedMs : logCurrent(state, elapsedMs(state, now));
+  return { ...state, status: 'ended', pausedAt: null, performedMs };
 }
 
-/** Sets whose final hang has been completed. */
-export function completedSets(state: EngineState): number {
-  const lastHangIndex = new Map<number, number>();
+/** Every hang that was started, in order, with its planned and actual seconds (0.1 s floor). */
+export function hangResults(state: EngineState): HangResult[] {
+  const results: HangResult[] = [];
   state.intervals.forEach((interval, i) => {
-    if (interval.phase === 'hang') lastHangIndex.set(interval.setIndex, i);
+    const ms = state.performedMs[i];
+    if (interval.phase !== 'hang' || ms === undefined) return;
+    results.push({ planned: interval.seconds, actual: Math.floor(ms / 100) / 10 });
   });
-  if (state.status === 'done') return lastHangIndex.size;
+  return results;
+}
+
+/** Sets whose every hang ran its full length: a skipped or cut-short hang does not count. */
+export function completedSets(state: EngineState): number {
+  const complete = new Map<number, boolean>();
+  state.intervals.forEach((interval, i) => {
+    if (interval.phase !== 'hang') return;
+    const ms = state.performedMs[i];
+    const full = ms !== undefined && ms >= interval.seconds * 1000;
+    complete.set(interval.setIndex, (complete.get(interval.setIndex) ?? true) && full);
+  });
   let n = 0;
-  for (const i of lastHangIndex.values()) if (i < state.index) n++;
+  for (const full of complete.values()) if (full) n++;
   return n;
 }

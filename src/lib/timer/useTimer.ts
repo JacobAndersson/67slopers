@@ -51,6 +51,8 @@ export function useTimer(timings: WorkoutTimings) {
     remainingSeconds: engine.remainingSeconds(state, clock),
     progress: engine.progress(state, clock),
     completedSets: engine.completedSets(state),
+    /** Planned and actual seconds of every hang started so far. */
+    hangResults: engine.hangResults(state),
     totalSets: intervals[0]?.setCount ?? 0,
     /** Wall-clock seconds since start, pauses included. Freezes once the timer stops. */
     elapsedSeconds: state.status === 'idle' ? 0 : (clock - state.startedAt) / 1000,
@@ -59,6 +61,6 @@ export function useTimer(timings: WorkoutTimings) {
     resume: () => act(engine.resume),
     skip: () => act(engine.skip),
     back: () => act(engine.back),
-    end: () => setState(engine.end),
+    end: () => act(engine.end),
   };
 }

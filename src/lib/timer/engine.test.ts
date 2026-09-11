@@ -7,6 +7,7 @@ import {
   createEngine,
   current,
   end,
+  hangResults,
   pause,
   remainingSeconds,
   resume,
@@ -113,9 +114,47 @@ test('completedSets counts sets whose last hang is behind us, and reaches done',
 test('end freezes the engine without counting the current set', () => {
   let s = running(twoSets, 0);
   s = tick(s, 12_000);
-  s = end(s);
+  s = end(s, 12_000);
   assert.equal(s.status, 'ended');
   assert.equal(completedSets(s), 0);
+  assert.deepEqual(hangResults(s), [{ planned: 7, actual: 2 }], 'the hang in progress is logged');
+});
+
+test('a skipped or cut-short hang is logged as done and does not complete its set', () => {
+  let s = running(twoSets, 0);
+  s = tick(s, 10_000); // first hang starts
+  s = tick(s, 20_000); // hang and pause ran out: second hang starts at 20 000
+  s = skip(s, 23_450); // skipped 3.45 s in
+  assert.equal(current(s).phase, 'rest');
+  assert.deepEqual(hangResults(s), [
+    { planned: 7, actual: 7 },
+    { planned: 7, actual: 3.4 },
+  ]);
+  assert.equal(completedSets(s), 0, 'set 1 had a short hang');
+  s = skip(s, 24_000); // skip the rest: set 2 starts
+  s = tick(s, 24_000 + 7_000 + 3_000 + 7_000);
+  assert.equal(s.status, 'done');
+  assert.equal(completedSets(s), 1, 'set 2 ran in full');
+});
+
+test('pauses do not count as hanging, and Back forgets what it goes back over', () => {
+  let s = running(twoSets, 0);
+  s = tick(s, 10_000);
+  s = pause(s, 12_000);
+  s = resume(s, 30_000);
+  s = skip(s, 31_000); // 3 s of hanging, 18 s of pause
+  assert.deepEqual(hangResults(s), [{ planned: 7, actual: 3 }]);
+  s = back(s, 31_500); // straight back onto the hang: its short attempt is forgotten
+  assert.equal(current(s).phase, 'hang');
+  assert.deepEqual(hangResults(s), []);
+  s = tick(s, 38_500);
+  assert.deepEqual(hangResults(s), [{ planned: 7, actual: 7 }]);
+});
+
+test('end before start logs nothing', () => {
+  const s = end(createEngine(twoSets, 0), 5_000);
+  assert.equal(s.status, 'ended');
+  assert.deepEqual(hangResults(s), []);
 });
 
 test('idle waits on the first interval until start is called', () => {

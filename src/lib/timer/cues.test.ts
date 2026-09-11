@@ -46,7 +46,7 @@ test('boundaryIn follows skips and ticks into later intervals', () => {
   assert.equal(boundaryIn(ticked, 5000), 7000);
   assert.equal(boundaryIn(ticked, 5250), 6750);
 
-  assert.equal(boundaryIn(end(running), 100), null, 'nothing once ended');
+  assert.equal(boundaryIn(end(running, 100), 100), null, 'nothing once ended');
   const last = { ...running, index: intervals.length - 1 };
   assert.equal(boundaryIn(last, 100), null, 'nothing on the done interval');
 });
