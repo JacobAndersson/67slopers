@@ -18,7 +18,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.sloppyslopers.app"
+      "package": "com.sloppyslopers.app",
+      "permissions": ["android.permission.VIBRATE"]
     },
     "web": {
       "output": "static",
@@ -34,7 +35,15 @@
           "imageWidth": 150
         }
       ],
-      "expo-audio"
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundRecording": false,
+          "enableBackgroundPlayback": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
