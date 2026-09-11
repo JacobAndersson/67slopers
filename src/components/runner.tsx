@@ -100,6 +100,7 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const [restart, setRestart] = useState(0);
 
   const addSession = useStore((s) => s.addSession);
+  const updateSession = useStore((s) => s.updateSession);
   const addWorkout = useStore((s) => s.addWorkout);
   const timer = useTimer(timings);
   const settings = useStore((s) => s.settings);
@@ -114,6 +115,8 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const [saveName, setSaveName] = useState(saveNameDefault);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const leaving = useRef(false);
+  /** Set once the finished run has been written to history. */
+  const sessionId = useRef<string | null>(null);
 
   // Leaving mid-workout (X, hardware back, gesture) asks first. Before Play, and after
   // finishing, leaving is free.
@@ -126,25 +129,51 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
     });
   }, [navigation, idle, finished, timer]);
 
-  const finish = () => {
-    // The session ends when the timer stopped, not when Finish was tapped.
-    const completedAt = new Date(
-      new Date(startedAt).getTime() + Math.round(timer.elapsedSeconds * 1000)
-    ).toISOString();
-    const trimmed = saveName.trim();
-    const savedId = isDraft && trimmed ? addWorkout({ name: trimmed, ...timings }).id : undefined;
-    addSession({
-      workoutId: workoutId ?? savedId,
-      workoutName: savedId ? trimmed : name,
+  // The session is written the moment the timer stops, so closing the app on the summary
+  // loses nothing. The grade and the save prompt only add to it.
+  const { status, elapsedSeconds, completedSets, totalSets, hangResults } = timer;
+  useEffect(() => {
+    if (!finished || sessionId.current) return;
+    sessionId.current = addSession({
+      workoutId,
+      workoutName: name,
       snapshot: timings,
       startedAt,
-      completedAt,
-      completedSets: timer.completedSets,
-      totalSets: timer.totalSets,
-      completed: timer.status === 'done',
-      hangs: timer.hangResults,
-      feel,
-    });
+      // The session ends when the timer stopped, not when Finish was tapped.
+      completedAt: new Date(
+        new Date(startedAt).getTime() + Math.round(elapsedSeconds * 1000)
+      ).toISOString(),
+      completedSets,
+      totalSets,
+      completed: status === 'done',
+      hangs: hangResults,
+    }).id;
+  }, [
+    finished,
+    addSession,
+    workoutId,
+    name,
+    timings,
+    startedAt,
+    elapsedSeconds,
+    completedSets,
+    totalSets,
+    status,
+    hangResults,
+  ]);
+
+  const grade = (next: Feel) => {
+    const value = feel === next ? undefined : next;
+    setFeel(value);
+    if (sessionId.current) updateSession(sessionId.current, { feel: value });
+  };
+
+  const finish = () => {
+    const trimmed = saveName.trim();
+    if (isDraft && trimmed && sessionId.current) {
+      const saved = addWorkout({ name: trimmed, ...timings });
+      updateSession(sessionId.current, { workoutId: saved.id, workoutName: trimmed });
+    }
     leaving.current = true;
     router.dismissTo('/');
   };
@@ -298,10 +327,7 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
               </View>
               <View className="gap-3">
                 <Text className="text-xl font-semibold">How did you feel?</Text>
-                <FeelPicker
-                  value={feel}
-                  onChange={(f) => setFeel((cur) => (cur === f ? undefined : f))}
-                />
+                <FeelPicker value={feel} onChange={grade} />
               </View>
               {isDraft ? (
                 <View className="gap-2">

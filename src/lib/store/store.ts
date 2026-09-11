@@ -36,7 +36,11 @@ type StoreState = {
   /** Copies a workout as a new, non-preset entry named "<name> copy". */
   duplicateWorkout: (id: string) => Workout | undefined;
   addSession: (input: Omit<Session, 'id'>) => Session;
-  updateSession: (id: string, patch: Partial<Pick<Session, 'feel'>>) => void;
+  /** The grade, or the workout a temporary run was saved as. */
+  updateSession: (
+    id: string,
+    patch: Partial<Pick<Session, 'feel' | 'workoutId' | 'workoutName'>>
+  ) => void;
   deleteSession: (id: string) => void;
   setDraft: (draft: Draft | null) => void;
   setSettings: (patch: Partial<Settings>) => void;
