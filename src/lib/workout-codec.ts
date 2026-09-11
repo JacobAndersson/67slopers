@@ -12,15 +12,15 @@ import { validateWorkout } from './workout-board';
 import { cloneSteps, LIMITS, sameTimings } from './workout-steps';
 
 /**
- * A workout as a short decimal code, for QR codes, share messages and typing from a poster.
+ * A workout as a short decimal code, carried by a QR code or a `slopers67://import?code=` link.
  *
  * The workout is arithmetic-coded (see `codec/arith.ts`) against a frozen model of what
  * hangboard workouts look like (`codec/models.ts`): an unchanged built-in workout is just its
  * index; otherwise the name, board, steps, durations, repeat counts, labels and grips are
  * coded with probabilities that make common choices (a 10 s get-ready, 7:3 repeaters, three
  * minutes between sets, dictionary words like "half crimp") nearly free. Digits suit QR numeric
- * mode, which packs them at 3.3 bits each. A final Damm check digit catches typing mistakes,
- * and decoding re-encodes the result, so only the one canonical code for a workout is accepted.
+ * mode, which packs them at 3.3 bits each. A final Damm check digit and a re-encode on decoding,
+ * which accepts only the one canonical code for a workout, turn away numbers that are not ours.
  */
 export type DecodedWorkout =
   | { ok: true; name?: string; board?: BoardId; steps: Step[]; description?: string }
@@ -29,8 +29,7 @@ export type DecodedWorkout =
 export type ShareableWorkout = { name?: string; board?: BoardId; steps: Step[] };
 
 export const CODEC_ERRORS = {
-  notACode: 'This is not a 67slopers workout code.',
-  typo: 'That code does not add up. Check the digits for a typo.',
+  notACode: 'This QR code is not a 67slopers workout.',
   needsUpdate: NEEDS_UPDATE,
 } as const;
 
@@ -75,7 +74,7 @@ export function encodeWorkout(workout: ShareableWorkout): string {
 export function decodeWorkout(input: string): DecodedWorkout {
   const digits = normalizeDigits(input);
   if (digits.length < 2) return { ok: false, error: CODEC_ERRORS.notACode };
-  if (!hasValidCheckDigit(digits)) return { ok: false, error: CODEC_ERRORS.typo };
+  if (!hasValidCheckDigit(digits)) return { ok: false, error: CODEC_ERRORS.notACode };
   let workout: ShareableWorkout & { description?: string };
   try {
     workout = readWorkout(new Decoder(digits.slice(0, -1)));

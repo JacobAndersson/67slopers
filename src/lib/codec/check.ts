@@ -1,6 +1,6 @@
 /**
- * Damm check digit: one digit that catches every single wrong digit and every swap of two
- * neighbouring digits, the usual mistakes when a code is typed from a poster.
+ * Damm check digit: one digit that turns away nine in ten numbers that are not workout codes,
+ * and every code with one wrong digit or two neighbouring digits swapped.
  */
 const TABLE = [
   [0, 3, 1, 7, 5, 9, 8, 6, 4, 2],

@@ -46,9 +46,10 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   changed since. Cues are foreground-only by design; the native checks live in
   `docs/device-checklist.md`.
 - Sharing: the overview's Share opens `workout/[id]/share.tsx`, a full-screen QR code of the
-  workout's code; Home's scan button opens `scan.tsx` (expo-camera, permission asked only
-  there, typed codes too); `import.tsx?code=` previews a workout before saving or running it,
-  and `slopers67://import?code=` links land there.
+  workout's code, with no digits or text to copy; Home's scan button opens `scan.tsx` (expo-camera,
+  permission asked only there, hidden on web where it cannot scan), which ignores QR codes that are
+  not workouts; `import.tsx?code=` previews a workout before saving or running it, and
+  `slopers67://import?code=` links land there.
 - State lives in `src/lib/store/` (zustand + AsyncStorage, persisted as one JSON blob). Select
   stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
   from a selector. Sessions store a snapshot of the workout they ran.

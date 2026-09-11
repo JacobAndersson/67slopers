@@ -88,8 +88,7 @@ Improvements:
 
 ## Out of scope for the MVP
 
-- Accounts, cloud sync, social features (principles 1 and 2). (Sharing a workout as a QR code
-  or short code shipped after the MVP: the code carries the whole workout, so no server is
+- Accounts, cloud sync, social features (principles 1 and 2). (Sharing a workout as a QR code shipped after the MVP: the code carries the whole workout, so no server is
   involved.)
 - Training plans, calendars, scheduling, coaching content, assessments.
 - Analytics, charts, streaks, weekly volume, CSV export.

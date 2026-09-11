@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { LibraryIcon, PlusIcon, ScanQrCodeIcon } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { ActiveRunCard } from '@/components/active-run-card';
 import { CalendarStats, WeekCalendar } from '@/components/calendar';
@@ -44,15 +44,19 @@ export default function HomeScreen() {
     <>
       <Stack.Screen
         options={{
-          headerRight: () => (
-            <Button
-              variant="ghost"
-              size="icon"
-              accessibilityLabel="Scan a workout code"
-              onPress={() => router.push('/scan')}>
-              <Icon as={ScanQrCodeIcon} className="size-6" />
-            </Button>
-          ),
+          // Browsers cannot read QR codes with expo-camera, so scanning is a phone feature.
+          headerRight:
+            Platform.OS === 'web'
+              ? undefined
+              : () => (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    accessibilityLabel="Scan a workout code"
+                    onPress={() => router.push('/scan')}>
+                    <Icon as={ScanQrCodeIcon} className="size-6" />
+                  </Button>
+                ),
         }}
       />
       <Screen>

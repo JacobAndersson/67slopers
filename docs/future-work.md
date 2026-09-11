@@ -159,12 +159,11 @@ No user-facing sharing or import flow was found during the review.
 - Pair the product with clear store positioning, useful demonstrations, and a few coach
   or gym relationships. Do not contact anyone automatically as part of implementation.
 
-Status (2026-09-11): a saved workout shares as a full-screen QR code and a short decimal code
-(a few digits for an unchanged built-in workout, arithmetic-coded against shared vocabularies
-otherwise, with a check digit for typing). Home's scan button reads it with the camera or as
-typed text, and the import screen previews the workout before saving or running it;
-`slopers67://import?code=` links open the same screen. Store positioning and coach or gym
-relationships are still open.
+Status (2026-09-11): a saved workout shares as a full-screen QR code holding a compact code (a
+few digits for an unchanged built-in workout, arithmetic-coded against shared vocabularies
+otherwise). Home's scan button reads it with the camera, and the import screen previews the
+workout before saving or running it; `slopers67://import?code=` links open the same screen.
+Store positioning and coach or gym relationships are still open.
 
 Becoming the default depends on people encountering the app when they want to train.
 
