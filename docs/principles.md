@@ -16,8 +16,9 @@ Implications:
   home, no remote config, no update checks, no ads.
 - Storage is an on-device database (see [mvp.md](mvp.md#data-and-storage)). Backups, if
   we add them, are local file export and import that the user controls.
-- Only the permissions the timer needs (keep-awake). No location, no
-  contacts, no notifications for marketing.
+- Only the permissions a feature needs, asked for when it is used: keep-awake for the timer,
+  and the camera only when the user opens the workout scanner. No location, no contacts, no
+  notifications for marketing.
 - If sync is ever added, it is optional, additive and opt-in. The local copy stays the
   source of truth.
 

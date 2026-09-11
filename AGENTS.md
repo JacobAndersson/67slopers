@@ -19,8 +19,11 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
 
 ## App structure (MVP)
 
-- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: streak stats, the current week,
-  three saved workouts, three latest sessions; `calendar.tsx` is the month view) → `workout/[id]/index.tsx` (overview with Start) →
+- Single Expo Router stack, no tabs: `src/app/index.tsx` (Home: an unfinished-run card when a
+  run was interrupted, streak stats, the current week, a Next up card for the last-used workout
+  whose Start opens the timer already counting down (`run?autostart=1`), the other saved
+  workouts with a + to build one, three latest sessions, and a scan button in the header;
+  `calendar.tsx` is the month view) → `workout/[id]/index.tsx` (overview with Start) →
   `workout/[id]/run.tsx` (full-screen timer, `src/components/runner.tsx`). `workout/run.tsx`
   runs the store's unsaved `draft` (Start from the setup screen, or "Do it again" on a deleted
   workout) and offers to save it at the end. `workouts.tsx` and `sessions.tsx` are the
@@ -29,9 +32,23 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   overview renders the same step list read-only. `presets.tsx` is the built-in library
   (`src/lib/store/presets.ts`: classic protocols by level with a description); opening one lands
   in `workout/new?preset=<id>`. Only the three ids in `SEEDED_PRESET_IDS` are copied into "Your
-  workouts" on first launch.
+  workouts" on first launch, with their `description`, which the builder can edit and the
+  overview shows (persist v6 restores it on workouts seeded before).
 - Grades (`feel`) are shown on session and overview screens and in the sessions index, never
   on the home screen.
+- Sessions are trustworthy: the runner writes the session the moment the timer stops (Finish
+  only adds the grade or the save-as-workout step). The engine logs the time really spent in
+  every interval (`performedMs`), sessions keep each hang's planned and actual seconds
+  (`hangs`), and a set only counts when all its hangs ran their full length. A run is
+  checkpointed (`src/lib/timer/checkpoint.ts`, stored by `src/lib/store/active-run.ts` under its
+  own key) at every interval change and when the app backgrounds; Home offers to continue it,
+  save it as ended or discard it. "Do it again" runs the session's snapshot when the workout has
+  changed since. Cues are foreground-only by design; the native checks live in
+  `docs/device-checklist.md`.
+- Sharing: the overview's Share opens `workout/[id]/share.tsx`, a full-screen QR code of the
+  workout's code; Home's scan button opens `scan.tsx` (expo-camera, permission asked only
+  there, typed codes too); `import.tsx?code=` previews a workout before saving or running it,
+  and `slopers67://import?code=` links land there.
 - State lives in `src/lib/store/` (zustand + AsyncStorage, persisted as one JSON blob). Select
   stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
   from a selector. Sessions store a snapshot of the workout they ran.
@@ -53,9 +70,13 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   level deep: the rounds of a top-level repeat are the sets, the rounds of a repeat inside it are
   the reps. The stored model has no ids; the editor adds them through `withIds`/`stripIds` in
   `src/lib/workout-steps.ts`, which also holds every tree edit (`updateStep`, `moveStep`,
-  `reorderWithin`, `validate`, `LIMITS`). `src/lib/workout-codec.ts` encodes a workout as short
-  text (`v1 p10 6(6(h7 r3) r180)`) for sharing by link or QR code. Persist version 3 migrates the
-  old `prepSeconds` + `blocks[]` shape in `src/lib/store/migrate.ts`.
+  `reorderWithin`, `validate`, `LIMITS`). `src/lib/workout-codec.ts` turns a workout into a
+  short decimal code for QR numeric mode: exact arithmetic coding (`src/lib/codec/`) against a
+  frozen model of hangboard workouts and shared vocabularies, a Damm check digit, and a
+  canonical re-encode on decode. Everything in `codec/models.ts` is frozen, and `WORDS`,
+  `PHRASES`, `BOARD_IDS`, `PRESETS` and each board's holds are append-only (codes refer to them
+  by index; `vocab.test.ts` checks the snapshot). Add holds at the end of a layout. Persist version 3 migrates the
+  old `prepSeconds` + `blocks[]` shape in `src/lib/store/migrate.ts` (now version 6).
 - Hangboards: `hangboard-models/` is the source of truth (one `layout.json` per board, hold boxes
   in mm, mirrored pairs; 3D files live in git LFS). `npm run boards` (`scripts/gen-board-images.mjs`)
   rasterises each board: `assets/boards/<id>/base.svg` is the source (hand-edit it; `--draw`

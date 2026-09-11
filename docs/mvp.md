@@ -76,7 +76,8 @@ Parity:
 Improvements:
 
 - Tap a completed session on the home screen to open it: grade, sets, duration, note,
-  and a "Do it again" button that starts the same workout.
+  and a "Do it again" button that runs the workout as it was run (or the current version, when
+  it has changed since).
 
 ### Settings
 
@@ -87,7 +88,9 @@ Improvements:
 
 ## Out of scope for the MVP
 
-- Accounts, cloud sync, sharing, social features (principles 1 and 2).
+- Accounts, cloud sync, social features (principles 1 and 2). (Sharing a workout as a QR code
+  or short code shipped after the MVP: the code carries the whole workout, so no server is
+  involved.)
 - Training plans, calendars, scheduling, coaching content, assessments.
 - Analytics, charts, streaks, weekly volume, CSV export.
 - Added-weight or bodyweight logging (natural next layer after the timer).

@@ -42,6 +42,13 @@ Future work:
   locking, accidental navigation, and recovery after the app is terminated.
 - Measure startup and time to countdown against the budgets in the product principles.
 
+Status (2026-09-11): sessions are saved the moment the timer stops; each hang's actual time is
+logged and a set only counts when all its hangs ran in full; an interrupted run is
+checkpointed, and Home offers to continue it or save it as ended; "Do it again" runs the
+recorded version and offers the current one. The native quality bar and the startup
+measurements are in [device-checklist.md](device-checklist.md), still to be run on hardware.
+Background cues stay out of scope: the timer is foreground-only by design.
+
 Starting points: [runner](../src/components/runner.tsx),
 [timer engine](../src/lib/timer/engine.ts), [timer hook](../src/lib/timer/useTimer.ts),
 [cue player](../src/lib/timer/cue-player.ts), and
@@ -89,6 +96,11 @@ overview, pressing Start, and then pressing Play.
 - Explain each starter workout's purpose, setup, and intended effort before it starts.
   Beginner/intermediate/advanced labels alone leave too much to interpretation.
 - Have a qualified climbing coach review guidance and its attribution.
+
+Status (2026-09-11): Home leads with a Next up card for the last-used workout; its Start opens
+the timer already counting down, the card shows the last result, and the overview is a tap
+away. Saved built-in workouts keep their description. The goal-and-equipment path for
+first-time users and the coach review are still open.
 
 ## 4. Build a credible connection between sessions
 
@@ -146,6 +158,13 @@ No user-facing sharing or import flow was found during the review.
   needed to resolve a workout's contents.
 - Pair the product with clear store positioning, useful demonstrations, and a few coach
   or gym relationships. Do not contact anyone automatically as part of implementation.
+
+Status (2026-09-11): a saved workout shares as a full-screen QR code and a short decimal code
+(a few digits for an unchanged built-in workout, arithmetic-coded against shared vocabularies
+otherwise, with a check digit for typing). Home's scan button reads it with the camera or as
+typed text, and the import screen previews the workout before saving or running it;
+`slopers67://import?code=` links open the same screen. Store positioning and coach or gym
+relationships are still open.
 
 Becoming the default depends on people encountering the app when they want to train.
 
