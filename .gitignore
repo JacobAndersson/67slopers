@@ -53,3 +53,6 @@ ds-bundle/
 .design-sync/node_modules
 .design-sync/build/dist/
 .design-sync/build/pkg/
+
+# local Expo modules: native build output
+modules/*/android/build/
