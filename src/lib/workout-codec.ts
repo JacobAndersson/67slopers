@@ -1,176 +1,190 @@
-import { isBoardId } from './boards';
-import type { BoardId } from './boards';
-import type { RepeatStep, Step, StepKind, TimedStep } from './store/types';
+import { BOARD_IDS, getBoard, type BoardId } from './boards';
+import { Decoder, Encoder } from './codec/arith';
+import { hasValidCheckDigit, withCheckDigit } from './codec/check';
+import { normalizeDigits } from './codec/digits';
+import { isNeedsUpdate, NEEDS_UPDATE, needsUpdate } from './codec/errors';
+import { M, secondsCoder, STEP_KINDS, type CodecStepKind } from './codec/models';
+import { normalizeText, readText, writeText } from './codec/text';
+import { codecGrips } from './codec/vocab';
+import { PRESETS } from './store/presets';
+import type { Step, TimedStep } from './store/types';
 import { validateWorkout } from './workout-board';
-import { LIMITS } from './workout-steps';
+import { cloneSteps, LIMITS, sameTimings } from './workout-steps';
 
 /**
- * Compact, human-readable text form of a workout for sharing by link or QR code.
+ * A workout as a short decimal code, for QR codes, share messages and typing from a poster.
  *
- *   v1 "Repeaters 7:3" @beastmaker-2000 p10 6(6(h7[edge-22] r3) r180)
- *
- * Tokens: `p`/`h`/`r` + seconds for a get-ready, hang or rest step, optionally followed by
- * `[hold ids]` (comma separated, on the board named by the optional `@board` token after the
- * name) and a quoted label (`h10[edge-22]"half crimp"`); `N(` … `)` for a repeat. Whitespace
- * is optional except between two numbers. Percent-encode the whole string when putting it in a
- * URL.
+ * The workout is arithmetic-coded (see `codec/arith.ts`) against a frozen model of what
+ * hangboard workouts look like (`codec/models.ts`): an unchanged built-in workout is just its
+ * index; otherwise the name, board, steps, durations, repeat counts, labels and grips are
+ * coded with probabilities that make common choices (a 10 s get-ready, 7:3 repeaters, three
+ * minutes between sets, dictionary words like "half crimp") nearly free. Digits suit QR numeric
+ * mode, which packs them at 3.3 bits each. A final Damm check digit catches typing mistakes,
+ * and decoding re-encodes the result, so only the one canonical code for a workout is accepted.
  */
-const VERSION = 'v1';
-
-const KIND_CODE: Record<StepKind, string> = { prep: 'p', hang: 'h', rest: 'r' };
-const CODE_KIND: Record<string, StepKind> = { p: 'prep', h: 'hang', r: 'rest' };
-
 export type DecodedWorkout =
-  { ok: true; name?: string; board?: BoardId; steps: Step[] } | { ok: false; error: string };
+  | { ok: true; name?: string; board?: BoardId; steps: Step[]; description?: string }
+  | { ok: false; error: string };
 
-export function encodeWorkout(workout: { name?: string; board?: BoardId; steps: Step[] }): string {
-  const parts = [VERSION];
-  if (workout.name?.trim()) parts.push(quote(workout.name.trim()));
-  if (workout.board) parts.push(`@${workout.board}`);
-  parts.push(...workout.steps.map(encodeStep));
-  return parts.join(' ');
-}
+export type ShareableWorkout = { name?: string; board?: BoardId; steps: Step[] };
 
-function encodeStep(step: Step): string {
-  if (step.kind === 'repeat') {
-    return `${step.times}(${step.steps.map(encodeStep).join(' ')})`;
+export const CODEC_ERRORS = {
+  notACode: 'This is not a 67slopers workout code.',
+  typo: 'That code does not add up. Check the digits for a typo.',
+  needsUpdate: NEEDS_UPDATE,
+} as const;
+
+const PRESET = 0;
+const CUSTOM = 1;
+const NO_HOLDS = 0;
+const SAME_HOLDS = 1;
+const NEW_HOLDS = 2;
+
+type Context = { grips: string[][] | null; previousGrip: number; timedSteps: number };
+
+/** The code for a valid workout. Throws with the first validation problem otherwise. */
+export function encodeWorkout(workout: ShareableWorkout): string {
+  const errors = validateWorkout(workout);
+  if (errors.length) throw new RangeError(errors[0]);
+  const enc = new Encoder();
+  enc.encode(M.version, 0);
+  const name = normalizeText(workout.name ?? '');
+  const preset = workout.board
+    ? -1
+    : PRESETS.findIndex((p) => p.name === name && sameTimings({ steps: p.steps }, workout));
+  if (preset >= 0) {
+    enc.encode(M.workoutKind, PRESET);
+    enc.encode(M.presetIndex, preset);
+    return withCheckDigit(enc.finish());
   }
-  const holds = step.holds?.length ? `[${step.holds.join(',')}]` : '';
-  return `${KIND_CODE[step.kind]}${step.seconds}${holds}${step.label ? quote(step.label) : ''}`;
+  enc.encode(M.workoutKind, CUSTOM);
+  enc.encode(M.hasName, name ? 1 : 0);
+  if (name) writeText(enc, name);
+  const board = getBoard(workout.board);
+  enc.encode(M.hasBoard, board ? 1 : 0);
+  if (board) enc.encode(M.boardIndex, BOARD_IDS.indexOf(board.id as BoardId));
+  const context: Context = {
+    grips: board ? codecGrips(board) : null,
+    previousGrip: -1,
+    timedSteps: 0,
+  };
+  writeSteps(enc, workout.steps, 0, context);
+  return withCheckDigit(enc.finish());
 }
 
-/** Labels cannot contain double quotes or line breaks; both are replaced rather than escaped. */
-function quote(text: string): string {
-  return `"${text.replace(/"/g, "'").replace(/\s+/g, ' ')}"`;
-}
-
-export function decodeWorkout(text: string): DecodedWorkout {
+export function decodeWorkout(input: string): DecodedWorkout {
+  const digits = normalizeDigits(input);
+  if (digits.length < 2) return { ok: false, error: CODEC_ERRORS.notACode };
+  if (!hasValidCheckDigit(digits)) return { ok: false, error: CODEC_ERRORS.typo };
+  let workout: ShareableWorkout & { description?: string };
   try {
-    const parser = new Parser(text);
-    parser.expectVersion();
-    const name = parser.peek() === '"' ? parser.readQuoted() : undefined;
-    const board = parser.peek() === '@' ? parser.readBoard() : undefined;
-    const steps = parser.readSteps(0, null);
-    const errors = validateWorkout({ board, steps });
-    if (errors.length) return { ok: false, error: errors[0] };
-    return {
-      ok: true,
-      ...(name ? { name } : {}),
-      ...(board ? { board } : {}),
-      steps,
-    };
+    workout = readWorkout(new Decoder(digits.slice(0, -1)));
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : 'Could not read the workout.' };
+    return {
+      ok: false,
+      error: isNeedsUpdate(e) ? CODEC_ERRORS.needsUpdate : CODEC_ERRORS.notACode,
+    };
+  }
+  // Any digit string decodes to something; only the exact code of a valid workout counts.
+  try {
+    if (encodeWorkout(workout) !== digits) return { ok: false, error: CODEC_ERRORS.notACode };
+  } catch {
+    return { ok: false, error: CODEC_ERRORS.notACode };
+  }
+  return { ok: true, ...workout };
+}
+
+function readWorkout(dec: Decoder): ShareableWorkout & { description?: string } {
+  if (dec.decode(M.version) !== 0) needsUpdate();
+  if (dec.decode(M.workoutKind) === PRESET) {
+    const preset = PRESETS[dec.decode(M.presetIndex)] ?? needsUpdate();
+    return { name: preset.name, steps: cloneSteps(preset.steps), description: preset.description };
+  }
+  const name = dec.decode(M.hasName) ? readText(dec) : undefined;
+  const board = dec.decode(M.hasBoard)
+    ? (BOARD_IDS[dec.decode(M.boardIndex)] ?? needsUpdate())
+    : undefined;
+  const manifest = getBoard(board);
+  const context: Context = {
+    grips: manifest ? codecGrips(manifest) : null,
+    previousGrip: -1,
+    timedSteps: 0,
+  };
+  const steps = readSteps(dec, 0, context);
+  return { ...(name ? { name } : {}), ...(board ? { board } : {}), steps };
+}
+
+function writeSteps(enc: Encoder, steps: Step[], depth: number, context: Context): void {
+  M.stepCount[depth].encode(enc, steps.length);
+  let previous: 'start' | CodecStepKind = 'start';
+  for (const step of steps) {
+    enc.encode(M.kind[depth][previous], STEP_KINDS.indexOf(step.kind));
+    previous = step.kind;
+    if (step.kind === 'repeat') {
+      M.times[Math.min(depth, 1)].encode(enc, step.times);
+      writeSteps(enc, step.steps, depth + 1, context);
+      continue;
+    }
+    secondsCoder(step.kind, depth).encode(enc, step.seconds);
+    const label = normalizeText(step.label ?? '');
+    enc.encode(step.kind === 'hang' ? M.hasLabel.hang : M.hasLabel.other, label ? 1 : 0);
+    if (label) writeText(enc, label);
+    if (step.kind === 'hang' && context.grips) writeHolds(enc, step.holds, context, context.grips);
   }
 }
 
-class Parser {
-  private pos = 0;
-
-  constructor(private readonly src: string) {}
-
-  peek(): string {
-    this.skipWs();
-    return this.src[this.pos] ?? '';
-  }
-
-  private skipWs() {
-    while (/\s/.test(this.src[this.pos] ?? '')) this.pos++;
-  }
-
-  expectVersion() {
-    this.skipWs();
-    if (!this.src.startsWith(VERSION, this.pos)) throw new Error('Unknown workout format.');
-    this.pos += VERSION.length;
-  }
-
-  readQuoted(): string {
-    this.skipWs();
-    const end = this.src.indexOf('"', this.pos + 1);
-    if (this.src[this.pos] !== '"' || end < 0) throw new Error('Unterminated label.');
-    const text = this.src.slice(this.pos + 1, end).trim();
-    this.pos = end + 1;
-    return text;
-  }
-
-  readBoard(): BoardId {
-    this.pos++; // '@'
-    const id = this.readIdent();
-    if (!isBoardId(id)) throw new Error(`Unknown hangboard "${id}".`);
-    return id;
-  }
-
-  private readIdent(): string {
-    const m = /^[a-z0-9-]+/i.exec(this.src.slice(this.pos));
-    if (!m) throw new Error('Expected a name.');
-    this.pos += m[0].length;
-    return m[0];
-  }
-
-  private readInt(): number {
-    this.skipWs();
-    const m = /^\d+/.exec(this.src.slice(this.pos));
-    if (!m) throw new Error('Expected a number.');
-    this.pos += m[0].length;
-    return Number(m[0]);
-  }
-
-  /** `[a,b]` right after the seconds of a timed step. */
-  private readHolds(): string[] {
-    this.pos++; // '['
-    const end = this.src.indexOf(']', this.pos);
-    if (end < 0) throw new Error('Unterminated hold list.');
-    const ids = this.src
-      .slice(this.pos, end)
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    this.pos = end + 1;
-    if (ids.length === 0 || ids.some((id) => !/^[a-z0-9-]+$/i.test(id))) {
-      throw new Error('Bad hold list.');
+function readSteps(dec: Decoder, depth: number, context: Context): Step[] {
+  const count = M.stepCount[depth].decode(dec);
+  const steps: Step[] = [];
+  let previous: 'start' | CodecStepKind = 'start';
+  for (let i = 0; i < count; i++) {
+    const kind: CodecStepKind = STEP_KINDS[dec.decode(M.kind[depth][previous])];
+    previous = kind;
+    if (kind === 'repeat') {
+      const times = M.times[Math.min(depth, 1)].decode(dec);
+      steps.push({ kind, times, steps: readSteps(dec, depth + 1, context) });
+      continue;
     }
-    return ids;
-  }
-
-  /** Reads steps until the closing bracket (`close`) or the end of input. */
-  readSteps(depth: number, close: ')' | null): Step[] {
-    const steps: Step[] = [];
-    for (;;) {
-      const c = this.peek();
-      if (c === '') {
-        if (close) throw new Error('Missing closing bracket.');
-        return steps;
-      }
-      if (c === ')') {
-        if (!close) throw new Error('Unexpected closing bracket.');
-        this.pos++;
-        return steps;
-      }
-      steps.push(this.readStep(depth));
-    }
-  }
-
-  private readStep(depth: number): Step {
-    const c = this.peek();
-    if (CODE_KIND[c]) {
-      this.pos++;
-      const seconds = this.readInt();
-      const holds = this.src[this.pos] === '[' ? this.readHolds() : undefined;
-      const label = this.peek() === '"' ? this.readQuoted() : undefined;
-      const step: TimedStep = { kind: CODE_KIND[c], seconds };
+    if (++context.timedSteps > LIMITS.maxSteps) throw new RangeError('Too many steps.');
+    const step: TimedStep = { kind, seconds: secondsCoder(kind, depth).decode(dec) };
+    if (dec.decode(kind === 'hang' ? M.hasLabel.hang : M.hasLabel.other))
+      step.label = readText(dec);
+    if (kind === 'hang' && context.grips) {
+      const holds = readHolds(dec, context, context.grips);
       if (holds) step.holds = holds;
-      if (label) step.label = label;
-      return step;
     }
-    if (/\d/.test(c)) {
-      if (depth + 1 > LIMITS.maxDepth)
-        throw new Error('Repeats can only be nested one level deep.');
-      const times = this.readInt();
-      if (this.peek() !== '(') throw new Error('Expected "(" after a repeat count.');
-      this.pos++;
-      const repeat: RepeatStep = { kind: 'repeat', times, steps: this.readSteps(depth + 1, ')') };
-      return repeat;
-    }
-    throw new Error(`Unexpected "${c}".`);
+    steps.push(step);
   }
+  return steps;
+}
+
+function writeHolds(
+  enc: Encoder,
+  holds: string[] | undefined,
+  context: Context,
+  grips: string[][]
+): void {
+  const wanted = [...(holds ?? [])].sort().join(',');
+  const index = wanted ? grips.findIndex((g) => [...g].sort().join(',') === wanted) : -1;
+  const model = context.previousGrip >= 0 ? M.holdsNext : M.holdsFirst;
+  if (index < 0) {
+    enc.encode(model, NO_HOLDS);
+    return;
+  }
+  if (index === context.previousGrip) {
+    enc.encode(model, SAME_HOLDS);
+  } else {
+    enc.encode(model, NEW_HOLDS);
+    enc.encode(M.gripIndex, index);
+  }
+  context.previousGrip = index;
+}
+
+function readHolds(dec: Decoder, context: Context, grips: string[][]): string[] | undefined {
+  const choice = dec.decode(context.previousGrip >= 0 ? M.holdsNext : M.holdsFirst);
+  if (choice === NO_HOLDS) return undefined;
+  const index = choice === SAME_HOLDS ? context.previousGrip : dec.decode(M.gripIndex);
+  const grip = grips[index] ?? needsUpdate();
+  context.previousGrip = index;
+  return [...grip];
 }

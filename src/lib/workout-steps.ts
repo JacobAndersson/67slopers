@@ -1,5 +1,5 @@
 import { newId } from './store/ids';
-import type { RepeatStep, Step, StepKind, TimedStep } from './store/types';
+import type { RepeatStep, Step, StepKind, TimedStep, WorkoutTimings } from './store/types';
 
 /** Editor bounds. Steppers clamp to these and `validate` rejects anything outside them. */
 export const LIMITS = {
@@ -150,6 +150,32 @@ export function clearHolds<T extends Step | EditableStep>(steps: T[]): T[] {
     if (!s.holds) return s;
     const { holds: _holds, ...rest } = s;
     return rest as T;
+  });
+}
+
+/** Same board and the same steps, labels, holds, counts and nesting. Names are not compared. */
+export function sameTimings(a: WorkoutTimings, b: WorkoutTimings): boolean {
+  return (a.board ?? undefined) === (b.board ?? undefined) && sameSteps(a.steps, b.steps);
+}
+
+function sameSteps(a: Step[], b: Step[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((s, i) => {
+    const t = b[i];
+    if (s.kind === 'repeat' || t.kind === 'repeat') {
+      return (
+        s.kind === 'repeat' &&
+        t.kind === 'repeat' &&
+        s.times === t.times &&
+        sameSteps(s.steps, t.steps)
+      );
+    }
+    return (
+      s.kind === t.kind &&
+      s.seconds === t.seconds &&
+      (s.label ?? '') === (t.label ?? '') &&
+      (s.holds ?? []).join(',') === (t.holds ?? []).join(',')
+    );
   });
 }
 
