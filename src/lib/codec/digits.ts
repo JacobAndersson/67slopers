@@ -20,3 +20,11 @@ export function normalizeDigits(input: string): string {
   }
   return best;
 }
+
+/**
+ * The text "Share as text" sends: a readable line with the grouped code, and a link that opens
+ * 67slopers on the import screen. `normalizeDigits` finds the code in it, link or not.
+ */
+export function shareMessage(name: string, digits: string): string {
+  return `${name} · 67slopers workout ${groupDigits(digits)}\nslopers67://import?code=${digits}`;
+}

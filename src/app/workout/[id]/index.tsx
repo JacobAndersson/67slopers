@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { CopyIcon } from 'lucide-react-native';
+import { CopyIcon, QrCodeIcon } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
@@ -95,6 +95,13 @@ export default function WorkoutOverviewScreen() {
             }}>
             <Icon as={CopyIcon} className="size-4" />
             <Text>Duplicate</Text>
+          </Button>
+          <Button
+            variant="outline"
+            className="self-start"
+            onPress={() => router.push(`/workout/${workout.id}/share`)}>
+            <Icon as={QrCodeIcon} className="size-4" />
+            <Text>Share</Text>
           </Button>
         </View>
 

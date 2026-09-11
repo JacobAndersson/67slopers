@@ -19,6 +19,7 @@
     "expo": "~57.0.20",
     "expo-asset": "~57.0.17",
     "expo-audio": "~57.0.4",
+    "expo-camera": "~57.0.5",
     "expo-constants": "~57.0.17",
     "expo-font": "~57.0.3",
     "expo-glass-effect": "~57.0.1",

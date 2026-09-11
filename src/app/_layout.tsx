@@ -60,6 +60,18 @@ export default function RootLayout() {
           <Stack.Screen name="workout/[id]/index" options={{ title: '' }} />
           <Stack.Screen name="workout/[id]/edit" options={{ title: 'Edit workout' }} />
           <Stack.Screen name="session/[id]" options={{ title: 'Session' }} />
+          <Stack.Screen name="import" options={{ title: 'Shared workout' }} />
+          {(['workout/[id]/share', 'scan'] as const).map((route) => (
+            <Stack.Screen
+              key={route}
+              name={route}
+              options={{
+                headerShown: false,
+                presentation: 'fullScreenModal',
+                animation: 'slide_from_bottom',
+              }}
+            />
+          ))}
           {(['workout/[id]/run', 'workout/run'] as const).map((route) => (
             <Stack.Screen
               key={route}

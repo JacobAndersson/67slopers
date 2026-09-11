@@ -51,6 +51,14 @@
           "supportsPictureInPicture": false
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "67slopers uses the camera to scan the QR code of a shared workout.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
       "expo-asset"
     ],
     "experiments": {
