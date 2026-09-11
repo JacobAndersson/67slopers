@@ -179,8 +179,11 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
   const holdsCaption = board ? gripName(board, shownHolds) : '';
   const nextHoldsName =
     board && timer.nextInterval?.holds ? gripName(board, timer.nextInterval.holds) : '';
-  // The slot the board slides into: the board's aspect plus its caption line.
-  const slotHeight = board ? ((width - 48) * board.height) / board.width + 32 : 0;
+  // The slot the board slides into. Its content is measured once laid out; until then the
+  // board's aspect plus room for the caption is a close estimate.
+  const [slotContent, setSlotContent] = useState(0);
+  const slotEstimate = board ? ((width - 48) * board.height) / board.width + 52 : 0;
+  const slotHeight = slotContent || slotEstimate;
   const slotOpen = useSharedValue(showBoard ? 1 : 0);
   useEffect(() => {
     slotOpen.set(withTiming(showBoard ? 1 : 0, { duration: SLOT_MS }));
@@ -334,7 +337,9 @@ export function Runner({ timings, name, workoutId, saveNameDefault = '' }: Runne
 
             {board ? (
               <Animated.View style={[{ overflow: 'hidden' }, slotStyle]}>
-                <View className="gap-1 pt-4" style={{ height: slotHeight }}>
+                <View
+                  className="gap-1 pb-1 pt-4"
+                  onLayout={(e) => setSlotContent(e.nativeEvent.layout.height)}>
                   <BoardView board={board} holds={shownHolds} mounted={allHolds} animated />
                   {holdsCaption ? (
                     <Text className="text-center text-muted-foreground">Next: {holdsCaption}</Text>
