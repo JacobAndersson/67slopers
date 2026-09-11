@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 484 124" width="968" height="248" font-family="Geist Mono, ui-monospace, monospace">
+<title>FIKA Vetelängd</title>
+<rect id="board" x="0" y="0" width="480" height="120" rx="8" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>
+<g id="holds">
+<rect id="sloper-25-l" data-type="sloper" data-fingers="4" data-angle="25" data-pair="sloper-25-r" x="79" y="0" width="80" height="20" rx="5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>25° sloper</title></rect>
+<rect id="sloper-35-l" data-type="sloper" data-fingers="4" data-angle="35" data-pair="sloper-35-r" x="159" y="0" width="80" height="20" rx="5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>35° sloper</title></rect>
+<rect id="sloper-25-r" data-type="sloper" data-fingers="4" data-angle="25" data-pair="sloper-25-l" x="239" y="0" width="80" height="20" rx="5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>25° sloper</title></rect>
+<rect id="sloper-35-r" data-type="sloper" data-fingers="4" data-angle="35" data-pair="sloper-35-l" x="319" y="0" width="80" height="20" rx="5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>35° sloper</title></rect>
+<path id="edge-20-l" data-type="edge" data-fingers="4" data-depth="20" data-pair="edge-20-r" d="M24.5 34h77a9.5 9.5 0 0 1 0 19h-77a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>20 mm edge</title></path>
+<path id="edge-25-l" data-type="edge" data-fingers="4" data-depth="25" data-pair="edge-25-r" d="M127.5 34h75a9.5 9.5 0 0 1 0 19h-75a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm edge</title></path>
+<path id="edge-25-r" data-type="edge" data-fingers="4" data-depth="25" data-pair="edge-25-l" d="M277.5 34h75a9.5 9.5 0 0 1 0 19h-75a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm edge</title></path>
+<path id="edge-20-r" data-type="edge" data-fingers="4" data-depth="20" data-pair="edge-20-l" d="M378.5 34h77a9.5 9.5 0 0 1 0 19h-77a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>20 mm edge</title></path>
+<path id="edge-15-l" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-15-r" d="M24.5 62h77a9.5 9.5 0 0 1 0 19h-77a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>15 mm edge</title></path>
+<path id="edge-12-l" data-type="edge" data-fingers="4" data-depth="12" data-pair="edge-12-r" d="M127.5 62h75a9.5 9.5 0 0 1 0 19h-75a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>12 mm edge</title></path>
+<path id="edge-12-r" data-type="edge" data-fingers="4" data-depth="12" data-pair="edge-12-l" d="M277.5 62h75a9.5 9.5 0 0 1 0 19h-75a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>12 mm edge</title></path>
+<path id="edge-15-r" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-15-l" d="M378.5 62h77a9.5 9.5 0 0 1 0 19h-77a9.5 9.5 0 0 1 0 -19z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>15 mm edge</title></path>
+<path id="hole-30-l" data-type="pocket" data-fingers="2" data-depth="30" data-pair="hole-30-r" d="M13 104a13 13 0 1 0 26 0a13 13 0 1 0 -26 0z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>30 mm round hole</title></path>
+<path id="edge-10-l" data-type="edge" data-fingers="4" data-depth="10" data-pair="edge-10-r" d="M56.5 92h69a10.5 10.5 0 0 1 0 21h-69a10.5 10.5 0 0 1 0 -21z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>10 mm edge</title></path>
+<rect id="trough" data-type="jug" data-fingers="4" data-depth="30" x="189" y="92" width="98" height="21" rx="5.25" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>30 mm trough</title></rect>
+<path id="edge-10-r" data-type="edge" data-fingers="4" data-depth="10" data-pair="edge-10-l" d="M354.5 92h69a10.5 10.5 0 0 1 0 21h-69a10.5 10.5 0 0 1 0 -21z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>10 mm edge</title></path>
+<path id="hole-30-r" data-type="pocket" data-fingers="2" data-depth="30" data-pair="hole-30-l" d="M441 104a13 13 0 1 0 26 0a13 13 0 1 0 -26 0z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>30 mm round hole</title></path>
+</g>
+<circle cx="161" cy="105" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="317" cy="105" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+</svg>

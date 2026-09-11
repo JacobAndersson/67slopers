@@ -76,9 +76,10 @@ export type Session = {
 export type Settings = {
   sound: boolean;
   vibration: boolean;
+  genZMode: boolean;
 };
 
-export const DEFAULT_SETTINGS: Settings = { sound: true, vibration: true };
+export const DEFAULT_SETTINGS: Settings = { sound: true, vibration: true, genZMode: false };
 
 /** Timings to run without saving them first. Lives in memory only. */
 export type Draft = {

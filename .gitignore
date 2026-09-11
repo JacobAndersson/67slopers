@@ -56,3 +56,6 @@ ds-bundle/
 
 # local Expo modules: native build output
 modules/*/android/build/
+
+# Downloaded gameplay masters and media QA artifacts
+.media-work/

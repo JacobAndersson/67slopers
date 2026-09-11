@@ -43,7 +43,9 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   (Kotlin, `USAGE_ALARM`): untagged vibrations, expo-haptics and React Native's `Vibration`
   alike, are filed under the touch-feedback setting and dropped when it is off. iOS uses
   expo-haptics; Expo Go falls back to the plain vibration. Sound and vibration are global
-  settings in the store, toggled on the timer screen. Screens only render; put behaviour in `src/lib` where
+  settings in the store, toggled in the workout settings menu. Gen Z mode adds bundled muted
+  gameplay below the timer; `src/lib/brainrot` owns run-scoped rotation and playback guards,
+  `scripts/brainrot.mjs` prepares the assets. No media is fetched remotely by the app. Screens only render; put behaviour in `src/lib` where
   `npm test` can reach it.
 - A workout is `steps[]`: timed steps (`prep`, `hang`, `rest`, each with seconds and an optional
   label) and `repeat` groups (`times`, nested `steps`; a trailing rest is skipped on the final

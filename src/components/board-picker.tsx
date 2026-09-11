@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
 import { BOARD_IDS, getBoard, type BoardId } from '@/lib/boards';
@@ -11,10 +11,15 @@ type BoardPickerProps = {
   onChange: (id: BoardId | undefined) => void;
 };
 
-/** Chips for "no board" and each known board. The hang cards show where the holds are. */
+/** Horizontally scrolling board choices. The hang cards show where the holds are. */
 export function BoardPicker({ value, onChange }: BoardPickerProps) {
   return (
-    <View className="flex-row flex-wrap gap-2">
+    <ScrollView
+      horizontal
+      className="grow-0"
+      contentContainerClassName="gap-2"
+      showsHorizontalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
       <Chip label="No board" active={value === undefined} onPress={() => onChange(undefined)} />
       {BOARD_IDS.map((id) => (
         <Chip
@@ -25,7 +30,7 @@ export function BoardPicker({ value, onChange }: BoardPickerProps) {
           onPress={() => onChange(id)}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -46,7 +51,7 @@ function Chip({
       accessibilityRole="radio"
       accessibilityState={{ selected: active }}
       className={cn(
-        'items-center gap-1.5 rounded-lg border px-3 py-2',
+        'shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2',
         active ? 'border-foreground bg-accent' : 'border-border bg-card active:bg-muted'
       )}>
       {thumb ? (

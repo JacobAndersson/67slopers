@@ -6,12 +6,21 @@ import { BOARD_IDS, getBoard, getHold, gripFor, gripName, grips, isBoardId } fro
 
 const inUnit = (v: number) => v >= 0 && v <= 1;
 
-test('both Beastmakers are registered with consistent manifests', () => {
-  assert.deepEqual(BOARD_IDS, ['beastmaker-1000', 'beastmaker-2000']);
+test('every board is registered with a consistent manifest', () => {
+  assert.deepEqual(BOARD_IDS, [
+    'beastmaker-1000',
+    'beastmaker-2000',
+    'tension-grindstone-mk2',
+    'metolius-simulator-3d',
+    'metolius-project',
+    'metolius-wood-grips-compact',
+    'metolius-wood-grips-deluxe',
+    'fika-vetelangd',
+  ]);
   for (const id of BOARD_IDS) {
     const board = getBoard(id)!;
-    assert.equal(board.width, 580);
-    assert.equal(board.height, 150);
+    assert.ok(board.width > 0 && board.height > 0, `${id} has a size`);
+    assert.ok(board.holds.length >= 10, `${id} has holds`);
     const ids = board.holds.map((h) => h.id);
     assert.equal(new Set(ids).size, ids.length, `${id}: unique hold ids`);
     for (const hold of board.holds) {

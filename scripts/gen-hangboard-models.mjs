@@ -60,6 +60,19 @@ function smoothstep(t) {
   return t * t * (3 - 2 * t);
 }
 
+/** True when (x, y) lies inside the board's traced outline (or anywhere, for plain rectangles). */
+function insideBoard(board, x, y) {
+  const poly = board.outline;
+  if (!poly?.length) return true;
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
 // ---------- heightmap ----------
 
 // Thickness of the board (distance from the wall) at front-view point (x, y).
@@ -80,9 +93,9 @@ function thicknessAt(board, x, y) {
       continue;
     }
     if (h.type === 'sloper' || h.type === 'jug') {
-      if (x < h.x || x > h.x + h.w || y > h.y + h.h) continue;
+      if (x < h.x || x > h.x + h.w || y < h.y || y > h.y + h.h) continue;
       if (h.type === 'sloper') {
-        const tan = Math.tan((h.angle_deg * Math.PI) / 180);
+        const tan = Math.tan(((h.angle_deg ?? 20) * Math.PI) / 180);
         const z0 = Math.max(0, D - h.h / tan);
         z = Math.min(z, z0 + (y - h.y) / tan);
       } else {
@@ -136,58 +149,66 @@ function buildMesh(board) {
       normals.push(n[0] / len, n[1] / len, n[2] / len);
     }
   }
-  for (let j = 0; j < ny - 1; j++) {
-    for (let i = 0; i < nx - 1; i++) {
-      const a = idx(i, j);
-      const b = idx(i + 1, j);
-      const c = idx(i, j + 1);
-      const d = idx(i + 1, j + 1);
-      // Counter-clockwise seen from +Z (the climber).
-      indices.push(a, c, b, b, c, d);
+  // A cell is part of the board when all four of its corners are inside the outline.
+  const inside = new Uint8Array(nx * ny);
+  for (let j = 0; j < ny; j++) {
+    for (let i = 0; i < nx; i++) inside[idx(i, j)] = insideBoard(board, i * sx, j * sy) ? 1 : 0;
+  }
+  const cell = (i, j) =>
+    i >= 0 &&
+    j >= 0 &&
+    i < nx - 1 &&
+    j < ny - 1 &&
+    inside[idx(i, j)] &&
+    inside[idx(i + 1, j)] &&
+    inside[idx(i, j + 1)] &&
+    inside[idx(i + 1, j + 1)];
+
+  // Back face: the same grid at Z = 0, facing the wall.
+  const backBase = positions.length / 3;
+  for (let j = 0; j < ny; j++) {
+    for (let i = 0; i < nx; i++) {
+      positions.push(i * sx, H - j * sy, 0);
+      normals.push(0, 0, -1);
     }
   }
-
-  // Back face and side walls. Side walls follow the front border down to Z=0.
   const addVert = (x, y, z, n) => {
     positions.push(x, y, z);
     normals.push(...n);
     return positions.length / 3 - 1;
   };
-  const back = [
-    addVert(0, 0, 0, [0, 0, -1]),
-    addVert(W, 0, 0, [0, 0, -1]),
-    addVert(W, H, 0, [0, 0, -1]),
-    addVert(0, H, 0, [0, 0, -1]),
-  ];
-  indices.push(back[0], back[2], back[1], back[0], back[3], back[2]);
-
-  const wall = (frontIds, n) => {
-    const backIds = frontIds.map((vi) => addVert(positions[vi * 3], positions[vi * 3 + 1], 0, n));
-    const dup = frontIds.map((vi) =>
-      addVert(positions[vi * 3], positions[vi * 3 + 1], positions[vi * 3 + 2], n)
-    );
-    for (let k = 0; k < frontIds.length - 1; k++) {
-      const f0 = dup[k];
-      const f1 = dup[k + 1];
-      const b0 = backIds[k];
-      const b1 = backIds[k + 1];
-      indices.push(f0, b0, f1, f1, b0, b1);
-    }
+  // Wall between two front vertices and their back copies, facing outwards along n.
+  const wall = (v0, v1, n) => {
+    const f0 = addVert(positions[v0 * 3], positions[v0 * 3 + 1], positions[v0 * 3 + 2], n);
+    const f1 = addVert(positions[v1 * 3], positions[v1 * 3 + 1], positions[v1 * 3 + 2], n);
+    const b0 = addVert(positions[v0 * 3], positions[v0 * 3 + 1], 0, n);
+    const b1 = addVert(positions[v1 * 3], positions[v1 * 3 + 1], 0, n);
+    indices.push(f0, b0, f1, f1, b0, b1);
   };
-  // Top edge (j = 0), walking left to right; outward normal +Y.
-  wall(Array.from({ length: nx }, (_, i) => idx(i, 0)).reverse(), [0, 1, 0]);
-  // Bottom edge, outward -Y.
-  wall(
-    Array.from({ length: nx }, (_, i) => idx(i, ny - 1)),
-    [0, -1, 0]
-  );
-  // Left edge, outward -X.
-  wall(Array.from({ length: ny }, (_, j) => idx(0, j)).reverse(), [-1, 0, 0]);
-  // Right edge, outward +X.
-  wall(
-    Array.from({ length: ny }, (_, j) => idx(nx - 1, j)),
-    [1, 0, 0]
-  );
+  for (let j = 0; j < ny - 1; j++) {
+    for (let i = 0; i < nx - 1; i++) {
+      if (!cell(i, j)) continue;
+      const a = idx(i, j);
+      const b = idx(i + 1, j);
+      const c = idx(i, j + 1);
+      const d = idx(i + 1, j + 1);
+      // Front, counter-clockwise seen from +Z (the climber); back the other way round.
+      indices.push(a, c, b, b, c, d);
+      indices.push(
+        backBase + a,
+        backBase + b,
+        backBase + c,
+        backBase + b,
+        backBase + d,
+        backBase + c
+      );
+      // Walls wherever the neighbouring cell is missing. Edges run so the quad faces outwards.
+      if (!cell(i, j - 1)) wall(b, a, [0, 1, 0]); // top edge (+Y)
+      if (!cell(i, j + 1)) wall(c, d, [0, -1, 0]); // bottom edge (-Y)
+      if (!cell(i - 1, j)) wall(a, c, [-1, 0, 0]); // left edge (-X)
+      if (!cell(i + 1, j)) wall(d, b, [1, 0, 0]); // right edge (+X)
+    }
+  }
 
   return { positions, normals, indices };
 }
@@ -434,7 +455,9 @@ function writeSvg(file, board, labeled) {
   );
   parts.push(`<title>${board.brand} ${board.model}</title>`);
   parts.push(
-    `<rect id="board" x="0" y="0" width="${W}" height="${H}" rx="${cornerR}" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>`
+    board.outline?.length
+      ? `<path id="board" d="${board.outline.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ')} Z" stroke-linejoin="round" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>`
+      : `<rect id="board" x="0" y="0" width="${W}" height="${H}" rx="${cornerR}" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>`
   );
   parts.push('<g id="holds">');
   for (const h of board.holds) {

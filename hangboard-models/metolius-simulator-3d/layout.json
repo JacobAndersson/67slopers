@@ -1,0 +1,645 @@
+{
+  "id": "metolius-simulator-3d",
+  "brand": "Metolius",
+  "model": "Simulator 3D",
+  "url": "https://www.metoliusclimbing.com/collections/training-boards/products/simulator-training-board",
+  "material": "polyester resin",
+  "size_mm": {
+    "width": 711,
+    "height": 222,
+    "depth": 60
+  },
+  "outline": [
+    [
+      0,
+      84
+    ],
+    [
+      15,
+      48
+    ],
+    [
+      30,
+      42
+    ],
+    [
+      95,
+      42
+    ],
+    [
+      105,
+      57
+    ],
+    [
+      180,
+      45
+    ],
+    [
+      290,
+      27
+    ],
+    [
+      318,
+      12
+    ],
+    [
+      335,
+      0
+    ],
+    [
+      376,
+      0
+    ],
+    [
+      393,
+      12
+    ],
+    [
+      421,
+      27
+    ],
+    [
+      531,
+      45
+    ],
+    [
+      606,
+      57
+    ],
+    [
+      616,
+      42
+    ],
+    [
+      681,
+      42
+    ],
+    [
+      696,
+      48
+    ],
+    [
+      711,
+      84
+    ],
+    [
+      615,
+      217
+    ],
+    [
+      381,
+      217
+    ],
+    [
+      371,
+      224
+    ],
+    [
+      340,
+      224
+    ],
+    [
+      330,
+      217
+    ],
+    [
+      96,
+      217
+    ]
+  ],
+  "weight_g": null,
+  "screw_holes": [
+    {
+      "x": 51,
+      "y": 84
+    },
+    {
+      "x": 660,
+      "y": 84
+    },
+    {
+      "x": 358,
+      "y": 52
+    },
+    {
+      "x": 176,
+      "y": 104
+    },
+    {
+      "x": 535,
+      "y": 104
+    },
+    {
+      "x": 152,
+      "y": 190
+    },
+    {
+      "x": 559,
+      "y": 190
+    }
+  ],
+  "coordinate_system": "x from the left edge, y from the top edge, millimetres, front view as the climber sees it",
+  "notes": [
+    "Depths are the numbers Metolius prints on its own \"Simulator edge depths\" diagram; positions are traced from that diagram and scaled to 28 x 8.75 in (711 x 222 mm), expect +-4 mm.",
+    "The board is an arc that widens downwards; `outline` is the traced silhouette. Sloper angles are not published (Metolius calls them flat and round), so angle_deg is null and the generators treat them as gentle 20 degree surfaces.",
+    "The \"55 mm\" and \"65 mm\" on the slopers and the pocket/edge numbers are Metolius depths from the front face to the back of the hold."
+  ],
+  "holds": [
+    {
+      "id": "jug-l",
+      "pair": "jug-r",
+      "side": "left",
+      "row": 1,
+      "type": "jug",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": null,
+      "label": "Outer jug",
+      "x": 20,
+      "y": 40,
+      "w": 78,
+      "h": 24,
+      "shape": "rect"
+    },
+    {
+      "id": "sloper-flat-l",
+      "pair": "sloper-flat-r",
+      "side": "left",
+      "row": 1,
+      "type": "sloper",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 55,
+      "label": "55 mm flat sloper",
+      "x": 102,
+      "y": 47,
+      "w": 100,
+      "h": 24,
+      "shape": "rect"
+    },
+    {
+      "id": "sloper-round-l",
+      "pair": "sloper-round-r",
+      "side": "left",
+      "row": 1,
+      "type": "sloper",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 65,
+      "label": "65 mm round sloper",
+      "x": 203,
+      "y": 32,
+      "w": 107,
+      "h": 30,
+      "shape": "rect"
+    },
+    {
+      "id": "jug-center",
+      "pair": null,
+      "side": "center",
+      "row": 1,
+      "type": "jug",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": null,
+      "label": "Centre jug",
+      "x": 315,
+      "y": 3,
+      "w": 86,
+      "h": 34,
+      "shape": "rect"
+    },
+    {
+      "id": "pocket-3f-50",
+      "pair": null,
+      "side": "center",
+      "row": 1,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 50,
+      "label": "50 mm 3-finger pocket",
+      "x": 326,
+      "y": 39,
+      "w": 64,
+      "h": 24,
+      "shape": "stadium"
+    },
+    {
+      "id": "sloper-round-r",
+      "pair": "sloper-round-l",
+      "side": "right",
+      "row": 1,
+      "type": "sloper",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 65,
+      "label": "65 mm round sloper",
+      "x": 401,
+      "y": 32,
+      "w": 107,
+      "h": 30,
+      "shape": "rect"
+    },
+    {
+      "id": "sloper-flat-r",
+      "pair": "sloper-flat-l",
+      "side": "right",
+      "row": 1,
+      "type": "sloper",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 55,
+      "label": "55 mm flat sloper",
+      "x": 509,
+      "y": 47,
+      "w": 100,
+      "h": 24,
+      "shape": "rect"
+    },
+    {
+      "id": "jug-r",
+      "pair": "jug-l",
+      "side": "right",
+      "row": 1,
+      "type": "jug",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": null,
+      "label": "Outer jug",
+      "x": 613,
+      "y": 40,
+      "w": 78,
+      "h": 24,
+      "shape": "rect"
+    },
+    {
+      "id": "pocket-3f-30-l",
+      "pair": "pocket-3f-30-r",
+      "side": "left",
+      "row": 2,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 30,
+      "label": "30 mm 3-finger pocket",
+      "x": 27,
+      "y": 70,
+      "w": 56,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-25-l",
+      "pair": "edge-25-r",
+      "side": "left",
+      "row": 2,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 25,
+      "label": "25 mm edge",
+      "x": 45,
+      "y": 102,
+      "w": 83,
+      "h": 26,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-19-l",
+      "pair": "edge-19-r",
+      "side": "left",
+      "row": 2,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 19,
+      "label": "19 mm edge",
+      "x": 134,
+      "y": 89,
+      "w": 80,
+      "h": 26,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-36-l",
+      "pair": "edge-36-r",
+      "side": "left",
+      "row": 2,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 36,
+      "label": "36 mm edge",
+      "x": 222,
+      "y": 78,
+      "w": 83,
+      "h": 26,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-37",
+      "pair": null,
+      "side": "center",
+      "row": 2,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 37,
+      "label": "37 mm 3-finger pocket",
+      "x": 329,
+      "y": 89,
+      "w": 61,
+      "h": 23,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-36-r",
+      "pair": "edge-36-l",
+      "side": "right",
+      "row": 2,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 36,
+      "label": "36 mm edge",
+      "x": 406,
+      "y": 78,
+      "w": 83,
+      "h": 26,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-19-r",
+      "pair": "edge-19-l",
+      "side": "right",
+      "row": 2,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 19,
+      "label": "19 mm edge",
+      "x": 497,
+      "y": 89,
+      "w": 80,
+      "h": 26,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-25-r",
+      "pair": "edge-25-l",
+      "side": "right",
+      "row": 2,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 25,
+      "label": "25 mm edge",
+      "x": 583,
+      "y": 102,
+      "w": 83,
+      "h": 26,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-30-r",
+      "pair": "pocket-3f-30-l",
+      "side": "right",
+      "row": 2,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 30,
+      "label": "30 mm 3-finger pocket",
+      "x": 628,
+      "y": 70,
+      "w": 56,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-15-l",
+      "pair": "pocket-3f-15-r",
+      "side": "left",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 15,
+      "label": "15 mm 3-finger pocket",
+      "x": 80,
+      "y": 146,
+      "w": 67,
+      "h": 24,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-35-l",
+      "pair": "pocket-3f-35-r",
+      "side": "left",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 35,
+      "label": "35 mm 3-finger pocket",
+      "x": 160,
+      "y": 136,
+      "w": 70,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-17-l",
+      "pair": "pocket-3f-17-r",
+      "side": "left",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 17,
+      "label": "17 mm 3-finger pocket",
+      "x": 241,
+      "y": 125,
+      "w": 69,
+      "h": 24,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-2f-28",
+      "pair": null,
+      "side": "center",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 2,
+      "angle_deg": null,
+      "depth_mm": 28,
+      "label": "28 mm 2-finger pocket",
+      "x": 334,
+      "y": 130,
+      "w": 54,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-17-r",
+      "pair": "pocket-3f-17-l",
+      "side": "right",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 17,
+      "label": "17 mm 3-finger pocket",
+      "x": 401,
+      "y": 125,
+      "w": 69,
+      "h": 24,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-35-r",
+      "pair": "pocket-3f-35-l",
+      "side": "right",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 35,
+      "label": "35 mm 3-finger pocket",
+      "x": 481,
+      "y": 136,
+      "w": 70,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-3f-15-r",
+      "pair": "pocket-3f-15-l",
+      "side": "right",
+      "row": 3,
+      "type": "pocket",
+      "fingers": 3,
+      "angle_deg": null,
+      "depth_mm": 15,
+      "label": "15 mm 3-finger pocket",
+      "x": 564,
+      "y": 146,
+      "w": 67,
+      "h": 24,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-14-l",
+      "pair": "edge-14-r",
+      "side": "left",
+      "row": 4,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 14,
+      "label": "14 mm edge",
+      "x": 118,
+      "y": 177,
+      "w": 82,
+      "h": 27,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-2f-30-l",
+      "pair": "pocket-2f-30-r",
+      "side": "left",
+      "row": 4,
+      "type": "pocket",
+      "fingers": 2,
+      "angle_deg": null,
+      "depth_mm": 30,
+      "label": "30 mm 2-finger pocket",
+      "x": 219,
+      "y": 172,
+      "w": 40,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-2f-14-l",
+      "pair": "pocket-2f-14-r",
+      "side": "left",
+      "row": 4,
+      "type": "pocket",
+      "fingers": 2,
+      "angle_deg": null,
+      "depth_mm": 14,
+      "label": "14 mm 2-finger pocket",
+      "x": 278,
+      "y": 164,
+      "w": 37,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-2f-32",
+      "pair": null,
+      "side": "center",
+      "row": 4,
+      "type": "pocket",
+      "fingers": 2,
+      "angle_deg": null,
+      "depth_mm": 32,
+      "label": "32 mm 2-finger pocket",
+      "x": 337,
+      "y": 175,
+      "w": 43,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-2f-14-r",
+      "pair": "pocket-2f-14-l",
+      "side": "right",
+      "row": 4,
+      "type": "pocket",
+      "fingers": 2,
+      "angle_deg": null,
+      "depth_mm": 14,
+      "label": "14 mm 2-finger pocket",
+      "x": 396,
+      "y": 164,
+      "w": 37,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "pocket-2f-30-r",
+      "pair": "pocket-2f-30-l",
+      "side": "right",
+      "row": 4,
+      "type": "pocket",
+      "fingers": 2,
+      "angle_deg": null,
+      "depth_mm": 30,
+      "label": "30 mm 2-finger pocket",
+      "x": 452,
+      "y": 172,
+      "w": 40,
+      "h": 21,
+      "shape": "stadium"
+    },
+    {
+      "id": "edge-14-r",
+      "pair": "edge-14-l",
+      "side": "right",
+      "row": 4,
+      "type": "edge",
+      "fingers": 4,
+      "angle_deg": null,
+      "depth_mm": 14,
+      "label": "14 mm edge",
+      "x": 511,
+      "y": 177,
+      "w": 82,
+      "h": 27,
+      "shape": "stadium"
+    }
+  ]
+}

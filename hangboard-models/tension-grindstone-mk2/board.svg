@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 563 156" width="1126" height="312" font-family="Geist Mono, ui-monospace, monospace">
+<title>Tension Grindstone Mk2</title>
+<rect id="board" x="0" y="0" width="559" height="152" rx="10" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>
+<g id="holds">
+<rect id="jug" data-type="jug" data-fingers="4" x="0" y="0" width="559" height="14" rx="3.5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Top jug</title></rect>
+<path id="edge-10-l" data-type="edge" data-fingers="4" data-depth="10" data-pair="edge-10-r" d="M15 14h101v24h-101z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>10 mm edge</title></path>
+<path id="edge-8-l" data-type="edge" data-fingers="4" data-depth="8" data-pair="edge-8-r" d="M116 14h93v24h-93z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>8 mm edge</title></path>
+<path id="edge-8-r" data-type="edge" data-fingers="4" data-depth="8" data-pair="edge-8-l" d="M445 14h93v24h-93z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>8 mm edge</title></path>
+<path id="edge-10-r" data-type="edge" data-fingers="4" data-depth="10" data-pair="edge-10-l" d="M350 14h95v24h-95z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>10 mm edge</title></path>
+<path id="edge-30-l" data-type="edge" data-fingers="4" data-depth="30" data-pair="edge-30-r" d="M21 63h102v27h-102z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>30 mm edge</title></path>
+<path id="edge-25-l" data-type="edge" data-fingers="4" data-depth="25" data-pair="edge-25-r" d="M123 63h93v27h-93z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm edge</title></path>
+<path id="edge-50" data-type="edge" data-fingers="4" data-depth="50" d="M233 65h89v25h-89z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>50 mm one-arm edge</title></path>
+<path id="edge-25-r" data-type="edge" data-fingers="4" data-depth="25" data-pair="edge-25-l" d="M439 63h99v27h-99z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm edge</title></path>
+<path id="edge-30-r" data-type="edge" data-fingers="4" data-depth="30" data-pair="edge-30-l" d="M347 63h92v27h-92z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>30 mm edge</title></path>
+<path id="edge-20-l" data-type="edge" data-fingers="4" data-depth="20" data-pair="edge-20-r" d="M27 118h99v27h-99z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>20 mm edge</title></path>
+<path id="edge-15-l" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-15-r" d="M126 118h87v27h-87z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>15 mm edge</title></path>
+<path id="edge-15-r" data-type="edge" data-fingers="4" data-depth="15" data-pair="edge-15-l" d="M436 118h102v27h-102z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>15 mm edge</title></path>
+<path id="edge-20-r" data-type="edge" data-fingers="4" data-depth="20" data-pair="edge-20-l" d="M343 118h93v27h-93z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>20 mm edge</title></path>
+</g>
+<circle cx="234" cy="42" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="321" cy="42" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="41" cy="76" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="515" cy="76" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="204" cy="131" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="352" cy="131" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+</svg>

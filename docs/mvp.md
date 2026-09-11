@@ -80,7 +80,10 @@ Improvements:
 
 ### Settings
 
-- None yet. No profile, no theme picker, no cue settings (there are no cues).
+- The workout settings menu contains Sound, Vibration, and Gen Z mode. Choices persist per device.
+- Gen Z mode is an optional post-MVP addition: an adaptive upper timer panel and muted, bundled
+  gameplay below. Clips rotate per hang and continue through recovery. No network access is
+  needed on native; media failures never affect the timer. See [gen-z-mode.md](gen-z-mode.md).
 
 ## Out of scope for the MVP
 

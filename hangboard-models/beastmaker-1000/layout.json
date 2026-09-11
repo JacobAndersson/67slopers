@@ -5,6 +5,8 @@
   "url": "https://www.beastmaker.co.uk/products/beastmaker-1000-series",
   "material": "wood (tulipwood; beech variant also sold)",
   "size_mm": { "width": 580, "height": 150, "depth": 45 },
+  "lower_tier": true,
+  "stepped_top": true,
   "corner_radius_mm": 60,
   "weight_g": 1700,
   "screw_holes": [

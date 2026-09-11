@@ -28,7 +28,16 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const ALL_BOARDS = ['beastmaker-1000', 'beastmaker-2000'];
+const ALL_BOARDS = [
+  'beastmaker-1000',
+  'beastmaker-2000',
+  'tension-grindstone-mk2',
+  'metolius-simulator-3d',
+  'metolius-project',
+  'metolius-wood-grips-compact',
+  'metolius-wood-grips-deluxe',
+  'fika-vetelangd',
+];
 // `npm run boards -- --draw [board...]` redraws base.svg from layout.json for the named boards
 // (all when none are named), replacing any hand edits.
 const args = process.argv.slice(2);
@@ -55,7 +64,7 @@ const C = {
 const read = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
 
 // Corner radius of the board being rendered, needed by corner-shaped jugs.
-let CURRENT = { id: '', rx: 12, width: 580 };
+let CURRENT = { id: '', rx: 12, width: 580, stepped: false };
 
 /** Rounded jug cap, with a curved inside corner instead of a square trim strip. */
 function cornerPath(h) {
@@ -79,7 +88,10 @@ function holdTransform(h) {
 function sloperGeometry(h) {
   const slope = Math.tan(((h.angle_deg ?? 20) * Math.PI) / 180);
   const drop = h.h * (0.4 + 0.6 * slope);
-  const run = CURRENT.id === 'beastmaker-2000' || h.side === 'center' ? 0 : 20;
+  // Only side slopers on the top edge of a board whose layout declares `stepped_top` (the
+  // Beastmaker 1000, where each sloper steps down from its neighbour) get a notch and end cheek.
+  const stepped = CURRENT.stepped && h.y === 0 && h.side !== 'center';
+  const run = stepped ? 20 : 0;
   const notch = run * slope;
   return { drop, notch, run };
 }
@@ -172,6 +184,16 @@ function topHold(h, selected = false) {
   const mid = selected ? C.primary : C.strip;
   const shadow = selected ? C.edge : C.stripDark;
   const stroke = `stroke="${outline}" stroke-width="0.8" stroke-linejoin="round"`;
+  if (h.type === 'jug' && h.shape !== 'corner') {
+    // A plain jug block or bar: a lit roll along the top, a darker undercut band below.
+    const rx = h.shape === 'circle' ? h.h / 2 : Math.min(7, h.h / 2);
+    const inset = Math.min(6, h.h * 0.3);
+    return `<g transform="translate(${h.x} ${h.y})">
+      <rect x="0" y="0" width="${h.w}" height="${h.h}" rx="${rx}" fill="${mid}" ${stroke}/>
+      <path d="M${inset + 2} ${inset} H${h.w - inset - 2}" fill="none" stroke="${light}" stroke-width="${Math.max(2, inset)}" stroke-linecap="round"/>
+      <path d="M${inset + 2} ${h.h - inset} H${h.w - inset - 2}" fill="none" stroke="${selected ? C.outline : C.recess}" stroke-width="${Math.max(1.5, inset * 0.6)}" stroke-linecap="round" opacity="0.7"/>
+    </g>`;
+  }
   if (h.type === 'jug') {
     const inner = h.inner ?? { w: 30, h: 28 };
     // The dark inside edge is the undercut; a broad lit roll sits in front of it.
@@ -188,6 +210,7 @@ function topHold(h, selected = false) {
   }
   const { drop, notch, run } = sloperGeometry(h);
   const angle = h.angle_deg ?? 20;
+  const caption = h.angle_deg != null ? `${angle}°` : h.depth_mm != null ? `${h.depth_mm} mm` : '';
   const face = mix(mid, shadow, (angle - 20) / 35);
   // A triangular end cheek exposes the actual ramp, and the front edge steps down by angle.
   const cheek = notch
@@ -200,7 +223,7 @@ function topHold(h, selected = false) {
     <path d="M4 ${drop - 2} H${h.w - 4}" stroke="${shadow}" stroke-width="3" stroke-linecap="round"/>
   </g>
   <text x="${h.x + h.w / 2 + (h.side === 'left' ? 5 : h.side === 'right' ? -5 : 0)}" y="${h.y + drop / 2 + 4.5}"
-    text-anchor="middle" font-family="Geist Mono" font-size="13" fill="${C.recess}">${angle}°</text>`;
+    text-anchor="middle" font-family="Geist Mono" font-size="13" fill="${C.recess}">${caption}</text>`;
 }
 
 /** One hold on the base board: sculpted top holds, recessed edges and dark pockets. */
@@ -258,9 +281,18 @@ function lowerTier(layout, W, H, rx, defs) {
   </g>`;
 }
 
+/** The board's silhouette: a traced polygon when the layout has one, else a rounded rectangle. */
+function bodyShape(layout, W, H, rx, attrs) {
+  if (layout.outline?.length) {
+    const d = layout.outline.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ') + ' Z';
+    return `<path d="${d}" stroke-linejoin="round" ${attrs}/>`;
+  }
+  return `<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="${rx}" ${attrs}/>`;
+}
+
 function baseSvg(layout, W, H) {
   const rx = boardCornerRadius(layout.id, layout);
-  CURRENT = { id: layout.id, rx, width: W };
+  CURRENT = { id: layout.id, rx, width: W, stepped: Boolean(layout.stepped_top) };
   const cuts = layout.holds
     .filter((h) => h.type === 'sloper' && h.side !== 'center')
     .map((h) => {
@@ -271,11 +303,11 @@ function baseSvg(layout, W, H) {
   const defs = [
     `<mask id="board-silhouette"><rect width="${W}" height="${H}" fill="white"/>${cuts}</mask>`,
   ];
-  const tier = lowerTier(layout, W, H, rx, defs);
+  const tier = layout.lower_tier ? lowerTier(layout, W, H, rx, defs) : '';
   const holds = layout.holds.map((h) => baseHold(h, defs)).join('\n');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W * SCALE}" height="${H * SCALE}">
 <defs>${defs.join('')}</defs>
-<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="${rx}" fill="${C.body}" stroke="${C.outline}" stroke-width="1" mask="url(#board-silhouette)"/>
+${bodyShape(layout, W, H, rx, `fill="${C.body}" stroke="${C.outline}" stroke-width="1" mask="url(#board-silhouette)"`)}
 ${tier}
 ${holds}
 </svg>`;
@@ -344,7 +376,12 @@ for (const id of BOARDS) {
   const H = layout.size_mm.height;
   const assetDir = `assets/boards/${id}`;
   rmSync(join(root, assetDir, 'holds'), { recursive: true, force: true });
-  CURRENT = { id, rx: boardCornerRadius(id, layout), width: W };
+  CURRENT = {
+    id,
+    rx: boardCornerRadius(id, layout),
+    width: W,
+    stepped: Boolean(layout.stepped_top),
+  };
 
   // base.svg is the source of truth; it is drawn from the layout only when asked or missing.
   const baseFile = `${assetDir}/base.svg`;

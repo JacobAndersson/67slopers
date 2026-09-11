@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -14 650 180" width="1300" height="360" font-family="Geist Mono, ui-monospace, monospace">
+<title>Metolius Project</title>
+<path id="board" d="M0 37 L7 2 L84 0 L106 17 L209 15 L312 9 L415 15 L518 17 L535 0 L615 2 L622 37 L549 145 L73 145 Z" stroke-linejoin="round" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>
+<g id="holds">
+<rect id="jug-l" data-type="jug" data-fingers="4" data-pair="jug-r" x="7" y="0" width="99" height="20" rx="5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Outer jug</title></rect>
+<rect id="sloper-flat-l" data-type="sloper" data-fingers="4" data-depth="55" data-pair="sloper-flat-r" x="106" y="15" width="103" height="22" rx="5.5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>55 mm flat sloper</title></rect>
+<rect id="sloper-round" data-type="sloper" data-fingers="4" data-depth="53" x="209" y="9" width="204" height="28" rx="7" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>53 mm round sloper</title></rect>
+<rect id="sloper-flat-r" data-type="sloper" data-fingers="4" data-depth="55" data-pair="sloper-flat-l" x="413" y="15" width="103" height="22" rx="5.5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>55 mm flat sloper</title></rect>
+<rect id="jug-r" data-type="jug" data-fingers="4" data-pair="jug-l" x="516" y="0" width="99" height="20" rx="5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Outer jug</title></rect>
+<path id="pocket-3f-45-l" data-type="pocket" data-fingers="3" data-depth="45" data-pair="pocket-3f-45-r" d="M31 28h46a10 10 0 0 1 0 20h-46a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>45 mm 3-finger pocket</title></path>
+<path id="pocket-3f-45-r" data-type="pocket" data-fingers="3" data-depth="45" data-pair="pocket-3f-45-l" d="M545 28h46a10 10 0 0 1 0 20h-46a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>45 mm 3-finger pocket</title></path>
+<path id="edge-30-l" data-type="edge" data-fingers="4" data-depth="30" data-pair="edge-30-r" d="M56 59h67a11 11 0 0 1 0 22h-67a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>30 mm edge</title></path>
+<path id="pocket-2f-40-l" data-type="pocket" data-fingers="2" data-depth="40" data-pair="pocket-2f-40-r" d="M160 54h25a10 10 0 0 1 0 20h-25a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>40 mm 2-finger pocket</title></path>
+<path id="edge-39" data-type="edge" data-fingers="4" data-depth="39" d="M224 48h174a13 13 0 0 1 0 26h-174a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>39 mm edge</title></path>
+<path id="pocket-2f-40-r" data-type="pocket" data-fingers="2" data-depth="40" data-pair="pocket-2f-40-l" d="M437 54h25a10 10 0 0 1 0 20h-25a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>40 mm 2-finger pocket</title></path>
+<path id="edge-30-r" data-type="edge" data-fingers="4" data-depth="30" data-pair="edge-30-l" d="M499 59h67a11 11 0 0 1 0 22h-67a11 11 0 0 1 0 -22z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>30 mm edge</title></path>
+<path id="pocket-3f-22-l" data-type="pocket" data-fingers="3" data-depth="22" data-pair="pocket-3f-22-r" d="M83 100h48a10 10 0 0 1 0 20h-48a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>22 mm 3-finger pocket</title></path>
+<path id="pocket-2f-22-l" data-type="pocket" data-fingers="2" data-depth="22" data-pair="pocket-2f-22-r" d="M163 95h24a10 10 0 0 1 0 20h-24a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>22 mm 2-finger pocket</title></path>
+<path id="edge-16" data-type="edge" data-fingers="4" data-depth="16" d="M225 91h172a12 12 0 0 1 0 24h-172a12 12 0 0 1 0 -24z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>16 mm edge</title></path>
+<path id="pocket-2f-22-r" data-type="pocket" data-fingers="2" data-depth="22" data-pair="pocket-2f-22-l" d="M435 95h24a10 10 0 0 1 0 20h-24a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>22 mm 2-finger pocket</title></path>
+<path id="pocket-3f-22-r" data-type="pocket" data-fingers="3" data-depth="22" data-pair="pocket-3f-22-l" d="M491 100h48a10 10 0 0 1 0 20h-48a10 10 0 0 1 0 -20z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>22 mm 3-finger pocket</title></path>
+</g>
+<circle cx="54" cy="37" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="568" cy="37" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="228" cy="63" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="392" cy="63" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="239" cy="104" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="383" cy="104" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="101" cy="112" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="521" cy="112" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<g id="labels" font-size="5" fill="#1f1a12" text-anchor="middle">
+<text x="56.5" y="17.5" fill="#1f1a12">jug</text>
+<text x="157.5" y="33.5" fill="#1f1a12">55</text>
+<text x="311" y="30.5" fill="#1f1a12">53</text>
+<text x="464.5" y="33.5" fill="#1f1a12">55</text>
+<text x="565.5" y="17.5" fill="#1f1a12">jug</text>
+<text x="54" y="45.5" fill="#f6f0e4">45</text>
+<text x="568" y="45.5" fill="#f6f0e4">45</text>
+<text x="89.5" y="77.5" fill="#f6f0e4">30</text>
+<text x="172.5" y="71.5" fill="#f6f0e4">40</text>
+<text x="311" y="68.5" fill="#f6f0e4">39</text>
+<text x="449.5" y="71.5" fill="#f6f0e4">40</text>
+<text x="532.5" y="77.5" fill="#f6f0e4">30</text>
+<text x="107" y="117.5" fill="#f6f0e4">22</text>
+<text x="175" y="112.5" fill="#f6f0e4">22</text>
+<text x="311" y="110.5" fill="#f6f0e4">16</text>
+<text x="447" y="112.5" fill="#f6f0e4">22</text>
+<text x="515" y="117.5" fill="#f6f0e4">22</text>
+</g>
+<text x="311" y="161" font-size="5" fill="#5a4a30" text-anchor="middle">Metolius Project · 622 × 152 × 55 mm · numbers are hold depths in mm (community measured)</text>
+</svg>

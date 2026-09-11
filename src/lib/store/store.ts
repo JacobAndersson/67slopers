@@ -4,8 +4,9 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { cloneSteps } from '../workout-steps';
 import { newId } from './ids';
-import { migrateSessionRecord, migrateWorkoutRecord } from './migrate';
+import { migrateStore } from './migrate';
 import { makePresetWorkouts } from './presets';
+import { normalizeSettings } from './settings';
 import {
   DEFAULT_SETTINGS,
   type Draft,
@@ -117,19 +118,11 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 'hangboard',
-      version: 4,
-      migrate: (persisted, version) => {
-        const state = { ...(persisted as Record<string, unknown>) };
-        // v1 persisted cue settings in another shape; v4 reintroduced `settings`.
-        if (version < 2) delete state.settings;
-        // v2 stored workouts as prep + blocks; v3 stores steps; v4 dropped repeats' skipLastRest.
-        if (version < 4) {
-          const records = (key: string) =>
-            Array.isArray(state[key]) ? (state[key] as Record<string, unknown>[]) : [];
-          state.workouts = records('workouts').map(migrateWorkoutRecord);
-          state.sessions = records('sessions').map(migrateSessionRecord);
-        }
-        return state;
+      version: 5,
+      migrate: migrateStore,
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<StoreState> | undefined;
+        return { ...current, ...saved, settings: normalizeSettings(saved?.settings) };
       },
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (s) => ({

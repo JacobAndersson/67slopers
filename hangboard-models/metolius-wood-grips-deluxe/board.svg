@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 614 220" width="1228" height="440" font-family="Geist Mono, ui-monospace, monospace">
+<title>Metolius Wood Grips II Deluxe</title>
+<path id="board" d="M0 0 L610 0 L594 216 L26 216 Z" stroke-linejoin="round" fill="#d9c9a3" stroke="#6b5a3a" stroke-width="1"/>
+<g id="holds">
+<rect id="jug-l" data-type="jug" data-fingers="4" data-pair="jug-r" x="2" y="2" width="100" height="26" rx="6.5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Outer jug</title></rect>
+<rect id="sloper-flat-l" data-type="sloper" data-fingers="4" data-depth="56" data-pair="sloper-flat-r" x="103" y="3" width="94" height="25" rx="6.25" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>56 mm flat sloper</title></rect>
+<rect id="sloper-round" data-type="sloper" data-fingers="4" data-depth="56" x="197" y="3" width="216" height="25" rx="6.25" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>56 mm round sloper</title></rect>
+<rect id="sloper-flat-r" data-type="sloper" data-fingers="4" data-depth="56" data-pair="sloper-flat-l" x="413" y="3" width="94" height="25" rx="6.25" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>56 mm flat sloper</title></rect>
+<rect id="jug-r" data-type="jug" data-fingers="4" data-pair="jug-l" x="508" y="2" width="100" height="26" rx="6.5" fill="#b8a57c" stroke="#6b5a3a" stroke-width="0.8"><title>Outer jug</title></rect>
+<path id="edge-31-l" data-type="edge" data-fingers="4" data-depth="31" data-pair="edge-31-r" d="M24 44h71a14 14 0 0 1 0 28h-71a14 14 0 0 1 0 -28z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>31 mm edge</title></path>
+<path id="pocket-3f-32-l" data-type="pocket" data-fingers="3" data-depth="32" data-pair="pocket-3f-32-r" d="M135 49h38a13 13 0 0 1 0 26h-38a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>32 mm 3-finger pocket</title></path>
+<path id="pocket-2f-38-l" data-type="pocket" data-fingers="2" data-depth="38" data-pair="pocket-2f-38-r" d="M215 49h20a13 13 0 0 1 0 26h-20a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>38 mm 2-finger pocket</title></path>
+<path id="pocket-4f-32" data-type="pocket" data-fingers="4" data-depth="32" d="M270 49h70a13 13 0 0 1 0 26h-70a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>32 mm 4-finger pocket</title></path>
+<path id="pocket-2f-38-r" data-type="pocket" data-fingers="2" data-depth="38" data-pair="pocket-2f-38-l" d="M375 49h20a13 13 0 0 1 0 26h-20a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>38 mm 2-finger pocket</title></path>
+<path id="pocket-3f-32-r" data-type="pocket" data-fingers="3" data-depth="32" data-pair="pocket-3f-32-l" d="M437 49h38a13 13 0 0 1 0 26h-38a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>32 mm 3-finger pocket</title></path>
+<path id="edge-31-r" data-type="edge" data-fingers="4" data-depth="31" data-pair="edge-31-l" d="M515 44h71a14 14 0 0 1 0 28h-71a14 14 0 0 1 0 -28z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>31 mm edge</title></path>
+<path id="edge-25-l" data-type="edge" data-fingers="4" data-depth="25" data-pair="edge-25-r" d="M32 104h73a14 14 0 0 1 0 28h-73a14 14 0 0 1 0 -28z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm edge</title></path>
+<path id="pocket-3f-25-l" data-type="pocket" data-fingers="3" data-depth="25" data-pair="pocket-3f-25-r" d="M145 109h39a13 13 0 0 1 0 26h-39a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm 3-finger pocket</title></path>
+<path id="pocket-2f-28-l" data-type="pocket" data-fingers="2" data-depth="28" data-pair="pocket-2f-28-r" d="M223 109h18a13 13 0 0 1 0 26h-18a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>28 mm 2-finger pocket</title></path>
+<path id="pocket-4f-25" data-type="pocket" data-fingers="4" data-depth="25" d="M270 109h70a13 13 0 0 1 0 26h-70a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm 4-finger pocket</title></path>
+<path id="pocket-2f-28-r" data-type="pocket" data-fingers="2" data-depth="28" data-pair="pocket-2f-28-l" d="M369 109h18a13 13 0 0 1 0 26h-18a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>28 mm 2-finger pocket</title></path>
+<path id="pocket-3f-25-r" data-type="pocket" data-fingers="3" data-depth="25" data-pair="pocket-3f-25-l" d="M426 109h39a13 13 0 0 1 0 26h-39a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm 3-finger pocket</title></path>
+<path id="edge-25-r" data-type="edge" data-fingers="4" data-depth="25" data-pair="edge-25-l" d="M505 104h73a14 14 0 0 1 0 28h-73a14 14 0 0 1 0 -28z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>25 mm edge</title></path>
+<path id="edge-19-l" data-type="edge" data-fingers="4" data-depth="19" data-pair="edge-19-r" d="M42 161h71a14 14 0 0 1 0 28h-71a14 14 0 0 1 0 -28z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm edge</title></path>
+<path id="pocket-3f-19-l" data-type="pocket" data-fingers="3" data-depth="19" data-pair="pocket-3f-19-r" d="M153 166h36a13 13 0 0 1 0 26h-36a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm 3-finger pocket</title></path>
+<path id="pocket-2f-19-l" data-type="pocket" data-fingers="2" data-depth="19" data-pair="pocket-2f-19-r" d="M225 166h16a13 13 0 0 1 0 26h-16a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm 2-finger pocket</title></path>
+<path id="pocket-4f-19" data-type="pocket" data-fingers="4" data-depth="19" d="M270 166h70a13 13 0 0 1 0 26h-70a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm 4-finger pocket</title></path>
+<path id="pocket-2f-19-r" data-type="pocket" data-fingers="2" data-depth="19" data-pair="pocket-2f-19-l" d="M369 166h16a13 13 0 0 1 0 26h-16a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm 2-finger pocket</title></path>
+<path id="pocket-3f-19-r" data-type="pocket" data-fingers="3" data-depth="19" data-pair="pocket-3f-19-l" d="M421 166h36a13 13 0 0 1 0 26h-36a13 13 0 0 1 0 -26z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm 3-finger pocket</title></path>
+<path id="edge-19-r" data-type="edge" data-fingers="4" data-depth="19" data-pair="edge-19-l" d="M497 161h71a14 14 0 0 1 0 28h-71a14 14 0 0 1 0 -28z" fill="#5a4630" stroke="#3b2d1c" stroke-width="0.8"><title>19 mm edge</title></path>
+</g>
+<circle cx="119" cy="49" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="494" cy="49" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="127" cy="106" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="486" cy="106" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="137" cy="166" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+<circle cx="476" cy="166" r="1.6" fill="#f2ece0" stroke="#3b2d1c" stroke-width="0.5"/>
+</svg>

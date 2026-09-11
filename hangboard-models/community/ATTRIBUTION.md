@@ -45,6 +45,7 @@ Keep this file with them.
 
 ## Official product photos
 
-`../beastmaker-*/reference/*.jpg` are Beastmaker Ltd product photos taken from
-beastmaker.co.uk. They are copyrighted marketing images kept here only as tracing references;
-do not bundle them into the app.
+`../<board>/reference/*` are manufacturer product photos and depth diagrams taken from
+beastmaker.co.uk, tensionclimbing.com, metoliusclimbing.com and fikaclimbing.shop. They are
+copyrighted marketing images kept here only as tracing references; do not bundle them into
+the app.

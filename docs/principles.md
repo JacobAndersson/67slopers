@@ -65,11 +65,12 @@ Not principles, but defaults that follow from how a hangboard timer is actually 
 (phone on the floor, on a shelf, or taped to the wall two metres away):
 
 - Legible from across the room: oversized digits, a colour-fill progress background and
-  large rep and set counters. Never shrink these to fit more on screen.
+  large rep and set counters. The default runner keeps its full-screen layout. Optional Gen Z
+  mode compacts spacing and adapts its split to preserve readable timing and grip guidance.
 - Few taps to start: last workout is preselected, one tap starts it.
 - Timing you can trust: the clock is monotonic, not `setInterval`, so 7:3 repeaters stay
   in sync. One beep and one tap mark every interval change, nothing before it; both are
-  quick toggles on the timer and the choice is remembered.
+  toggles in the workout settings menu and the choice is remembered. Gameplay clips are always muted.
 - One appearance. There are no themes and no dark mode; the palette is fixed.
 - Cross-platform from one codebase: iOS, Android and web, with native tab bars where the
   platform has them.

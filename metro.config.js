@@ -8,6 +8,7 @@ const config = getDefaultConfig(__dirname);
 // node_modules tree and `node_modules/hangboard-ui` symlinks into
 // `.design-sync/build`, which otherwise stalls the initial crawl and the manifest.
 const ignored = [
+  '.media-work',
   '.ds-sync',
   '.design-sync',
   'ds-bundle',

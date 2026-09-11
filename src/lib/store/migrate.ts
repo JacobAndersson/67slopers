@@ -1,3 +1,4 @@
+import { normalizeSettings } from './settings';
 import type { RepeatStep, Step, StepKind, TimedStep, WorkoutTimings } from './types';
 
 /** The v2 shape: one prep time and a list of blocks of identical sets. */
@@ -93,4 +94,18 @@ export function migrateWorkoutRecord(record: Record<string, unknown>): Record<st
 /** A persisted session: migrates its snapshot. */
 export function migrateSessionRecord(record: Record<string, unknown>): Record<string, unknown> {
   return { ...record, snapshot: migrateTimings(record.snapshot) };
+}
+
+/** Persist v5 adds Gen Z mode without rewriting v4 workouts or sessions. */
+export function migrateStore(persisted: unknown, version: number): Record<string, unknown> {
+  const state = { ...(persisted as Record<string, unknown>) };
+  if (version < 2) delete state.settings;
+  if (version < 4) {
+    const records = (key: string) =>
+      Array.isArray(state[key]) ? (state[key] as Record<string, unknown>[]) : [];
+    state.workouts = records('workouts').map(migrateWorkoutRecord);
+    state.sessions = records('sessions').map(migrateSessionRecord);
+  }
+  state.settings = normalizeSettings(state.settings);
+  return state;
 }
