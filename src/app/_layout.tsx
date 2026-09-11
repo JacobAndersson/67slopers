@@ -11,9 +11,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { FONTS } from '@/lib/fonts';
 import { useStore } from '@/lib/store/store';
+import { mark, measure } from '@/lib/perf';
 import { NAV_THEME, THEME } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync();
+mark('launch');
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(FONTS);
@@ -27,6 +29,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) {
       SplashScreen.hideAsync();
+      measure('launch', 'JS start → first screen');
     }
   }, [ready]);
 
