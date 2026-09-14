@@ -44,7 +44,7 @@ const twoSets = expandWorkout({
     },
   ],
 });
-// prep, hang, pause, hang, rest, hang, pause, hang, done
+// prep, hang, pause, hang, pause, rest, hang, pause, hang, pause, rest, done
 
 test('tick advances exactly at the boundary and carries no drift', () => {
   let s = running(twoSets, 1000);
@@ -103,10 +103,10 @@ test('back restarts after two seconds, otherwise goes to the previous interval',
 test('completedSets counts sets whose last hang is behind us, and reaches done', () => {
   let s = running(twoSets, 0);
   assert.equal(completedSets(s), 0);
-  s = tick(s, 10_000 + 7_000 + 3_000 + 7_000); // second hang of set 1 finished -> rest
-  assert.equal(current(s).phase, 'rest');
+  s = tick(s, 10_000 + 7_000 + 3_000 + 7_000); // second hang of set 1 finished -> pause
+  assert.equal(current(s).phase, 'pause');
   assert.equal(completedSets(s), 1);
-  s = tick(s, 10_000 + 7_000 + 3_000 + 7_000 + 60_000 + 7_000 + 3_000 + 7_000);
+  s = tick(s, 10_000 + 2 * (7_000 + 3_000 + 7_000 + 3_000 + 60_000));
   assert.equal(s.status, 'done');
   assert.equal(completedSets(s), 2);
 });
@@ -125,14 +125,16 @@ test('a skipped or cut-short hang is logged as done and does not complete its se
   s = tick(s, 10_000); // first hang starts
   s = tick(s, 20_000); // hang and pause ran out: second hang starts at 20 000
   s = skip(s, 23_450); // skipped 3.45 s in
-  assert.equal(current(s).phase, 'rest');
+  assert.equal(current(s).phase, 'pause');
   assert.deepEqual(hangResults(s), [
     { planned: 7, actual: 7 },
     { planned: 7, actual: 3.4 },
   ]);
   assert.equal(completedSets(s), 0, 'set 1 had a short hang');
-  s = skip(s, 24_000); // skip the rest: set 2 starts
-  s = tick(s, 24_000 + 7_000 + 3_000 + 7_000);
+  s = skip(s, 24_000); // skip the pause: set 1 rest starts
+  assert.equal(current(s).phase, 'rest');
+  s = skip(s, 24_500); // skip the rest: set 2 starts
+  s = tick(s, 24_500 + 7_000 + 3_000 + 7_000 + 3_000 + 60_000);
   assert.equal(s.status, 'done');
   assert.equal(completedSets(s), 1, 'set 2 ran in full');
 });

@@ -33,8 +33,8 @@ test('summaryLine reads sets, reps and rests', () => {
 });
 
 test('estimateDuration counts prep, hangs, pauses and rests between sets', () => {
-  assert.equal(estimateDuration(repeaters), 10 + 6 * (6 * 7 + 5 * 3) + 5 * 180);
-  assert.equal(estimateDuration(maxHangs), 10 + 5 * 10 + 4 * 180);
+  assert.equal(estimateDuration(repeaters), 10 + 6 * (6 * 7 + 6 * 3) + 6 * 180);
+  assert.equal(estimateDuration(maxHangs), 10 + 5 * 10 + 5 * 180);
   assert.equal(setsLine(4, 6), '4/6 sets');
 });
 

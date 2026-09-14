@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import type { RepeatStep, Step, TimedStep } from '../store/types';
-import { countSets, expandWorkout, totalSeconds, trimTrailingRests } from './intervals';
+import { countSets, expandWorkout, totalSeconds } from './intervals';
 
 const prep = (seconds: number): TimedStep => ({ kind: 'prep', seconds });
 const hang = (seconds: number, label?: string): TimedStep =>
@@ -20,10 +20,10 @@ test('repeaters unroll into sets of reps with pauses inside and rests between', 
   const count = (phase: string) => intervals.filter((i) => i.phase === phase).length;
   assert.equal(intervals[0].phase, 'prep');
   assert.equal(count('hang'), 36);
-  assert.equal(count('pause'), 30);
-  assert.equal(count('rest'), 5);
+  assert.equal(count('pause'), 36);
+  assert.equal(count('rest'), 6);
   assert.equal(intervals.at(-1)?.phase, 'done');
-  assert.equal(totalSeconds(intervals), 10 + 6 * (6 * 7 + 5 * 3) + 5 * 180);
+  assert.equal(totalSeconds(intervals), 10 + 6 * (6 * 7 + 6 * 3) + 6 * 180);
 });
 
 test('outer rounds are sets and inner rounds are reps', () => {
@@ -58,23 +58,23 @@ test('a single-level repeat has no reps and its rests stay rests', () => {
     'hang',
     'rest',
     'hang',
+    'rest',
     'done',
   ]);
 });
 
-test('the final round drops only its trailing rest', () => {
-  assert.equal(phases([repeat(3, [hang(7), rest(3)])]).filter((p) => p === 'rest').length, 2);
-  // Rests that are not trailing survive the final round.
+test('every round keeps its trailing rest, including the final one', () => {
+  assert.equal(phases([repeat(3, [hang(7), rest(3)])]).filter((p) => p === 'rest').length, 3);
+  // Rests that are not trailing survive every round too.
   assert.deepEqual(phases([repeat(2, [rest(5), hang(7), rest(3)])]), [
     'rest',
     'hang',
     'rest',
     'rest',
     'hang',
+    'rest',
     'done',
   ]);
-  assert.deepEqual(trimTrailingRests([hang(7), rest(3), rest(4)]), [hang(7)]);
-  assert.deepEqual(trimTrailingRests([rest(3)]), []);
 });
 
 test('top-level hangs count as sets and top-level rests belong to the set before them', () => {
@@ -83,7 +83,7 @@ test('top-level hangs count as sets and top-level rests belong to the set before
   const intervals = expandWorkout({ steps });
   assert.deepEqual(
     intervals.map((i) => `${i.phase} ${i.setIndex}/${i.setCount}`),
-    ['prep 0/3', 'hang 0/3', 'rest 0/3', 'hang 1/3', 'rest 1/3', 'hang 2/3', 'done 2/3']
+    ['prep 0/3', 'hang 0/3', 'rest 0/3', 'hang 1/3', 'rest 1/3', 'hang 2/3', 'rest 2/3', 'done 2/3']
   );
   assert.equal(intervals[1].label, 'warm up');
   assert.equal('label' in intervals[2], false, 'unlabelled steps carry no label key');

@@ -77,7 +77,7 @@ test('clock catch-up, pause/resume, back/restart, skip never reshuffle', () => {
   assert.equal(shouldPlay(state.status, false), false);
   state = engine.tick(state, 25000);
   assert.equal(hangOrdinal(engine.back(state, 25000)), ordinal);
-  assert.equal(hangOrdinal(engine.tick(state, 70000)), 3);
+  assert.equal(hangOrdinal(engine.tick(state, 72000)), 3);
   assert.equal(shouldPlay('done', true), false);
   assert.equal(shouldPlay('ended', true), false);
   assert.equal(shouldPlay('idle', true), false);

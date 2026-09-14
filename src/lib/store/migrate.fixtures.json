@@ -12,7 +12,8 @@
     "hang 7 s0/6 r4/6",
     "pause 3 s0/6 r4/6",
     "hang 7 s0/6 r5/6",
-    "rest 180 s0/6 r5/6",
+    "pause 3 s0/6 r5/6",
+    "rest 180 s0/6 r0/1",
     "hang 7 s1/6 r0/6",
     "pause 3 s1/6 r0/6",
     "hang 7 s1/6 r1/6",
@@ -24,7 +25,8 @@
     "hang 7 s1/6 r4/6",
     "pause 3 s1/6 r4/6",
     "hang 7 s1/6 r5/6",
-    "rest 180 s1/6 r5/6",
+    "pause 3 s1/6 r5/6",
+    "rest 180 s1/6 r0/1",
     "hang 7 s2/6 r0/6",
     "pause 3 s2/6 r0/6",
     "hang 7 s2/6 r1/6",
@@ -36,7 +38,8 @@
     "hang 7 s2/6 r4/6",
     "pause 3 s2/6 r4/6",
     "hang 7 s2/6 r5/6",
-    "rest 180 s2/6 r5/6",
+    "pause 3 s2/6 r5/6",
+    "rest 180 s2/6 r0/1",
     "hang 7 s3/6 r0/6",
     "pause 3 s3/6 r0/6",
     "hang 7 s3/6 r1/6",
@@ -48,7 +51,8 @@
     "hang 7 s3/6 r4/6",
     "pause 3 s3/6 r4/6",
     "hang 7 s3/6 r5/6",
-    "rest 180 s3/6 r5/6",
+    "pause 3 s3/6 r5/6",
+    "rest 180 s3/6 r0/1",
     "hang 7 s4/6 r0/6",
     "pause 3 s4/6 r0/6",
     "hang 7 s4/6 r1/6",
@@ -60,7 +64,8 @@
     "hang 7 s4/6 r4/6",
     "pause 3 s4/6 r4/6",
     "hang 7 s4/6 r5/6",
-    "rest 180 s4/6 r5/6",
+    "pause 3 s4/6 r5/6",
+    "rest 180 s4/6 r0/1",
     "hang 7 s5/6 r0/6",
     "pause 3 s5/6 r0/6",
     "hang 7 s5/6 r1/6",
@@ -72,6 +77,8 @@
     "hang 7 s5/6 r4/6",
     "pause 3 s5/6 r4/6",
     "hang 7 s5/6 r5/6",
+    "pause 3 s5/6 r5/6",
+    "rest 180 s5/6 r0/1",
     "done 0 s5/6 r0/1"
   ],
   "maxHangs": [
@@ -85,6 +92,7 @@
     "hang 10 s3/5 r0/1",
     "rest 180 s3/5 r0/1",
     "hang 10 s4/5 r0/1",
+    "rest 180 s4/5 r0/1",
     "done 0 s4/5 r0/1"
   ],
   "density": [
@@ -96,6 +104,7 @@
     "hang 30 s2/4 r0/1",
     "rest 120 s2/4 r0/1",
     "hang 30 s3/4 r0/1",
+    "rest 120 s3/4 r0/1",
     "done 0 s3/4 r0/1"
   ],
   "twoBlocks": [
@@ -103,14 +112,17 @@
     "hang 7 s0/4 r0/2 A",
     "pause 3 s0/4 r0/2",
     "hang 7 s0/4 r1/2 A",
-    "rest 60 s0/4 r1/2",
+    "pause 3 s0/4 r1/2",
+    "rest 60 s0/4 r0/1",
     "hang 7 s1/4 r0/2 A",
     "pause 3 s1/4 r0/2",
     "hang 7 s1/4 r1/2 A",
-    "rest 60 s1/4 r1/2",
+    "pause 3 s1/4 r1/2",
+    "rest 60 s1/4 r0/1",
     "hang 10 s2/4 r0/1 B",
     "rest 90 s2/4 r0/1",
     "hang 10 s3/4 r0/1 B",
+    "rest 90 s3/4 r0/1",
     "done 0 s3/4 r0/1"
   ],
   "pauseZero": [
@@ -118,10 +130,11 @@
     "hang 10 s0/2 r0/3",
     "hang 10 s0/2 r1/3",
     "hang 10 s0/2 r2/3",
-    "rest 60 s0/2 r2/3",
+    "rest 60 s0/2 r0/1",
     "hang 10 s1/2 r0/3",
     "hang 10 s1/2 r1/3",
     "hang 10 s1/2 r2/3",
+    "rest 60 s1/2 r0/1",
     "done 0 s1/2 r0/1"
   ],
   "singleSet": [
@@ -133,16 +146,20 @@
     "hang 7 s0/1 r2/4",
     "pause 3 s0/1 r2/4",
     "hang 7 s0/1 r3/4",
+    "pause 3 s0/1 r3/4",
     "done 0 s0/1 r0/1"
   ],
   "noPrep": [
     "hang 7 s0/2 r0/2",
     "pause 3 s0/2 r0/2",
     "hang 7 s0/2 r1/2",
-    "rest 30 s0/2 r1/2",
+    "pause 3 s0/2 r1/2",
+    "rest 30 s0/2 r0/1",
     "hang 7 s1/2 r0/2",
     "pause 3 s1/2 r0/2",
     "hang 7 s1/2 r1/2",
+    "pause 3 s1/2 r1/2",
+    "rest 30 s1/2 r0/1",
     "done 0 s1/2 r0/1"
   ]
 }

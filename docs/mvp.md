@@ -25,8 +25,8 @@ Parity with BoulderFIT, done the Garmin Connect way:
 
 - A workout is an ordered list of **steps** (Get ready, Hang, Rest, each timed, with an optional
   label such as "20 mm half crimp") and **repeats** that run a group of steps N times. Repeats
-  nest one level: sets × (reps × (hang, rest), rest between sets). The trailing rest of a
-  repeat's final round is always skipped, like Garmin's skip last recovery.
+  nest one level: sets × (reps × (hang, rest), rest between sets). Every rest runs,
+  including the final round's: stacking two blocks never glues two hangs together.
 - New workouts start from the repeaters template, or from the classic-workouts library: ten
   protocols across beginner, intermediate and advanced (10:50 first hangs, Emil-style no-hangs,
   density hangs, 7:3 repeaters, max hangs, minimum edge, two-grip repeaters, Hörst 7/53, one-arm

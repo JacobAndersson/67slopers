@@ -14,8 +14,7 @@ export type TimedStep = {
 
 /**
  * Runs its steps `times` rounds in a row. May contain one more level of repeats, no deeper.
- * A rest at the end of the round is skipped on the final round, so "hang, rest" × 6 ends on
- * the hang.
+ * Every rest runs, including the final round's.
  */
 export type RepeatStep = {
   kind: 'repeat';

@@ -59,13 +59,17 @@ export function blocksToSteps(legacy: LegacyTimings): WorkoutTimings {
       steps.push(round);
     }
     const hasNext = i < legacy.blocks.length - 1;
-    if (hasNext && block.restSeconds > 0) steps.push(timed('rest', block.restSeconds));
+    // An outer repeat already ends with its own rest, which doubles as the rest before the
+    // next block. Only single hangs/rounds need an explicit rest between blocks.
+    const endsWithRest = block.sets > 1 && block.restSeconds > 0;
+    if (hasNext && block.restSeconds > 0 && !endsWithRest)
+      steps.push(timed('rest', block.restSeconds));
   });
 
   return { steps };
 }
 
-/** v3 repeats carried a `skipLastRest` flag; skipping is now always on, so the key goes. */
+/** v3 repeats carried a `skipLastRest` flag; every rest runs now, so the key goes. */
 function dropSkipLastRest(steps: Step[]): Step[] {
   return steps.map((s) => {
     if (s.kind !== 'repeat') return s;
