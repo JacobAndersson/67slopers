@@ -64,6 +64,12 @@ export function Screen({
     [scrollRef]
   );
 
+  // Footer screens pin their primary action above the nav bar; screens without a
+  // footer (Home, session view) need the inset on the scroll content itself, or the
+  // last rows slide under the gesture bar on edge-to-edge Android. Never pad the
+  // scroll view or gesture root: that breaks Sortable.Grid measuring and drag preview.
+  const bottomPad = footer ? undefined : Math.max(24, insets.bottom + 12);
+
   return (
     <ScreenScrollContext.Provider value={api}>
       <View className={cn('flex-1 bg-background', className)}>
@@ -72,6 +78,7 @@ export function Screen({
             ref={scrollRef}
             className="flex-1"
             contentContainerClassName={cn(CONTENT, contentClassName)}
+            contentContainerStyle={bottomPad ? { paddingBottom: bottomPad } : undefined}
             keyboardShouldPersistTaps="handled"
             onScroll={(e) => {
               offset.current = e.nativeEvent.contentOffset.y;
@@ -80,7 +87,11 @@ export function Screen({
             {children}
           </Animated.ScrollView>
         ) : (
-          <View className={cn('flex-1', CONTENT, contentClassName)}>{children}</View>
+          <View
+            className={cn('flex-1', CONTENT, contentClassName)}
+            style={bottomPad ? { paddingBottom: bottomPad } : undefined}>
+            {children}
+          </View>
         )}
         {footer ? (
           <View

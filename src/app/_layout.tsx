@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { FONTS } from '@/lib/fonts';
 import { useStore } from '@/lib/store/store';
@@ -38,55 +39,59 @@ export default function RootLayout() {
   }
 
   // The gesture root is a plain view; drag-to-reorder in the workout builder needs it.
+  // SafeAreaProvider is sync (no startup cost): without it useSafeAreaInsets() reads 0 on
+  // edge-to-edge Android, so footers and full-screen timers sit under the nav bar.
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={NAV_THEME}>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: THEME.background },
-            headerTintColor: THEME.foreground,
-            headerTitleStyle: { fontFamily: 'GeistMono_600SemiBold' },
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
-            contentStyle: { backgroundColor: THEME.background },
-          }}>
-          <Stack.Screen name="index" options={{ title: '67slopers' }} />
-          <Stack.Screen name="workouts" options={{ title: 'Your workouts' }} />
-          <Stack.Screen name="sessions" options={{ title: 'Latest workouts' }} />
-          <Stack.Screen name="calendar" options={{ title: 'Calendar' }} />
-          <Stack.Screen name="presets" options={{ title: 'Classic workouts' }} />
-          <Stack.Screen name="workout/new" options={{ title: 'New workout' }} />
-          <Stack.Screen name="workout/[id]/index" options={{ title: '' }} />
-          <Stack.Screen name="workout/[id]/edit" options={{ title: 'Edit workout' }} />
-          <Stack.Screen name="session/[id]" options={{ title: 'Session' }} />
-          <Stack.Screen name="import" options={{ title: 'Shared workout' }} />
-          {(['workout/[id]/share', 'scan'] as const).map((route) => (
-            <Stack.Screen
-              key={route}
-              name={route}
-              options={{
-                headerShown: false,
-                presentation: 'fullScreenModal',
-                animation: 'slide_from_bottom',
-              }}
-            />
-          ))}
-          {(['workout/[id]/run', 'workout/run'] as const).map((route) => (
-            <Stack.Screen
-              key={route}
-              name={route}
-              options={{
-                headerShown: false,
-                presentation: 'fullScreenModal',
-                gestureEnabled: false,
-                animation: 'slide_from_bottom',
-              }}
-            />
-          ))}
-        </Stack>
-        <PortalHost />
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={NAV_THEME}>
+          <StatusBar style="dark" />
+          <Stack
+            screenOptions={{
+              headerStyle: { backgroundColor: THEME.background },
+              headerTintColor: THEME.foreground,
+              headerTitleStyle: { fontFamily: 'GeistMono_600SemiBold' },
+              headerShadowVisible: false,
+              headerBackButtonDisplayMode: 'minimal',
+              contentStyle: { backgroundColor: THEME.background },
+            }}>
+            <Stack.Screen name="index" options={{ title: '67slopers' }} />
+            <Stack.Screen name="workouts" options={{ title: 'Your workouts' }} />
+            <Stack.Screen name="sessions" options={{ title: 'Latest workouts' }} />
+            <Stack.Screen name="calendar" options={{ title: 'Calendar' }} />
+            <Stack.Screen name="presets" options={{ title: 'Classic workouts' }} />
+            <Stack.Screen name="workout/new" options={{ title: 'New workout' }} />
+            <Stack.Screen name="workout/[id]/index" options={{ title: '' }} />
+            <Stack.Screen name="workout/[id]/edit" options={{ title: 'Edit workout' }} />
+            <Stack.Screen name="session/[id]" options={{ title: 'Session' }} />
+            <Stack.Screen name="import" options={{ title: 'Shared workout' }} />
+            {(['workout/[id]/share', 'scan'] as const).map((route) => (
+              <Stack.Screen
+                key={route}
+                name={route}
+                options={{
+                  headerShown: false,
+                  presentation: 'fullScreenModal',
+                  animation: 'slide_from_bottom',
+                }}
+              />
+            ))}
+            {(['workout/[id]/run', 'workout/run'] as const).map((route) => (
+              <Stack.Screen
+                key={route}
+                name={route}
+                options={{
+                  headerShown: false,
+                  presentation: 'fullScreenModal',
+                  gestureEnabled: false,
+                  animation: 'slide_from_bottom',
+                }}
+              />
+            ))}
+          </Stack>
+          <PortalHost />
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
