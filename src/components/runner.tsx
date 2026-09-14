@@ -67,7 +67,7 @@ const SLOT_MS = 250;
 const FILL_STEP_MS = 100;
 
 const sameGrip = (a: string[] | undefined, b: string[] | undefined) =>
-  (a ?? []).join(',') === (b ?? []).join(',');
+  [...(a ?? [])].sort().join(',') === [...(b ?? [])].sort().join(',');
 
 const PHASE_LABEL: Record<Phase, string> = {
   prep: 'Get ready',
@@ -230,16 +230,20 @@ export function Runner({
   const countdown = interval.seconds >= 60 ? formatClock(secondsLeft) : String(secondsLeft);
   const board = getBoard(timings.board);
   const allHolds = useMemo(() => holdsInWorkout(timings.steps), [timings]);
-  // The board only appears when the hands have to move: before the first hang, and on a
-  // pause or rest whose next hang is on a different grip. Never during a hang.
-  const shownHolds = timer.nextHang?.holds ?? [];
+  // The board shows the current grip during a hang and the next grip during prep, pause
+  // and rest, so a same-board grip change is always visible: what is in the hands now,
+  // then what to set up for. Before the first hang there is no previous grip to match.
+  const isHang = interval.phase === 'hang';
+  const nextHolds = timer.nextHang?.holds ?? [];
+  const currentHolds = interval.holds ?? timer.previousHang?.holds ?? [];
+  const shownHolds = isHang ? currentHolds : nextHolds;
   const showBoard =
     !!board &&
     !finished &&
-    interval.phase !== 'hang' &&
-    !!timer.nextHang?.holds?.length &&
-    (!timer.previousHang || !sameGrip(timer.previousHang.holds, timer.nextHang.holds));
+    shownHolds.length > 0 &&
+    (isHang || !timer.previousHang || !sameGrip(timer.previousHang.holds, timer.nextHang?.holds));
   const holdsCaption = board ? gripName(board, shownHolds) : '';
+  const holdsPrefix = isHang ? 'Now' : 'Next';
   const nextHoldsName =
     board && timer.nextInterval?.holds ? gripName(board, timer.nextInterval.holds) : '';
   // The slot the board slides into. Its content is measured once laid out; until then the
@@ -413,8 +417,10 @@ export function Runner({
                     onLayout={(e) => setSlotContent(e.nativeEvent.layout.height)}>
                     <BoardView board={board} holds={shownHolds} mounted={allHolds} animated />
                     {holdsCaption ? (
-                      <Text className="text-center text-muted-foreground">
-                        Next: {holdsCaption}
+                      <Text
+                        key={`${holdsPrefix}:${shownHolds.slice().sort().join('|')}`}
+                        className="text-center text-muted-foreground">
+                        {holdsPrefix}: {holdsCaption}
                       </Text>
                     ) : null}
                   </View>
