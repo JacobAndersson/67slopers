@@ -6,6 +6,7 @@ import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
+  FadeIn,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -65,6 +66,8 @@ const BG_TRANSITION_MS = 250;
 const SLOT_MS = 250;
 /** The display tick; the rising fill glides between ticks over the same span. */
 const FILL_STEP_MS = 100;
+/** Beat between the timer stopping and the summary fading in. */
+const SUMMARY_DELAY_MS = 900;
 
 const sameGrip = (a: string[] | undefined, b: string[] | undefined) =>
   [...(a ?? [])].sort().join(',') === [...(b ?? [])].sort().join(',');
@@ -131,6 +134,16 @@ export function Runner({
   const leaving = useRef(false);
   /** Set once the finished run has been written to history. */
   const sessionId = useRef<string | null>(null);
+  /**
+   * The summary waits a beat after the timer stops, so the finish lands instead of
+   * flashing straight into the form. The session is still written immediately.
+   */
+  const [showSummary, setShowSummary] = useState(false);
+  useEffect(() => {
+    if (!finished) return;
+    const id = setTimeout(() => setShowSummary(true), SUMMARY_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [finished]);
 
   // A checkpoint follows the run, so a closed app can pick it up again from Home. An older
   // unfinished run still waiting there is kept in history as ended when this one starts.
@@ -351,8 +364,49 @@ export function Runner({
           </View>
 
           {finished ? (
-            <View className="flex-1 justify-center gap-6">
-              <View className="gap-2">
+            showSummary ? (
+              <Animated.View
+                entering={FadeIn.duration(300)}
+                className="flex-1 justify-center gap-6">
+                <View className="gap-2">
+                  <Text className="text-5xl tracking-tight font-bold">
+                    {timer.status === 'done' ? 'Done' : 'Ended'}
+                  </Text>
+                  <Text className="text-2xl">
+                    {setsLine(timer.completedSets, timer.totalSets)} ·{' '}
+                    {formatClock(timer.elapsedSeconds)}
+                  </Text>
+                  <Text variant="muted" className="text-lg">
+                    {hangsLine(hangOutcomes(timings, timer.hangResults))}
+                  </Text>
+                </View>
+                <View className="gap-3">
+                  <Text className="text-xl font-semibold">How did you feel?</Text>
+                  <FeelPicker value={feel} onChange={grade} />
+                </View>
+                {isDraft ? (
+                  <View className="gap-2">
+                    <Text className="text-xl font-semibold">Save this workout?</Text>
+                    <Input
+                      value={saveName}
+                      onChangeText={setSaveName}
+                      placeholder="Give it a name to keep it"
+                      autoCapitalize="sentences"
+                      returnKeyType="done"
+                    />
+                    <Text variant="muted">Leave it empty to finish without saving.</Text>
+                  </View>
+                ) : null}
+                <Button size="lg" onPress={finish}>
+                  <Text className="text-lg">
+                    {isDraft && saveName.trim() ? 'Save and finish' : 'Finish'}
+                  </Text>
+                </Button>
+              </Animated.View>
+            ) : (
+              <Animated.View
+                entering={FadeIn.duration(300)}
+                className="flex-1 items-center justify-center gap-2">
                 <Text className="text-5xl tracking-tight font-bold">
                   {timer.status === 'done' ? 'Done' : 'Ended'}
                 </Text>
@@ -360,33 +414,8 @@ export function Runner({
                   {setsLine(timer.completedSets, timer.totalSets)} ·{' '}
                   {formatClock(timer.elapsedSeconds)}
                 </Text>
-                <Text variant="muted" className="text-lg">
-                  {hangsLine(hangOutcomes(timings, timer.hangResults))}
-                </Text>
-              </View>
-              <View className="gap-3">
-                <Text className="text-xl font-semibold">How did you feel?</Text>
-                <FeelPicker value={feel} onChange={grade} />
-              </View>
-              {isDraft ? (
-                <View className="gap-2">
-                  <Text className="text-xl font-semibold">Save this workout?</Text>
-                  <Input
-                    value={saveName}
-                    onChangeText={setSaveName}
-                    placeholder="Give it a name to keep it"
-                    autoCapitalize="sentences"
-                    returnKeyType="done"
-                  />
-                  <Text variant="muted">Leave it empty to finish without saving.</Text>
-                </View>
-              ) : null}
-              <Button size="lg" onPress={finish}>
-                <Text className="text-lg">
-                  {isDraft && saveName.trim() ? 'Save and finish' : 'Finish'}
-                </Text>
-              </Button>
-            </View>
+              </Animated.View>
+            )
           ) : (
             <>
               <View
