@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   FadeIn,
+  FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -17,7 +18,12 @@ import { BrainrotBoundary } from '@/components/brainrot-boundary';
 import { FeelPicker } from '@/components/feel';
 import { WorkoutSettings } from '@/components/workout-settings';
 import { CLIPS } from '@/lib/brainrot/generated';
-import { createClipRotation, hangOrdinal, splitHeight } from '@/lib/brainrot/rotation';
+import {
+  bucketsByGame,
+  createBucketRotation,
+  hangOrdinal,
+  splitHeight,
+} from '@/lib/brainrot/rotation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,6 +70,8 @@ const BrainrotVideo = lazy(() => import('@/components/brainrot-video'));
 const BG_TRANSITION_MS = 250;
 /** How long the board slot takes to open or close. */
 const SLOT_MS = 250;
+/** How long the timer panel takes to glide into and out of the Gen Z split. */
+const SPLIT_MS = 300;
 /** The display tick; the rising fill glides between ticks over the same span. */
 const FILL_STEP_MS = 100;
 /** Beat between the timer stopping and the summary fading in. */
@@ -113,7 +121,7 @@ export function Runner({
   const insets = useSafeAreaInsets();
   const { width, height, fontScale } = useWindowDimensions();
   const [rootHeight, setRootHeight] = useState(height);
-  const [rotation] = useState(() => createClipRotation(CLIPS.map((clip) => clip.id)));
+  const [rotation] = useState(() => createBucketRotation(bucketsByGame(CLIPS)));
   const [restart, setRestart] = useState(0);
 
   const addSession = useStore((s) => s.addSession);
@@ -283,12 +291,21 @@ export function Runner({
     24 +
     headerHeight +
     phaseHeight +
-    previewHeight +
+    // Compact hides the set/rep row and the next-up preview (see below), so they
+    // leave the measured height out and the video below grows into the space.
+    (compact ? 0 : previewHeight) +
     controlsHeight +
     106 * fontScale +
     (showBoard ? slotHeight : 0);
   const panelHeight = splitHeight(rootHeight, requiredHeight, compact);
   const split = panelHeight < rootHeight;
+  // Toggling Gen Z mode, or finishing a run, glides the timer panel to its new share
+  // instead of jumping; the video below fades in and out around the glide.
+  const panelHeightValue = useSharedValue(panelHeight);
+  useEffect(() => {
+    panelHeightValue.set(withTiming(panelHeight, { duration: SPLIT_MS }));
+  }, [panelHeight, panelHeightValue]);
+  const animatedPanelStyle = useAnimatedStyle(() => ({ height: panelHeightValue.get() }));
   const ordinal = hangOrdinal(timer.engineState);
   const clipId = compact ? rotation.clipAt(ordinal) : undefined;
   const clip = CLIPS.find((entry) => entry.id === clipId);
@@ -331,7 +348,7 @@ export function Runner({
     <View
       className="flex-1 bg-background"
       onLayout={(e) => setRootHeight(e.nativeEvent.layout.height)}>
-      <Animated.View style={[{ height: panelHeight, overflow: 'hidden' }, backgroundStyle]}>
+      <Animated.View style={[{ overflow: 'hidden' }, backgroundStyle, animatedPanelStyle]}>
         <Animated.View
           pointerEvents="none"
           style={[
@@ -427,16 +444,18 @@ export function Runner({
                 {interval.label ? (
                   <Text className="text-lg text-muted-foreground">{interval.label}</Text>
                 ) : null}
-                <View className={compact ? 'flex-row items-center gap-4' : 'items-center gap-1'}>
-                  {showRep ? (
-                    <Text className={compact ? 'text-xl font-semibold' : 'text-3xl font-semibold'}>
-                      Rep {interval.repIndex + 1}/{interval.repCount}
+                {compact ? null : (
+                  <View className="items-center gap-1">
+                    {showRep ? (
+                      <Text className="text-3xl font-semibold">
+                        Rep {interval.repIndex + 1}/{interval.repCount}
+                      </Text>
+                    ) : null}
+                    <Text className="text-xl text-muted-foreground font-medium">
+                      Set {interval.setIndex + 1}/{interval.setCount}
                     </Text>
-                  ) : null}
-                  <Text className="text-xl text-muted-foreground font-medium">
-                    Set {interval.setIndex + 1}/{interval.setCount}
-                  </Text>
-                </View>
+                  </View>
+                )}
               </View>
 
               {board ? (
@@ -464,7 +483,7 @@ export function Runner({
                   {countdown}
                 </Text>
                 <View onLayout={(e) => setPreviewHeight(e.nativeEvent.layout.height)}>
-                  {idle ? (
+                  {compact ? null : idle ? (
                     <Text className="text-xl text-muted-foreground">
                       {name} · press play to start
                     </Text>
@@ -531,7 +550,11 @@ export function Runner({
         </ScrollView>
       </Animated.View>
       {split ? (
-        <View style={{ height: rootHeight - panelHeight }} className="overflow-hidden bg-muted">
+        <Animated.View
+          entering={FadeIn.duration(SPLIT_MS)}
+          exiting={FadeOut.duration(SPLIT_MS)}
+          style={{ flex: 1 }}
+          className="overflow-hidden bg-muted">
           {clip ? (
             <BrainrotBoundary>
               <Suspense fallback={<View className="flex-1 bg-muted" />}>
@@ -548,7 +571,7 @@ export function Runner({
               <Text variant="muted">Video unavailable</Text>
             </View>
           )}
-        </View>
+        </Animated.View>
       ) : null}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>

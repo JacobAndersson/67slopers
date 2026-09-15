@@ -60,9 +60,66 @@ export function shouldPlay(status: EngineState['status'], active: boolean): bool
   return active && status === 'running';
 }
 
+/** Clip ids grouped by their content bucket (game), in first-seen bucket order. */
+export function bucketsByGame(clips: readonly { id: string; game: string }[]): string[][] {
+  const buckets = new Map<string, string[]>();
+  for (const clip of clips) {
+    const bucket = buckets.get(clip.game);
+    if (bucket) bucket.push(clip.id);
+    else buckets.set(clip.game, [clip.id]);
+  }
+  return [...buckets.values()];
+}
+
+/**
+ * Run-scoped ledger over content buckets: each cycle plays every bucket once (in shuffled
+ * order, never the same bucket twice in a row), dealing each bucket's clips without repeat
+ * until its deck is exhausted. Stable on Back and toggling, like `createClipRotation`.
+ */
+export function createBucketRotation(
+  buckets: readonly (readonly string[])[],
+  random = Math.random
+) {
+  const present = buckets.filter((bucket) => bucket.length > 0);
+  const bucketPick = createClipRotation(
+    present.map((_, index) => String(index)),
+    random
+  );
+  const inners = present.map((ids) => createClipRotation(ids, random));
+  const counts = present.map(() => 0);
+  const assigned: (string | undefined)[] = [];
+  const findBucket = (id: string) => present.findIndex((ids) => ids.includes(id));
+  return {
+    clipAt(ordinal: number): string | undefined {
+      for (let i = assigned.length; i <= ordinal; i++) {
+        const pick = bucketPick.clipAt(i);
+        const bucket = pick === undefined ? -1 : Number(pick);
+        const inner = bucket >= 0 ? inners[bucket] : undefined;
+        if (!inner) {
+          assigned.push(undefined);
+          continue;
+        }
+        const n = counts[bucket]++;
+        assigned.push(inner.clipAt(n));
+      }
+      return assigned[ordinal];
+    },
+    fail(id: string) {
+      const bucket = findBucket(id);
+      if (bucket >= 0) inners[bucket].fail(id);
+    },
+    hasFailed(id: string) {
+      const bucket = findBucket(id);
+      return bucket >= 0 && inners[bucket].hasFailed(id);
+    },
+  };
+}
+
 export function splitHeight(total: number, required: number, enabled: boolean): number {
   if (!enabled) return total;
-  const top = Math.max(total / 2, required);
+  // The video takes the larger share: the timer keeps 40% or what it measured,
+  // whichever is more. If less than 120 points remain, video is temporarily hidden.
+  const top = Math.max(total * 0.4, required);
   return total - top >= 120 ? top : total;
 }
 

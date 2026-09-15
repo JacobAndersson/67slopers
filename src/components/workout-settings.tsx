@@ -8,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuSeparator,
-  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { useStore } from '@/lib/store/store';
 
@@ -42,11 +41,6 @@ export function WorkoutSettings() {
           onCheckedChange={(genZMode) => setSettings({ genZMode })}>
           <Text>Gen Z mode</Text>
         </DropdownMenuCheckboxItem>
-        {settings.genZMode ? (
-          <DropdownMenuLabel>
-            <Text className="text-xs text-muted-foreground">Gameplay: OrbitalNCG+</Text>
-          </DropdownMenuLabel>
-        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

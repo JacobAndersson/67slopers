@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  bucketsByGame,
   coverFrame,
+  createBucketRotation,
   createClipRotation,
   hangOrdinal,
   shouldPlay,
@@ -93,7 +95,7 @@ test('no hangs, consecutive hangs, long hang and adaptive layout', () => {
     ],
   });
   assert.equal(hangOrdinal({ intervals: consecutive, index: 1 }), 1);
-  assert.equal(splitHeight(800, 380, true), 400);
+  assert.equal(splitHeight(800, 380, true), 380, 'video takes the larger share');
   assert.equal(splitHeight(800, 480, true), 480);
   assert.equal(splitHeight(500, 420, true), 500);
   assert.equal(splitHeight(800, 380, false), 800);
@@ -108,4 +110,48 @@ test('cover crop retains aspect ratio and favours the lower portrait action', ()
   assert.equal(landscape.height, 422);
   assert.ok(landscape.left < 0);
   assert.equal(landscape.top, 0);
+});
+
+test('bucketsByGame groups clip ids in first-seen game order', () => {
+  assert.deepEqual(
+    bucketsByGame([
+      { id: 'g1', game: 'gta' },
+      { id: 's1', game: 'subway' },
+      { id: 'g2', game: 'gta' },
+      { id: 'r1', game: 'roblox' },
+    ]),
+    [['g1', 'g2'], ['s1'], ['r1']]
+  );
+});
+
+test('bucket rotation plays every bucket once per cycle, never repeating a game', () => {
+  const buckets = [
+    ['a1', 'a2'],
+    ['b1', 'b2'],
+    ['c1', 'c2'],
+  ];
+  const bucketOf = (id: string) => buckets.findIndex((b) => b.includes(id!));
+  const rotation = createBucketRotation(buckets, () => 0.7);
+  const picks = Array.from({ length: 30 }, (_, i) => rotation.clipAt(i)!);
+  for (let i = 0; i < picks.length; i += 3) {
+    assert.equal(new Set(picks.slice(i, i + 3).map(bucketOf)).size, 3);
+  }
+  for (let i = 1; i < picks.length; i++) {
+    assert.notEqual(bucketOf(picks[i]), bucketOf(picks[i - 1]));
+  }
+  // Each bucket's clips are exhausted before any of them repeats.
+  assert.deepEqual(new Set(picks.slice(0, 6)).size, 6);
+  assert.equal(rotation.clipAt(0), picks[0], 'Back is stable');
+  assert.equal(rotation.clipAt(19), picks[19]);
+});
+
+test('bucket rotation skips failed clips and reports them', () => {
+  const rotation = createBucketRotation([['a1', 'a2'], ['b1']], () => 0);
+  rotation.fail('a1');
+  assert.equal(rotation.hasFailed('a1'), true);
+  assert.equal(rotation.hasFailed('a2'), false);
+  const picks = Array.from({ length: 10 }, (_, i) => rotation.clipAt(i));
+  assert.ok(!picks.includes('a1'));
+  assert.ok(picks.includes('a2'));
+  assert.ok(picks.includes('b1'));
 });

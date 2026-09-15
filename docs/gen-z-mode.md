@@ -1,14 +1,17 @@
 # Gen Z workout mode
 
 The workout gear menu remembers Sound, Vibration and Gen Z mode per device. Gen Z mode is off
-by default. Its timer/video split starts at half height and gives the timer more room for labels,
-accessibility text and grip guidance. If less than 120 points remain, video is temporarily hidden.
+by default. Toggling it glides the timer into its compact share while the video fades in below;
+toggling off, or finishing the run, reverses the animation. Compact hides the set/rep row and the
+next-up preview, keeping the phase label, grip guidance and digits, so the video takes the larger
+share of the screen. If less than 120 points remain, video is temporarily hidden.
 The finished/ended summary stays full screen.
 
 ## Playback
 
-The timer remains the only clock. A run-scoped shuffled ledger assigns one clip to each hang;
-recovery retains the previous hang’s clip. Initial prep uses the first hang’s clip. Clips loop,
+The timer remains the only clock. A run-scoped ledger assigns one clip to each hang, cycling
+evenly through the content buckets (gta, subway, roblox) so no source dominates; recovery retains
+the previous hang’s clip. Initial prep uses the first hang’s clip. Clips loop,
 pause with the timer, and stop when the app is inactive. Back restores the same assignment and
 restarts playback. Disabling releases the player but keeps the run’s assignments. Source loading,
 autoplay rejection and decoder errors are isolated from the timer and session recording.
@@ -22,7 +25,8 @@ in airplane mode; web requires its usual same-origin static assets to have loade
 
 All sources come from public YouTube embeds inspected on [OrbitalNCG+’s shop](https://ko-fi.com/orbital2ncg/shop).
 The catalog records the creator’s reuse claim; it does not assert an independently verified app license.
-The settings menu credits OrbitalNCG+, and `assets/brainrot/CREDITS.md` links each source listing.
+Reuse has been cleared, so the app shows no attribution label. `assets/brainrot/CREDITS.md` still
+links each source listing for the record.
 
 Requirements: current yt-dlp, Node, FFmpeg and ffprobe. Downloaded masters, metadata and QA images
 live in `.media-work/`, ignored by Git and Metro. A local yt-dlp installation in `.media-work/tools`
