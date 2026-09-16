@@ -23,13 +23,18 @@ test('each level has at least three presets', () => {
   }
 });
 
-test('seeding copies the three starters with fresh ids and independent steps', () => {
+test('seeding copies the three starters with stable ids and independent steps', () => {
   const seeded = makePresetWorkouts(new Date('2026-01-01T00:00:00Z'));
   assert.deepEqual(
     seeded.map((w) => w.name),
     SEEDED_PRESET_IDS.map((id) => PRESETS.find((p) => p.id === id)!.name)
   );
   assert.ok(seeded.every((w) => w.isPreset));
+  assert.deepEqual(
+    seeded.map((w) => w.id),
+    SEEDED_PRESET_IDS.map((id) => `seeded-${id}`),
+    'seeded ids are deterministic so SSR and hydration agree'
+  );
   const source = PRESETS.find((p) => p.id === SEEDED_PRESET_IDS[0])!;
   assert.deepEqual(seeded[0].steps, source.steps);
   assert.notEqual(seeded[0].steps, source.steps, 'steps are cloned, not shared');

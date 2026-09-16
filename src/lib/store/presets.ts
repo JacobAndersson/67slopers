@@ -1,5 +1,4 @@
 import { cloneSteps } from '../workout-steps';
-import { newId } from './ids';
 import type { RepeatStep, Step, TimedStep, Workout, WorkoutTimings } from './types';
 
 export type PresetLevel = 'beginner' | 'intermediate' | 'advanced';
@@ -165,7 +164,9 @@ export function makePresetWorkouts(now = new Date()): Workout[] {
       name: preset.name,
       description: preset.description,
       steps: cloneSteps(preset.steps),
-      id: newId(),
+      // Deterministic: the seeded copy doubles as the canonical web SSR output, so a random
+      // id here would hydrate into different workout links on the client.
+      id: `seeded-${id}`,
       isPreset: true,
       createdAt: iso,
       updatedAt: iso,
