@@ -1,10 +1,22 @@
 import { formatShort } from './dates';
 import type { HangResult, Step, WorkoutTimings } from './store/types';
-import { expandWorkout, totalSeconds } from './timer/intervals';
+import { countSets, expandWorkout, totalSeconds } from './timer/intervals';
 
 /** Seconds from the first prep to the final hang, including rests. */
 export function estimateDuration(timings: WorkoutTimings): number {
   return totalSeconds(expandWorkout(timings));
+}
+
+/** Facts from the exact interval sequence, including mixed protocols and every rest. */
+export function workoutFacts(timings: WorkoutTimings) {
+  const intervals = expandWorkout(timings);
+  const hangs = intervals.filter((interval) => interval.phase === 'hang');
+  return {
+    seconds: totalSeconds(intervals),
+    hangSeconds: totalSeconds(hangs),
+    sets: countSets(timings.steps),
+    hangs: hangs.length,
+  };
 }
 
 /**

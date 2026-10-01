@@ -316,16 +316,11 @@ ${holds}
 const GLOW_FILTER =
   '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5"/></filter>';
 
-/** The highlight for one hold: a soft glow, then the hold itself in the primary colour. */
+/** A crisp amber rim keeps the carved cavity visible during grip selection. */
 function highlightShapes(h) {
   return (
-    holdShape(
-      h,
-      `fill="${C.primary}" stroke="${C.primary}" stroke-width="6" opacity="0.55" filter="url(#glow)"`
-    ) +
-    (h.type === 'sloper' || h.type === 'jug'
-      ? topHold(h, true)
-      : holdShape(h, `fill="${C.primary}" stroke="${C.edge}" stroke-width="1.2"`))
+    holdShape(h, 'fill="none" stroke="#FFFFFF" stroke-width="5"') +
+    holdShape(h, 'fill="#9C5500" fill-opacity="0.12" stroke="#9C5500" stroke-width="2.5"')
   );
 }
 

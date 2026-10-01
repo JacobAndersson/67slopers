@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import type { ActiveRun } from '../timer/checkpoint';
+import type { BoardId } from '../boards/generated';
 import { cloneSteps } from '../workout-steps';
 import { newId } from './ids';
 import { migrateStore } from './migrate';
@@ -32,6 +33,9 @@ type StoreState = {
   resume: ActiveRun | null;
   /** Sound and vibration on the timer; set once, remembered. */
   settings: Settings;
+  /** Default for new builders only; saved workouts keep their own board. */
+  preferredBoard?: BoardId;
+  boardSetupDone: boolean;
 
   addWorkout: (input: WorkoutInput) => Workout;
   updateWorkout: (id: string, patch: Partial<WorkoutInput>) => void;
@@ -39,15 +43,16 @@ type StoreState = {
   /** Copies a workout as a new, non-preset entry named "<name> copy". */
   duplicateWorkout: (id: string) => Workout | undefined;
   addSession: (input: Omit<Session, 'id'>) => Session;
-  /** The grade, or the workout a temporary run was saved as. */
+  /** The grade, note, or the workout a temporary run was saved as. */
   updateSession: (
     id: string,
-    patch: Partial<Pick<Session, 'feel' | 'workoutId' | 'workoutName'>>
+    patch: Partial<Pick<Session, 'feel' | 'note' | 'workoutId' | 'workoutName'>>
   ) => void;
   deleteSession: (id: string) => void;
   setDraft: (draft: Draft | null) => void;
   setResume: (run: ActiveRun | null) => void;
   setSettings: (patch: Partial<Settings>) => void;
+  setPreferredBoard: (board: BoardId | undefined) => void;
   finishHydration: () => void;
 };
 
@@ -61,6 +66,8 @@ export const useStore = create<StoreState>()(
       draft: null,
       resume: null,
       settings: DEFAULT_SETTINGS,
+      preferredBoard: undefined,
+      boardSetupDone: false,
 
       addWorkout: (input) => {
         const now = new Date().toISOString();
@@ -117,6 +124,7 @@ export const useStore = create<StoreState>()(
       setResume: (resume) => set({ resume }),
 
       setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
+      setPreferredBoard: (preferredBoard) => set({ preferredBoard, boardSetupDone: true }),
 
       finishHydration: () => {
         const { seeded, workouts } = get();
@@ -141,6 +149,8 @@ export const useStore = create<StoreState>()(
         sessions: s.sessions,
         seeded: s.seeded,
         settings: s.settings,
+        preferredBoard: s.preferredBoard,
+        boardSetupDone: s.boardSetupDone,
       }),
       onRehydrateStorage: () => (state) => {
         state?.finishHydration();

@@ -2,7 +2,9 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { FeelPicker } from '@/components/feel';
+import { SessionFacts } from '@/components/session-facts';
 import { Screen } from '@/components/screen';
+import { SessionNote } from '@/components/session-note';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,17 +17,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
-import { formatClock, formatTime, relativeDay } from '@/lib/dates';
+import { formatTime, relativeDay } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
-import { hangOutcomes, hangsLine, setsLine, summaryLine } from '@/lib/workout-summary';
+import { summaryLine } from '@/lib/workout-summary';
 import { sameTimings } from '@/lib/workout-steps';
 
 export default function SessionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const session = useStore((s) => s.sessions.find((x) => x.id === id));
+  const hydrated = useStore((s) => s.hydrated);
   const workout = useStore((s) => s.workouts.find((w) => w.id === session?.workoutId));
   const setDraft = useStore((s) => s.setDraft);
   const updateSession = useStore((s) => s.updateSession);
@@ -36,7 +38,14 @@ export default function SessionScreen() {
       <>
         <Stack.Screen options={{ title: 'Session' }} />
         <Screen>
-          <Text variant="muted">This session no longer exists.</Text>
+          <Text variant="muted">
+            {hydrated ? 'This session no longer exists.' : 'Opening session…'}
+          </Text>
+          {hydrated ? (
+            <Button variant="outline" onPress={() => router.dismissTo('/')}>
+              <Text>Back to home</Text>
+            </Button>
+          ) : null}
         </Screen>
       </>
     );
@@ -48,7 +57,7 @@ export default function SessionScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: session.workoutName }} />
+      <Stack.Screen options={{ title: 'Session' }} />
       <Screen
         footer={
           <View className="gap-2">
@@ -79,26 +88,28 @@ export default function SessionScreen() {
             ) : null}
           </View>
         }>
-        <Card>
-          <CardHeader>
-            <CardDescription>
-              {relativeDay(session.completedAt)} · {formatTime(session.completedAt)}
-            </CardDescription>
-            <CardTitle>{setsLine(session.completedSets, session.totalSets)}</CardTitle>
-            <CardDescription>
-              {formatClock(seconds)}
-              {session.completed ? '' : ' · ended early'}
-            </CardDescription>
-            {session.hangs ? (
-              <CardDescription>
-                {hangsLine(hangOutcomes(session.snapshot, session.hangs))}
-              </CardDescription>
-            ) : null}
-          </CardHeader>
-          <CardContent>
-            <Text variant="muted">{summaryLine(session.snapshot)}</Text>
-          </CardContent>
-        </Card>
+        <View className="gap-2 pb-2">
+          <Text variant="muted">
+            {relativeDay(session.completedAt)} · {formatTime(session.completedAt)}
+          </Text>
+          <Text selectable className="text-3xl tracking-tight font-bold">
+            {session.workoutName}
+          </Text>
+          <Text variant="muted">
+            {session.completed ? 'Workout completed' : 'Workout ended early'}
+          </Text>
+        </View>
+        <SessionFacts
+          snapshot={session.snapshot}
+          elapsedSeconds={seconds}
+          completedSets={session.completedSets}
+          totalSets={session.totalSets}
+          hangs={session.hangs}
+        />
+        <View className="gap-2 border-t border-border pt-4">
+          <Text className="font-medium">Workout as performed</Text>
+          <Text variant="muted">{summaryLine(session.snapshot)}</Text>
+        </View>
 
         <View className="gap-3">
           <Text className="text-xl font-semibold">How did you feel?</Text>
@@ -109,6 +120,12 @@ export default function SessionScreen() {
             }
           />
         </View>
+
+        <SessionNote
+          key={session.id}
+          value={session.note}
+          onSave={(note) => updateSession(session.id, { note })}
+        />
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -130,7 +147,8 @@ export default function SessionScreen() {
               <AlertDialogAction
                 onPress={() => {
                   deleteSession(session.id);
-                  router.back();
+                  if (router.canGoBack()) router.back();
+                  else router.replace('/');
                 }}>
                 <Text>Delete</Text>
               </AlertDialogAction>

@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import { PlayIcon } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
@@ -19,24 +18,19 @@ import { estimateDuration, setsLine, summaryLine } from '@/lib/workout-summary';
 export function WorkoutHero({ workout, last }: { workout: Workout; last?: Session }) {
   const router = useRouter();
   return (
-    <Card>
+    <Card className="border-0 bg-secondary">
       <Pressable
         accessibilityRole="button"
         accessibilityHint="Opens the workout"
         onPress={() => router.push(`/workout/${workout.id}`)}
         className="gap-3 active:opacity-80">
         <CardHeader>
-          <View className="flex-row flex-wrap items-center gap-2">
-            <CardTitle className="text-2xl">{workout.name}</CardTitle>
-            {workout.isPreset ? (
-              <Badge variant="secondary">
-                <Text>Preset</Text>
-              </Badge>
-            ) : null}
+          <View className="flex-row items-center justify-between gap-2">
+            <Text className="font-medium">Next up</Text>
+            <Text variant="small">{formatClock(estimateDuration(workout))}</Text>
           </View>
-          <CardDescription>
-            {summaryLine(workout)} · {formatClock(estimateDuration(workout))}
-          </CardDescription>
+          <CardTitle className="text-4xl font-extrabold">{workout.name}</CardTitle>
+          <CardDescription>{summaryLine(workout)}</CardDescription>
         </CardHeader>
         <CardContent>
           <Text variant="muted">
@@ -58,7 +52,7 @@ export function WorkoutHero({ workout, last }: { workout: Workout; last?: Sessio
             });
           }}>
           <Icon as={PlayIcon} className="size-5 text-primary-foreground" />
-          <Text className="text-lg">Start</Text>
+          <Text className="text-lg">Start workout</Text>
         </Button>
       </CardContent>
     </Card>

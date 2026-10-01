@@ -9,13 +9,20 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  ReduceMotion,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import type { Board, Hold } from '@/lib/boards';
 import { BOARD_IMAGES } from '@/lib/boards/generated/images';
 import { cn } from '@/lib/utils';
 
-const FADE_MS = 200;
+const FADE_MS = 150;
+const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
 /** How far (in dp) a tap may land from a hold's centre and still pick it. */
 const TAP_RADIUS = 28;
 
@@ -75,12 +82,13 @@ export function BoardView({
       />
       {ids.map((id) => {
         const hold = board.holds.find((h) => h.id === id);
-        if (!hold) return null;
+        const source = images.holds[id];
+        if (!hold || !source) return null;
         return (
           <Overlay
             key={id}
             hold={hold}
-            source={images.holds[id]}
+            source={source}
             visible={holds.includes(id)}
             animated={animated}
           />
@@ -135,7 +143,17 @@ function Overlay({
   };
   const opacity = useSharedValue(visible ? 1 : 0);
   useEffect(() => {
-    opacity.set(animated ? withTiming(visible ? 1 : 0, { duration: FADE_MS }) : visible ? 1 : 0);
+    opacity.set(
+      animated
+        ? withTiming(visible ? 1 : 0, {
+            duration: FADE_MS,
+            easing: EASE_OUT,
+            reduceMotion: ReduceMotion.System,
+          })
+        : visible
+          ? 1
+          : 0
+    );
   }, [visible, animated, opacity]);
   const fade = useAnimatedStyle(() => ({ opacity: opacity.get() }));
 

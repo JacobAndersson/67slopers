@@ -5,6 +5,7 @@ import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { QrCode } from '@/components/qr-code';
+import { SlabBrand } from '@/components/slab-brand';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -19,6 +20,7 @@ export default function ShareWorkoutScreen() {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const workout = useStore((s) => s.workouts.find((w) => w.id === id));
+  const hydrated = useStore((s) => s.hydrated);
   const code = useMemo((): { digits: string } | { error: string } => {
     if (!workout) return { error: 'This workout no longer exists.' };
     try {
@@ -34,12 +36,13 @@ export default function ShareWorkoutScreen() {
     <View
       className="flex-1 bg-background"
       style={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }}>
-      <View className="flex-row justify-end px-4">
+      <View className="flex-row items-center justify-between px-4">
+        <SlabBrand />
         <Button
           variant="ghost"
           size="icon"
           accessibilityLabel="Close"
-          onPress={() => router.back()}>
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
           <Icon as={XIcon} className="size-6" />
         </Button>
       </View>
@@ -60,7 +63,7 @@ export default function ShareWorkoutScreen() {
           </>
         ) : (
           <Text variant="muted" className="text-center">
-            {'error' in code ? code.error : ''}
+            {hydrated ? ('error' in code ? code.error : '') : 'Opening workout…'}
           </Text>
         )}
       </View>

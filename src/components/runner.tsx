@@ -1,7 +1,7 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { useNavigation, useRouter } from 'expo-router';
 import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, XIcon } from 'lucide-react-native';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -14,8 +14,10 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { BoardView } from '@/components/board-view';
+import { TimerPhaseLabel } from '@/components/timer-phase-label';
 import { BrainrotBoundary } from '@/components/brainrot-boundary';
 import { FeelPicker } from '@/components/feel';
+import { SessionFacts } from '@/components/session-facts';
 import { WorkoutSettings } from '@/components/workout-settings';
 import { CLIPS } from '@/lib/brainrot/generated';
 import {
@@ -37,13 +39,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
+import { Textarea } from '@/components/ui/textarea';
 import { getBoard, gripName } from '@/lib/boards';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { measure } from '@/lib/perf';
 import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
+import { shouldShowBoard } from '@/lib/timer/board-visibility';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import type { Phase } from '@/lib/timer/intervals';
 import { useCues } from '@/lib/timer/useCues';
@@ -51,7 +56,7 @@ import { useRunCheckpoint } from '@/lib/timer/useRunCheckpoint';
 import { useTimer } from '@/lib/timer/useTimer';
 import { cn } from '@/lib/utils';
 import { holdsInWorkout } from '@/lib/workout-steps';
-import { hangOutcomes, hangsLine, setsLine } from '@/lib/workout-summary';
+import { setsLine } from '@/lib/workout-summary';
 
 /**
  * Flat background per phase, so the state reads from across the room without the digits.
@@ -59,7 +64,7 @@ import { hangOutcomes, hangsLine, setsLine } from '@/lib/workout-summary';
  */
 const PHASE_COLOR: Record<Phase, string> = {
   prep: THEME.accent,
-  hang: THEME.primary,
+  hang: THEME.chart1,
   pause: THEME.secondary,
   rest: THEME.muted,
   done: THEME.background,
@@ -76,9 +81,6 @@ const SPLIT_MS = 300;
 const FILL_STEP_MS = 100;
 /** Beat between the timer stopping and the summary fading in. */
 const SUMMARY_DELAY_MS = 900;
-
-const sameGrip = (a: string[] | undefined, b: string[] | undefined) =>
-  [...(a ?? [])].sort().join(',') === [...(b ?? [])].sort().join(',');
 
 const PHASE_LABEL: Record<Phase, string> = {
   prep: 'Get ready',
@@ -138,8 +140,23 @@ export function Runner({
   const [startedAt] = useState(() => resume?.startedAt ?? new Date().toISOString());
   const [feel, setFeel] = useState<Feel | undefined>();
   const [saveName, setSaveName] = useState(saveNameDefault);
+  const [note, setNote] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const leaving = useRef(false);
+  /** True when the confirm dialog itself paused a running timer, so Keep going resumes it. */
+  const pausedForConfirm = useRef(false);
+  const askConfirm = useCallback(() => {
+    pausedForConfirm.current = timer.status === 'running';
+    if (pausedForConfirm.current) timer.pause();
+    setConfirmOpen(true);
+  }, [timer]);
+  const keepGoing = useCallback(() => {
+    setConfirmOpen(false);
+    if (pausedForConfirm.current) {
+      pausedForConfirm.current = false;
+      timer.resume();
+    }
+  }, [timer]);
   /** Set once the finished run has been written to history. */
   const sessionId = useRef<string | null>(null);
   /**
@@ -180,10 +197,9 @@ export function Runner({
     return navigation.addListener('beforeRemove', (e) => {
       if (leaving.current || idle || finished) return;
       e.preventDefault();
-      timer.pause();
-      setConfirmOpen(true);
+      askConfirm();
     });
-  }, [navigation, idle, finished, timer]);
+  }, [navigation, idle, finished, timer, askConfirm]);
 
   // The session is written the moment the timer stops, so closing the app on the summary
   // loses nothing. The grade and the save prompt only add to it.
@@ -237,12 +253,12 @@ export function Runner({
   const onClose = () => {
     if (idle) {
       leaving.current = true;
-      router.back();
+      if (router.canGoBack()) router.back();
+      else router.dismissTo('/');
     } else if (finished) {
       finish();
     } else {
-      timer.pause();
-      setConfirmOpen(true);
+      askConfirm();
     }
   };
 
@@ -251,20 +267,22 @@ export function Runner({
   const countdown = interval.seconds >= 60 ? formatClock(secondsLeft) : String(secondsLeft);
   const board = getBoard(timings.board);
   const allHolds = useMemo(() => holdsInWorkout(timings.steps), [timings]);
-  // The board shows the current grip during a hang and the next grip during prep, pause
-  // and rest, so a same-board grip change is always visible: what is in the hands now,
-  // then what to set up for. Before the first hang there is no previous grip to match.
-  const isHang = interval.phase === 'hang';
-  const nextHolds = timer.nextHang?.holds ?? [];
-  const currentHolds = interval.holds ?? timer.previousHang?.holds ?? [];
-  const shownHolds = isHang ? currentHolds : nextHolds;
-  const showBoard =
-    !!board &&
-    !finished &&
-    shownHolds.length > 0 &&
-    (isHang || !timer.previousHang || !sameGrip(timer.previousHang.holds, timer.nextHang?.holds));
+  // The board is a setup cue: first prep shows the opening grip (or the opening hang
+  // itself when a workout starts there), then only rests (or pauses between reps) where
+  // the next grip differs. Later hangs and same-grip rests hide it.
+  const shownHolds = timer.previousHang
+    ? (timer.nextHang?.holds ?? [])
+    : (interval.holds ?? timer.nextHang?.holds ?? []);
+  const showBoard = shouldShowBoard({
+    phase: interval.phase,
+    previousHang: timer.previousHang,
+    nextHang: timer.nextHang,
+    currentHolds: interval.holds,
+    hasBoard: !!board,
+    finished,
+  });
   const holdsCaption = board ? gripName(board, shownHolds) : '';
-  const holdsPrefix = isHang ? 'Now' : 'Next';
+  const holdsPrefix = interval.phase === 'hang' ? 'Now' : 'Next';
   const nextHoldsName =
     board && timer.nextInterval?.holds ? gripName(board, timer.nextInterval.holds) : '';
   // The slot the board slides into. Its content is measured once laid out; until then the
@@ -282,10 +300,10 @@ export function Runner({
   }));
   const showRep = interval.repCount > 1 && interval.phase !== 'rest';
   const compact = settings.genZMode && !finished;
-  const [headerHeight, setHeaderHeight] = useState(40);
+  const [headerHeight, setHeaderHeight] = useState(48);
   const [phaseHeight, setPhaseHeight] = useState(72);
   const [previewHeight, setPreviewHeight] = useState(48);
-  const [controlsHeight, setControlsHeight] = useState(72);
+  const [controlsHeight, setControlsHeight] = useState(96);
   const requiredHeight =
     insets.top +
     24 +
@@ -314,7 +332,7 @@ export function Runner({
     (width * 0.9) / (countdown.length * 0.62 * fontScale),
     split
       ? Math.max(96, (panelHeight - requiredHeight + 106 * fontScale) / (1.1 * fontScale))
-      : height * (board ? 0.24 : 0.28)
+      : height * (showBoard ? 0.24 : 0.28)
   );
 
   const hanging = !idle && !finished && interval.phase === 'hang';
@@ -364,6 +382,7 @@ export function Runner({
         />
         <ScrollView
           className="flex-1"
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             flexGrow: 1,
             minHeight: compact ? Math.max(panelHeight, requiredHeight) : panelHeight,
@@ -372,34 +391,52 @@ export function Runner({
             paddingBottom: split ? 12 : insets.bottom + 16,
           }}>
           <View
-            className="flex-row items-center justify-between"
+            className="flex-row items-center justify-between gap-3"
             onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
             <Button variant="ghost" size="icon" accessibilityLabel="Close" onPress={onClose}>
               <Icon as={XIcon} className="size-6" />
             </Button>
-            {finished ? null : <WorkoutSettings />}
+            <Text className="flex-1 text-center font-medium" numberOfLines={2}>
+              {name}
+            </Text>
+            {finished ? <View className="w-11" /> : <WorkoutSettings />}
           </View>
 
           {finished ? (
             showSummary ? (
               <Animated.View
                 entering={FadeIn.duration(300)}
-                className="flex-1 justify-center gap-6">
+                className="w-full max-w-3xl gap-6 self-center py-6">
                 <View className="gap-2">
-                  <Text className="text-5xl tracking-tight font-bold">
-                    {timer.status === 'done' ? 'Done' : 'Ended'}
+                  <Text className="text-3xl tracking-tight font-bold">
+                    {timer.status === 'done' ? 'Workout complete' : 'Workout ended'}
                   </Text>
-                  <Text className="text-2xl">
-                    {setsLine(timer.completedSets, timer.totalSets)} ·{' '}
-                    {formatClock(timer.elapsedSeconds)}
-                  </Text>
-                  <Text variant="muted" className="text-lg">
-                    {hangsLine(hangOutcomes(timings, timer.hangResults))}
-                  </Text>
+                  <Text variant="muted">Your session is saved.</Text>
                 </View>
+                <SessionFacts
+                  snapshot={timings}
+                  elapsedSeconds={timer.elapsedSeconds}
+                  completedSets={timer.completedSets}
+                  totalSets={timer.totalSets}
+                  hangs={timer.hangResults}
+                />
                 <View className="gap-3">
                   <Text className="text-xl font-semibold">How did you feel?</Text>
                   <FeelPicker value={feel} onChange={grade} />
+                </View>
+                <View className="gap-2">
+                  <Label nativeID="run-note">Session note (optional)</Label>
+                  <Textarea
+                    aria-labelledby="run-note"
+                    value={note}
+                    numberOfLines={3}
+                    placeholder="Holds, load, or something to remember."
+                    onChangeText={(value) => {
+                      setNote(value);
+                      if (sessionId.current)
+                        updateSession(sessionId.current, { note: value.trim() || undefined });
+                    }}
+                  />
                 </View>
                 {isDraft ? (
                   <View className="gap-2">
@@ -438,20 +475,18 @@ export function Runner({
               <View
                 className={cn(compact ? 'mt-2 items-center gap-1' : 'mt-6 items-center gap-1')}
                 onLayout={(e) => setPhaseHeight(e.nativeEvent.layout.height + (compact ? 8 : 24))}>
-                <Text className="text-lg uppercase tracking-wide text-muted-foreground font-semibold">
-                  {PHASE_LABEL[interval.phase]}
-                </Text>
+                <TimerPhaseLabel label={paused ? 'Paused' : PHASE_LABEL[interval.phase]} />
                 {interval.label ? (
                   <Text className="text-lg text-muted-foreground">{interval.label}</Text>
                 ) : null}
                 {compact ? null : (
-                  <View className="items-center gap-1">
+                  <View className="flex-row flex-wrap items-center justify-center gap-x-6 gap-y-1">
                     {showRep ? (
-                      <Text className="text-3xl font-semibold">
+                      <Text className="text-2xl font-semibold">
                         Rep {interval.repIndex + 1}/{interval.repCount}
                       </Text>
                     ) : null}
-                    <Text className="text-xl text-muted-foreground font-medium">
+                    <Text className="text-2xl font-semibold">
                       Set {interval.setIndex + 1}/{interval.setCount}
                     </Text>
                   </View>
@@ -482,66 +517,82 @@ export function Runner({
                   accessibilityLiveRegion="polite">
                   {countdown}
                 </Text>
-                <View onLayout={(e) => setPreviewHeight(e.nativeEvent.layout.height)}>
+                <View
+                  className={cn('w-full max-w-3xl self-center', !compact && 'py-3')}
+                  onLayout={(e) => setPreviewHeight(e.nativeEvent.layout.height)}>
                   {compact ? null : idle ? (
-                    <Text className="text-xl text-muted-foreground">
-                      {name} · press play to start
+                    <Text className="text-center text-muted-foreground">
+                      Press Start when you’re ready.
                     </Text>
                   ) : timer.nextInterval && timer.nextInterval.phase !== 'done' ? (
-                    <Text className="text-xl text-foreground/60">
-                      Next: {PHASE_LABEL[timer.nextInterval.phase]}{' '}
-                      {timer.nextInterval.seconds >= 60
-                        ? formatClock(timer.nextInterval.seconds)
-                        : `${timer.nextInterval.seconds}s`}
-                      {timer.nextInterval.label
-                        ? ` · ${timer.nextInterval.label}`
-                        : nextHoldsName
-                          ? ` · ${nextHoldsName}`
-                          : ''}
-                    </Text>
+                    <View className="gap-1 rounded-lg border border-border bg-background px-4 py-3">
+                      <Text variant="small" className="text-muted-foreground">
+                        Next up
+                      </Text>
+                      <Text className="font-medium">
+                        {PHASE_LABEL[timer.nextInterval.phase]}{' '}
+                        {timer.nextInterval.seconds >= 60
+                          ? formatClock(timer.nextInterval.seconds)
+                          : `${timer.nextInterval.seconds}s`}
+                        {timer.nextInterval.label
+                          ? ` · ${timer.nextInterval.label}`
+                          : nextHoldsName
+                            ? ` · ${nextHoldsName}`
+                            : ''}
+                      </Text>
+                    </View>
                   ) : (
-                    <Text className="text-xl text-foreground/60">Last one</Text>
+                    <Text className="text-center text-muted-foreground">Final step</Text>
                   )}
                 </View>
               </View>
 
               <View
-                className="flex-row items-center justify-center gap-6"
+                className="w-full max-w-3xl gap-2 self-center"
                 onLayout={(e) => setControlsHeight(e.nativeEvent.layout.height)}>
-                {paused ? (
+                <View className="flex-row items-center justify-center gap-3">
+                  {paused ? (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-14 w-14 rounded-lg"
+                      accessibilityLabel="Back"
+                      onPress={() => {
+                        setRestart((value) => value + 1);
+                        timer.back();
+                      }}>
+                      <Icon as={SkipBackIcon} className="size-7" />
+                    </Button>
+                  ) : null}
                   <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-16 w-16 rounded-full"
-                    accessibilityLabel="Back"
-                    onPress={() => {
-                      setRestart((value) => value + 1);
-                      timer.back();
-                    }}>
-                    <Icon as={SkipBackIcon} className="size-7" />
+                    className={cn(
+                      'flex-1 rounded-lg bg-foreground active:bg-foreground/80',
+                      compact ? 'h-16' : 'h-20'
+                    )}
+                    accessibilityLabel={idle ? 'Start' : paused ? 'Resume' : 'Pause'}
+                    onPress={idle ? timer.start : paused ? timer.resume : timer.pause}>
+                    <Icon
+                      as={idle || paused ? PlayIcon : PauseIcon}
+                      className="size-7 text-background"
+                    />
+                    <Text className="text-lg font-semibold">
+                      {idle ? 'Start' : paused ? 'Resume' : 'Pause'}
+                    </Text>
                   </Button>
-                ) : null}
-                <Button
-                  size="icon"
-                  className={cn(
-                    'rounded-full bg-foreground active:bg-foreground/80',
-                    compact ? 'h-16 w-16' : 'h-24 w-24'
-                  )}
-                  accessibilityLabel={idle ? 'Start' : paused ? 'Resume' : 'Pause'}
-                  onPress={idle ? timer.start : paused ? timer.resume : timer.pause}>
-                  <Icon
-                    as={idle || paused ? PlayIcon : PauseIcon}
-                    className="size-10 text-background"
-                  />
-                </Button>
-                {paused ? (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-16 w-16 rounded-full"
-                    accessibilityLabel="Skip"
-                    onPress={timer.skip}>
-                    <Icon as={SkipForwardIcon} className="size-7" />
+                  {paused ? (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-14 w-14 rounded-lg"
+                      accessibilityLabel="Skip"
+                      onPress={timer.skip}>
+                      <Icon as={SkipForwardIcon} className="size-7" />
+                    </Button>
+                  ) : null}
+                </View>
+                {!compact && !idle ? (
+                  <Button variant="ghost" className="self-center" onPress={askConfirm}>
+                    <Text>End workout</Text>
                   </Button>
                 ) : null}
               </View>
@@ -573,7 +624,7 @@ export function Runner({
           )}
         </Animated.View>
       ) : null}
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <AlertDialog open={confirmOpen} onOpenChange={(open) => !open && keepGoing()}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>End this workout?</AlertDialogTitle>
@@ -582,7 +633,7 @@ export function Runner({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onPress={() => timer.resume()}>
+            <AlertDialogCancel onPress={keepGoing}>
               <Text>Keep going</Text>
             </AlertDialogCancel>
             <AlertDialogAction onPress={() => timer.end()}>

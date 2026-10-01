@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 
 import type { Settings } from '../store/types';
 import { createCuePlayer } from './cue-player';
@@ -16,9 +17,11 @@ const now = () => performance.now();
 export function useCues(state: engine.EngineState, settings: Settings) {
   const player = useRef<ReturnType<typeof createCuePlayer> | null>(null);
   const latestSettings = useRef(settings);
+  const latestState = useRef(state);
   useEffect(() => {
     latestSettings.current = settings;
-  }, [settings]);
+    latestState.current = state;
+  }, [settings, state]);
 
   useEffect(() => {
     player.current = createCuePlayer();
@@ -30,10 +33,15 @@ export function useCues(state: engine.EngineState, settings: Settings) {
 
   const { status, index, phaseStartedAt, pausedTotal } = state;
   useEffect(() => {
+    if (AppState.currentState !== 'active') return;
     const delay = boundaryIn(state, now());
     if (delay === null) return;
     const cue = cueFor(engine.next(state));
+    const scheduledIndex = index;
     const id = setTimeout(() => {
+      if (AppState.currentState !== 'active') return;
+      if (engine.current(latestState.current).phase === 'done') return;
+      if (latestState.current.index !== scheduledIndex) return;
       player.current?.play(cue, latestSettings.current);
       if (__DEV__) {
         const late = boundaryIn(state, now());

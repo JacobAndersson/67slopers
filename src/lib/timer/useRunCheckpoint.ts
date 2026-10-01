@@ -24,8 +24,13 @@ export function useRunCheckpoint(
     latest.current = { state, info, onAbandoned };
   });
   const checkedOlder = useRef(false);
+  const finishedRef = useRef(finished);
+  useEffect(() => {
+    finishedRef.current = finished;
+  }, [finished]);
 
   const save = () => {
+    if (finishedRef.current) return;
     const run = checkpointFrom(latest.current.state, now(), latest.current.info);
     if (run) void saveActiveRun(run);
   };

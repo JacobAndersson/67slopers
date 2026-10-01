@@ -65,7 +65,7 @@ export function ActiveRunCard() {
   };
 
   return (
-    <Card className="border-primary">
+    <Card className="border-border bg-accent">
       <CardHeader>
         <CardDescription>Unfinished workout</CardDescription>
         <CardTitle>{run.name}</CardTitle>

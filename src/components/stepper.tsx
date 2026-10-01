@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { useScreenScroll } from '@/components/screen';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { parseStepperInput } from '@/lib/stepper-input';
 
 type StepperProps = {
   label: string;
@@ -102,104 +102,113 @@ export function Stepper({
   };
 
   const commit = () => {
-    const parse = (text: string) => {
-      const n = parseInt(text.replace(/\D/g, ''), 10);
-      return Number.isFinite(n) ? n : 0;
-    };
-    const typed =
-      inputMode === 'clock'
-        ? parse(draftMinutes) * 60 + Math.min(59, parse(draftSeconds))
-        : parse(draft);
-    const nextValue = clamp(typed);
+    const entry =
+      inputMode === 'clock' ? { minutes: draftMinutes, seconds: draftSeconds } : { value: draft };
+    const nextValue = parseStepperInput(entry, min, max);
     if (nextValue !== value) onChange(nextValue);
     setEditing(false);
   };
 
   return (
-    <View ref={rowRef} className="flex-row items-center gap-3 py-1">
-      <View className="flex-1 gap-0.5">
+    <View ref={rowRef} className="gap-2 py-1">
+      <View className="gap-0.5">
         <Text className="font-medium">{label}</Text>
         {hint ? <Text variant="muted">{hint}</Text> : null}
       </View>
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-11 w-11"
-        disabled={editing || value <= min}
-        onPress={() => bump(-1)}
-        onPressIn={() => startHold(-1)}
-        onPressOut={stop}
-        accessibilityLabel={`Decrease ${label}`}>
-        <Icon as={MinusIcon} className="size-5" />
-      </Button>
+      <View className="flex-row items-center gap-2">
+        {editing && inputMode === 'clock' ? null : (
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11"
+            disabled={editing || value <= min}
+            onPress={() => bump(-1)}
+            onPressIn={() => startHold(-1)}
+            onPressOut={stop}
+            accessibilityLabel={`Decrease ${label}`}>
+            <Icon as={MinusIcon} className="size-5" />
+          </Button>
+        )}
 
-      {editing ? (
-        inputMode === 'clock' ? (
-          <View className="flex-row items-center gap-1">
+        {editing ? (
+          inputMode === 'clock' ? (
+            <View className="flex-row items-center gap-1">
+              <TextInput
+                className={INPUT_CLASS}
+                value={draftMinutes}
+                onChangeText={(minutes) => {
+                  setDraftMinutes(minutes);
+                  onChange(parseStepperInput({ minutes, seconds: draftSeconds }, min, max));
+                }}
+                keyboardType="number-pad"
+                maxLength={2}
+                autoFocus
+                selectTextOnFocus
+                returnKeyType="next"
+                onSubmitEditing={() => secondsRef.current?.focus()}
+                blurOnSubmit={false}
+                accessibilityLabel={`${label} minutes`}
+              />
+              <Text className="text-xl font-semibold">:</Text>
+              <TextInput
+                ref={secondsRef}
+                className={INPUT_CLASS}
+                value={draftSeconds}
+                onChangeText={(seconds) => {
+                  setDraftSeconds(seconds);
+                  onChange(parseStepperInput({ minutes: draftMinutes, seconds }, min, max));
+                }}
+                keyboardType="number-pad"
+                maxLength={2}
+                selectTextOnFocus
+                returnKeyType="done"
+                onSubmitEditing={commit}
+                onBlur={commit}
+                accessibilityLabel={`${label} seconds`}
+              />
+            </View>
+          ) : (
             <TextInput
-              className={cn(INPUT_CLASS, 'font-semibold')}
-              value={draftMinutes}
-              onChangeText={setDraftMinutes}
+              className={INPUT_CLASS}
+              value={draft}
+              onChangeText={(text) => {
+                setDraft(text);
+                onChange(parseStepperInput({ value: text }, min, max));
+              }}
               keyboardType="number-pad"
-              maxLength={2}
+              maxLength={3}
               autoFocus
-              selectTextOnFocus
-              returnKeyType="next"
-              onSubmitEditing={() => secondsRef.current?.focus()}
-              blurOnSubmit={false}
-              accessibilityLabel={`${label} minutes`}
-            />
-            <Text className="text-xl font-semibold">:</Text>
-            <TextInput
-              ref={secondsRef}
-              className={cn(INPUT_CLASS, 'font-semibold')}
-              value={draftSeconds}
-              onChangeText={setDraftSeconds}
-              keyboardType="number-pad"
-              maxLength={2}
               selectTextOnFocus
               returnKeyType="done"
               onSubmitEditing={commit}
               onBlur={commit}
-              accessibilityLabel={`${label} seconds`}
+              accessibilityLabel={`${label} value`}
             />
-          </View>
+          )
         ) : (
-          <TextInput
-            className={cn(INPUT_CLASS, 'font-semibold')}
-            value={draft}
-            onChangeText={setDraft}
-            keyboardType="number-pad"
-            maxLength={3}
-            autoFocus
-            selectTextOnFocus
-            returnKeyType="done"
-            onSubmitEditing={commit}
-            onBlur={commit}
-            accessibilityLabel={`${label} value`}
-          />
-        )
-      ) : (
-        <Pressable
-          onPress={beginEdit}
-          accessibilityRole="button"
-          accessibilityLabel={`Edit ${label}`}
-          className="h-11 min-w-16 items-center justify-center rounded-md border border-dashed border-border px-2 active:bg-accent">
-          <Text className="text-xl font-semibold">{format ? format(value) : String(value)}</Text>
-        </Pressable>
-      )}
+          <Pressable
+            onPress={beginEdit}
+            accessibilityRole="button"
+            accessibilityLabel={`Edit ${label}`}
+            className="h-11 min-w-16 items-center justify-center rounded-md border border-dashed border-border px-2 active:bg-accent">
+            <Text className="text-xl font-semibold">{format ? format(value) : String(value)}</Text>
+          </Pressable>
+        )}
 
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-11 w-11"
-        disabled={editing || value >= max}
-        onPress={() => bump(1)}
-        onPressIn={() => startHold(1)}
-        onPressOut={stop}
-        accessibilityLabel={`Increase ${label}`}>
-        <Icon as={PlusIcon} className="size-5" />
-      </Button>
+        {editing && inputMode === 'clock' ? null : (
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11"
+            disabled={editing || value >= max}
+            onPress={() => bump(1)}
+            onPressIn={() => startHold(1)}
+            onPressOut={stop}
+            accessibilityLabel={`Increase ${label}`}>
+            <Icon as={PlusIcon} className="size-5" />
+          </Button>
+        )}
+      </View>
     </View>
   );
 }

@@ -16,6 +16,8 @@ export function BoardPicker({ value, onChange }: BoardPickerProps) {
   return (
     <ScrollView
       horizontal
+      accessibilityRole="radiogroup"
+      accessibilityLabel="Hangboard"
       className="grow-0"
       contentContainerClassName="gap-2"
       showsHorizontalScrollIndicator={false}
@@ -49,15 +51,16 @@ function Chip({
     <Pressable
       onPress={onPress}
       accessibilityRole="radio"
-      accessibilityState={{ selected: active }}
+      aria-checked={active}
+      accessibilityState={{ checked: active }}
       className={cn(
         'shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2',
         active ? 'border-foreground bg-accent' : 'border-border bg-card active:bg-muted'
       )}>
       {thumb ? (
-        <Image source={thumb} style={{ width: 96, height: 25 }} contentFit="fill" />
+        <Image source={thumb} style={{ width: 128, height: 48 }} contentFit="contain" />
       ) : (
-        <View className="h-[25px] w-24 items-center justify-center rounded border border-dashed border-border">
+        <View className="h-12 w-32 items-center justify-center rounded border border-dashed border-border">
           <Text variant="muted">—</Text>
         </View>
       )}

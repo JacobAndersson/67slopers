@@ -5,7 +5,7 @@ import { Platform, View } from 'react-native';
 
 import { ActiveRunCard } from '@/components/active-run-card';
 import { CalendarStats, WeekCalendar } from '@/components/calendar';
-import { LatestSessionCard } from '@/components/latest-session-card';
+import { SlabBrand } from '@/components/slab-brand';
 import { Screen } from '@/components/screen';
 import { SectionHeader } from '@/components/section-header';
 import { SessionRow } from '@/components/session-row';
@@ -15,19 +15,21 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { WorkoutCard } from '@/components/workout-card';
 import { WorkoutHero } from '@/components/workout-hero';
+import { WorkoutRail } from '@/components/workout-rail';
 import { lastSessionForWorkout, sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useStore } from '@/lib/store/store';
 
 const PREVIEW = 3;
 
 /**
- * The week at a glance, then the workout to do next with a Start that counts down straight
- * away, the other saved workouts (+ builds a new one) and the latest sessions.
+ * The last-used workout starts in one tap, followed by the week, a saved-workout rail,
+ * and the three latest sessions. Recovery always takes priority above the hero.
  */
 export default function HomeScreen() {
   const router = useRouter();
   const workouts = useStore((s) => s.workouts);
   const sessions = useStore((s) => s.sessions);
+  const boardSetupDone = useStore((s) => s.boardSetupDone);
 
   const sorted = useMemo(() => sortWorkoutsByLastUsed(workouts, sessions), [workouts, sessions]);
   const [next, ...others] = sorted;
@@ -44,6 +46,7 @@ export default function HomeScreen() {
     <>
       <Stack.Screen
         options={{
+          headerTitle: () => <SlabBrand />,
           // Browsers cannot read QR codes with expo-camera, so scanning is a phone feature.
           headerRight:
             Platform.OS === 'web'
@@ -61,10 +64,6 @@ export default function HomeScreen() {
       />
       <Screen>
         <ActiveRunCard />
-        <CalendarStats sessions={sessions} />
-        <WeekCalendar sessions={sessions} />
-
-        <SectionHeader title="Next up" />
         {next ? (
           <WorkoutHero workout={next} last={last} />
         ) : (
@@ -87,6 +86,14 @@ export default function HomeScreen() {
           </Card>
         )}
 
+        {!boardSetupDone ? (
+          <Button variant="outline" onPress={() => router.push('/board-setup')}>
+            <Text>Choose your hangboard</Text>
+          </Button>
+        ) : null}
+        <CalendarStats sessions={sessions} />
+        <WeekCalendar sessions={sessions} />
+
         {next ? (
           <>
             <SectionHeader
@@ -102,11 +109,11 @@ export default function HomeScreen() {
               </Button>
             </SectionHeader>
             {others.length > 0 ? (
-              <View className="gap-2">
+              <WorkoutRail>
                 {others.slice(0, PREVIEW).map((workout) => (
-                  <WorkoutCard key={workout.id} workout={workout} />
+                  <WorkoutCard key={workout.id} workout={workout} compact />
                 ))}
-              </View>
+              </WorkoutRail>
             ) : (
               <Text variant="muted">Tap + to build another workout.</Text>
             )}
@@ -114,14 +121,13 @@ export default function HomeScreen() {
         ) : null}
 
         <SectionHeader
-          title="Latest workouts"
+          title="Recent sessions"
           actionLabel={latestSessions.length > PREVIEW ? 'View all' : undefined}
           onAction={() => router.push('/sessions')}
         />
         {latestSessions.length > 0 ? (
           <View className="gap-2">
-            <LatestSessionCard session={latestSessions[0]} />
-            {latestSessions.slice(1, PREVIEW).map((session) => (
+            {latestSessions.slice(0, PREVIEW).map((session) => (
               <SessionRow
                 key={session.id}
                 session={session}

@@ -2,6 +2,7 @@ import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
   GripVerticalIcon,
+  PlusIcon,
   RepeatIcon,
 } from 'lucide-react-native';
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
@@ -9,6 +10,7 @@ import { Pressable, View } from 'react-native';
 import Sortable from 'react-native-sortables';
 
 import { BoardView } from '@/components/board-view';
+import { DisclosureChevron, EditorReveal } from '@/components/disclosure-motion';
 import { useScreenScroll } from '@/components/screen';
 import { Stepper } from '@/components/stepper';
 import { Button } from '@/components/ui/button';
@@ -50,7 +52,7 @@ export type StepListActions = {
   move: (id: string, direction: -1 | 1) => void;
   moveOut: (id: string) => void;
   moveInto: (id: string, repeatId: string) => void;
-  addStep: (parentId: string | null) => void;
+  addStep: (parentId: string | null, kind?: StepKind) => void;
   addRepeat: (parentId: string | null) => void;
   reorder: (parentId: string | null, ids: string[]) => void;
 };
@@ -95,8 +97,8 @@ export function StepEditorProvider({
 
 const BAR: Record<StepKind | 'repeat', string> = {
   prep: 'bg-accent',
-  hang: 'bg-primary',
-  rest: 'bg-muted-foreground',
+  hang: 'bg-chart-1',
+  rest: 'bg-muted',
   repeat: 'bg-chart-3',
 };
 
@@ -105,6 +107,27 @@ const KINDS: StepKind[] = ['prep', 'hang', 'rest'];
 const KIND_SHORT: Record<StepKind, string> = { prep: 'Prep', hang: 'Hang', rest: 'Rest' };
 
 const duration = (step: EditableTimedStep) => formatShort(step.seconds);
+
+/** Pick the step type before inserting it, including inside repeat groups. */
+export function AddStepButton({ onAdd }: { onAdd: (kind: StepKind) => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary" className="min-w-32 flex-1">
+          <Icon as={PlusIcon} className="size-4" />
+          <Text>Add step</Text>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-52">
+        {KINDS.map((kind) => (
+          <DropdownMenuItem key={kind} onPress={() => onAdd(kind)}>
+            <Text>{STEP_NAMES[kind]}</Text>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 type StepListProps = {
   steps: EditableStep[];
@@ -198,24 +221,32 @@ function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
 
   return (
     <View className="gap-2">
-      <Pressable
-        disabled={!editor}
-        onPress={() => editor?.setExpandedId(expanded ? null : step.id)}
-        accessibilityRole="button"
-        accessibilityLabel={`${title}, ${duration(step)}${grip ? `, ${grip}` : ''}`}
+      <View
         className={cn(
-          'flex-row overflow-hidden rounded-lg border bg-card',
-          expanded ? 'border-foreground' : 'border-border',
-          editor && 'active:bg-muted'
+          'flex-row items-center overflow-hidden rounded-lg border bg-card',
+          expanded ? 'border-foreground' : 'border-border'
         )}>
-        <View className={cn('w-1.5', BAR[step.kind])} />
-        <View className="flex-1 gap-0.5 px-3 py-3">
-          <Text className="font-medium">{title}</Text>
-          <Text variant="muted">{subtitle}</Text>
-        </View>
-        {showBoard ? <HoldThumb board={board} step={step} /> : null}
+        <View className={cn('w-1.5 self-stretch', BAR[step.kind])} />
+        <Pressable
+          disabled={!editor}
+          onPress={() => editor?.setExpandedId(expanded ? null : step.id)}
+          accessibilityRole={editor ? 'button' : undefined}
+          accessibilityState={editor ? { expanded } : undefined}
+          accessibilityLabel={`${editor ? 'Edit ' : ''}${title}, ${duration(step)}${grip ? `, ${grip}` : ''}`}
+          className="min-h-16 flex-1 flex-row items-center gap-2 px-3 py-3 active:bg-accent">
+          <View className="flex-1 gap-0.5">
+            <Text className="font-medium">{title}</Text>
+            <Text variant="muted">{subtitle}</Text>
+          </View>
+          {editor ? <DisclosureChevron expanded={expanded} /> : null}
+        </Pressable>
         {editor ? <StepMenu step={step} /> : null}
-      </Pressable>
+      </View>
+      {showBoard ? (
+        <View className="px-3">
+          <HoldThumb board={board} step={step} />
+        </View>
+      ) : null}
       {expanded && editor ? <StepEditor step={step} depth={depth} /> : null}
     </View>
   );
@@ -261,7 +292,7 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
   const coarse = step.kind === 'rest' && depth < 2;
 
   return (
-    <View className="gap-3 rounded-lg border border-border bg-muted p-3">
+    <EditorReveal className="gap-3 rounded-lg border border-border bg-card p-3">
       <ToggleGroup
         type="single"
         variant="outline"
@@ -282,7 +313,7 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
         ))}
       </ToggleGroup>
       <Stepper
-        label="Length"
+        label={`${KIND_SHORT[step.kind]} length`}
         value={step.seconds}
         onChange={(v) => actions.update(step.id, { seconds: v })}
         min={range.min}
@@ -295,27 +326,27 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
         <Pressable
           onPress={() => openHoldPicker(step.id)}
           accessibilityRole="button"
-          className="flex-row items-center gap-3 rounded-md border border-border bg-background px-3 py-2 active:bg-accent">
-          <View className="w-28">
+          className="gap-2 rounded-md border border-border bg-background p-3 active:bg-accent">
+          <View className="w-full">
             <BoardView board={board} holds={step.holds ?? []} className="rounded-sm" />
           </View>
-          <View className="flex-1">
-            <Text className="font-medium">
+          <View className="flex-row items-center gap-2">
+            <Text className="flex-1 font-medium">
               {step.holds?.length ? gripName(board, step.holds) : 'Choose holds'}
             </Text>
-            <Text variant="muted">{board.name}</Text>
+            <Icon as={ChevronDownIcon} className="size-4 -rotate-90 text-muted-foreground" />
           </View>
-          <Icon as={ChevronDownIcon} className="size-4 -rotate-90 text-muted-foreground" />
         </Pressable>
       ) : null}
       <Input
+        accessibilityLabel="Step label"
         value={step.label ?? ''}
         onChangeText={(text) => actions.update(step.id, { label: text || undefined })}
         placeholder="Label, e.g. 20 mm half crimp"
         autoCapitalize="sentences"
         returnKeyType="done"
       />
-    </View>
+    </EditorReveal>
   );
 }
 
@@ -337,13 +368,7 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
           <Text className="text-lg font-semibold">
             {step.times} {step.times === 1 ? 'time' : 'times'}
           </Text>
-          {editor ? (
-            <Icon
-              as={ChevronDownIcon}
-              className="size-4 text-muted-foreground"
-              style={{ transform: [{ rotate: editingCount ? '180deg' : '0deg' }] }}
-            />
-          ) : null}
+          {editor ? <DisclosureChevron expanded={editingCount} /> : null}
         </Pressable>
         {editor ? (
           reorderingHere ? (
@@ -357,7 +382,7 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
       </View>
 
       {editingCount && editor ? (
-        <View className="px-3 pb-2">
+        <EditorReveal className="px-3 pb-2">
           <Stepper
             label="Rounds"
             value={step.times}
@@ -365,11 +390,25 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
             min={LIMITS.times.min}
             max={LIMITS.times.max}
           />
-        </View>
+        </EditorReveal>
       ) : null}
 
-      <View className="px-3 pb-3">
+      <View className="gap-3 px-3 pb-3">
         <StepList steps={step.steps} parentId={step.id} depth={depth + 1} />
+        {editor && editor.reorderTarget === undefined ? (
+          <View className="flex-row flex-wrap gap-2">
+            <AddStepButton onAdd={(kind) => editor.actions.addStep(step.id, kind)} />
+            {depth === 0 ? (
+              <Button
+                variant="outline"
+                className="min-w-32 flex-1"
+                onPress={() => editor.actions.addRepeat(step.id)}>
+                <Icon as={RepeatIcon} className="size-4" />
+                <Text>Add repeat</Text>
+              </Button>
+            ) : null}
+          </View>
+        ) : null}
       </View>
     </View>
   );

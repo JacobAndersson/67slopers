@@ -52,7 +52,7 @@ export function stripIds(steps: EditableStep[]): Step[] {
     }
     const out: TimedStep = { kind: s.kind, seconds: s.seconds };
     if (s.label) out.label = s.label;
-    if (s.holds?.length) out.holds = [...s.holds];
+    if (s.kind === 'hang' && s.holds?.length) out.holds = [...s.holds];
     return out;
   });
 }
@@ -235,7 +235,11 @@ function mapChildren(
 
 export function updateStep(steps: EditableStep[], id: string, patch: StepPatch): EditableStep[] {
   return steps.map((s) => {
-    if (s.id === id) return { ...s, ...patch } as EditableStep;
+    if (s.id === id) {
+      const next = { ...s, ...patch } as EditableStep;
+      if (next.kind !== 'hang' && 'holds' in next) delete (next as { holds?: unknown }).holds;
+      return next;
+    }
     if (s.kind === 'repeat') return { ...s, steps: updateStep(s.steps, id, patch) };
     return s;
   });

@@ -20,7 +20,10 @@ type FeelPickerProps = {
 /** "How did you feel?" as three big icon buttons. Tapping the selected one clears it. */
 export function FeelPicker({ value, onChange }: FeelPickerProps) {
   return (
-    <View className="flex-row gap-3">
+    <View
+      className="flex-row gap-3"
+      accessibilityRole="radiogroup"
+      accessibilityLabel="How did you feel?">
       {FEELS.map((feel) => {
         const selected = value === feel;
         return (
@@ -28,10 +31,11 @@ export function FeelPicker({ value, onChange }: FeelPickerProps) {
             key={feel}
             onPress={() => onChange(feel)}
             accessibilityRole="radio"
-            accessibilityState={{ selected }}
+            aria-checked={selected}
+            accessibilityState={{ checked: selected }}
             accessibilityLabel={FEEL_LABELS[feel]}
             className={cn(
-              'flex-1 items-center gap-2 rounded-lg border-2 border-border bg-card py-4 active:bg-accent',
+              'flex-1 items-center gap-2 rounded-lg border border-border bg-card py-4 active:bg-accent',
               selected && 'border-primary bg-primary'
             )}>
             <Icon

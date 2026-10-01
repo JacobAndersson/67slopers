@@ -11,14 +11,19 @@ export default function RunScreen() {
   const { id, autostart } = useLocalSearchParams<{ id: string; autostart?: string }>();
   const router = useRouter();
   const workout = useStore((s) => s.workouts.find((w) => w.id === id));
+  const hydrated = useStore((s) => s.hydrated);
 
   if (!workout) {
     return (
       <View className="flex-1 items-center justify-center gap-4 bg-background p-6">
-        <Text variant="muted">This workout no longer exists.</Text>
-        <Button variant="outline" onPress={() => router.dismissTo('/')}>
-          <Text>Back to home</Text>
-        </Button>
+        <Text variant="muted">
+          {hydrated ? 'This workout no longer exists.' : 'Opening workout…'}
+        </Text>
+        {hydrated ? (
+          <Button variant="outline" onPress={() => router.dismissTo('/')}>
+            <Text>Back to home</Text>
+          </Button>
+        ) : null}
       </View>
     );
   }

@@ -8,11 +8,45 @@ import {
   hangsLine,
   setsLine,
   summaryLine,
+  workoutFacts,
 } from './workout-summary';
 
 const repeaters = findPreset('repeaters-7-3')!;
 const maxHangs = findPreset('max-hangs')!;
 const density = findPreset('density-hangs')!;
+
+test('workout facts follow mixed and nested intervals without assuming uniform reps', () => {
+  assert.deepEqual(workoutFacts(repeaters), {
+    seconds: 1450,
+    hangSeconds: 252,
+    sets: 6,
+    hangs: 36,
+  });
+  assert.deepEqual(
+    workoutFacts({
+      steps: [
+        { kind: 'prep', seconds: 10 },
+        { kind: 'hang', seconds: 20 },
+        {
+          kind: 'repeat',
+          times: 2,
+          steps: [
+            {
+              kind: 'repeat',
+              times: 3,
+              steps: [
+                { kind: 'hang', seconds: 7 },
+                { kind: 'rest', seconds: 3 },
+              ],
+            },
+            { kind: 'rest', seconds: 60 },
+          ],
+        },
+      ],
+    }),
+    { seconds: 210, hangSeconds: 62, sets: 3, hangs: 7 }
+  );
+});
 
 test('summaryLine reads sets, reps and rests', () => {
   assert.equal(summaryLine(repeaters), '6 × (6 × 7s / 3s · rest 3:00)');

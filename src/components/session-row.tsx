@@ -28,10 +28,12 @@ export function SessionRow({
       onPress={onPress}
       disabled={!onPress}
       accessibilityRole={onPress ? 'button' : undefined}
-      className="flex-row items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 active:bg-accent">
+      className="flex-row items-center justify-between gap-3 border-b border-border py-4 active:bg-accent">
       <View className="flex-1 gap-0.5">
         <Text className="font-semibold">{session.workoutName}</Text>
-        <Text variant="muted">{summaryLine(session.snapshot)}</Text>
+        <Text variant="muted" numberOfLines={1}>
+          {summaryLine(session.snapshot)}
+        </Text>
       </View>
       {showFeel && session.feel ? <Icon as={FEEL_ICONS[session.feel]} className="size-6" /> : null}
       <View className="items-end gap-0.5">

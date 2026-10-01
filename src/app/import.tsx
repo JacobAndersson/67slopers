@@ -1,18 +1,17 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { BoardView } from '@/components/board-view';
 import { Screen } from '@/components/screen';
 import { StepList, StepListBoardProvider } from '@/components/step-list';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { WorkoutFacts } from '@/components/workout-facts';
 import { getBoard } from '@/lib/boards';
-import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { decodeWorkout } from '@/lib/workout-codec';
 import { holdsInWorkout, sameTimings, withIds } from '@/lib/workout-steps';
-import { estimateDuration } from '@/lib/workout-summary';
 
 /**
  * A workout from a scanned, linked or typed code. Everything it needs is in the code, so it is
@@ -33,8 +32,11 @@ export default function ImportScreen() {
         <Stack.Screen options={{ title: 'Shared workout' }} />
         <Screen>
           <Text className="text-lg">{result.error}</Text>
-          <Button variant="outline" className="self-start" onPress={() => router.replace('/scan')}>
-            <Text>Scan again</Text>
+          <Button
+            variant="outline"
+            className="self-start"
+            onPress={() => router.replace(Platform.OS === 'web' ? '/' : '/scan')}>
+            <Text>{Platform.OS === 'web' ? 'Back to home' : 'Scan again'}</Text>
           </Button>
         </Screen>
       </>
@@ -48,14 +50,14 @@ export default function ImportScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: name }} />
+      <Stack.Screen options={{ title: 'Shared workout' }} />
       <Screen
         footer={
-          <View className="flex-row gap-3">
+          <View className="flex-row flex-wrap gap-3">
             <Button
               size="lg"
               variant="outline"
-              className="flex-1"
+              className="min-w-28 flex-1"
               onPress={() => {
                 setDraft({ name: result.name, timings });
                 router.replace('/workout/run');
@@ -64,7 +66,7 @@ export default function ImportScreen() {
             </Button>
             <Button
               size="lg"
-              className="flex-1"
+              className="min-w-40 flex-1"
               onPress={() => {
                 const workout =
                   saved ??
@@ -79,25 +81,31 @@ export default function ImportScreen() {
             </Button>
           </View>
         }>
-        <Text variant="muted">
-          {saved
-            ? 'You already have this workout.'
-            : 'Shared with you. Save it to your workouts, or start it without saving.'}
+        <Text selectable className="text-3xl tracking-tight font-bold">
+          {name}
         </Text>
+        <View className="rounded-lg bg-secondary p-4">
+          <Text>
+            {saved
+              ? 'You already have this workout.'
+              : 'Shared with you. Save it to your workouts, or start it without saving.'}
+          </Text>
+        </View>
         {result.description ? <Text>{result.description}</Text> : null}
 
+        <WorkoutFacts timings={timings} />
+
         {board ? (
-          <View className="gap-1">
+          <View className="gap-3 rounded-lg border border-border bg-card p-4">
+            <Text className="font-medium">{board.name}</Text>
             <BoardView board={board} holds={holdsInWorkout(result.steps)} />
-            <Text variant="muted">{board.name}</Text>
           </View>
         ) : null}
 
+        <Text className="pt-2 text-xl font-semibold">The workout</Text>
         <StepListBoardProvider board={board}>
           <StepList steps={steps} parentId={null} depth={0} />
         </StepListBoardProvider>
-
-        <Text variant="muted">About {formatClock(estimateDuration(timings))} in total.</Text>
       </Screen>
     </>
   );

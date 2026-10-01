@@ -21,6 +21,11 @@ export function useTimer(timings: WorkoutTimings, resumeFrom?: engine.RunPositio
       : engine.createEngine(intervals, now())
   );
   const [clock, setClock] = useState(now);
+  // Recorded results change with engine state, not with the display clock.
+  const results = useMemo(
+    () => ({ completedSets: engine.completedSets(state), hangResults: engine.hangResults(state) }),
+    [state]
+  );
 
   useEffect(() => {
     if (state.status !== 'running') return;
@@ -55,9 +60,9 @@ export function useTimer(timings: WorkoutTimings, resumeFrom?: engine.RunPositio
     engineState: state,
     remainingSeconds: engine.remainingSeconds(state, clock),
     progress: engine.progress(state, clock),
-    completedSets: engine.completedSets(state),
+    completedSets: results.completedSets,
     /** Planned and actual seconds of every hang started so far. */
-    hangResults: engine.hangResults(state),
+    hangResults: results.hangResults,
     totalSets: intervals[0]?.setCount ?? 0,
     /** Wall-clock seconds since start, pauses included. Freezes once the timer stops. */
     elapsedSeconds: state.status === 'idle' ? 0 : (clock - state.startedAt) / 1000,

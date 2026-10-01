@@ -1,22 +1,22 @@
 {
   "fill": {
-    "solid": "extended-srgb:0.96471,0.94510,0.91765,1.00000"
+    "solid": "extended-srgb:0.97647,0.77647,0.36471,1.00000"
   },
   "groups": [
     {
       "layers": [
         {
           "image-name": "sloper.svg",
-          "name": "sloper"
+          "name": "Slab"
         }
       ],
       "shadow": {
         "kind": "neutral",
-        "opacity": 0.3
+        "opacity": 0
       },
       "translucency": {
         "enabled": false,
-        "value": 0.5
+        "value": 0
       }
     }
   ],

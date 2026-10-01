@@ -6,17 +6,21 @@ import { Text } from '@/components/ui/text';
 import { formatClock } from '@/lib/dates';
 import type { Workout } from '@/lib/store/types';
 import { estimateDuration, summaryLine } from '@/lib/workout-summary';
+import { cn } from '@/lib/utils';
 
 /** A saved workout in the home list. Tapping opens its overview, which has Start. */
-export function WorkoutCard({ workout }: { workout: Workout }) {
+export function WorkoutCard({ workout, compact = false }: { workout: Workout; compact?: boolean }) {
   const router = useRouter();
   return (
     <Pressable
       onPress={() => router.push(`/workout/${workout.id}`)}
       accessibilityRole="button"
-      className="flex-row items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 active:bg-accent">
+      className={cn(
+        'gap-3 rounded-lg border border-border bg-card px-4 py-3 active:bg-accent',
+        compact ? 'min-h-36 w-64 shrink-0 justify-between' : 'flex-row items-center'
+      )}>
       <View className="flex-1 gap-0.5">
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row flex-wrap items-center gap-2">
           <Text className="font-semibold">{workout.name}</Text>
           {workout.isPreset ? (
             <Badge variant="secondary">

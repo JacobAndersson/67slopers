@@ -14,15 +14,15 @@ function PresetCard({ preset }: { preset: Preset }) {
     <Pressable
       onPress={() => router.push({ pathname: '/workout/new', params: { preset: preset.id } })}
       accessibilityRole="button"
-      className="gap-1 rounded-lg border border-border bg-card px-4 py-3 active:bg-accent">
+      className="gap-3 rounded-lg border border-border bg-card p-5 active:bg-accent">
       <View className="flex-row items-center justify-between gap-3">
-        <Text className="font-semibold">{preset.name}</Text>
+        <Text className="flex-1 text-lg font-semibold">{preset.name}</Text>
         <Text variant="small" className="text-muted-foreground">
           {formatClock(estimateDuration(preset))}
         </Text>
       </View>
       <Text variant="muted">{summaryLine(preset)}</Text>
-      <Text className="mt-1 text-sm">{preset.description}</Text>
+      <Text className="text-sm leading-6 text-muted-foreground">{preset.description}</Text>
     </Pressable>
   );
 }
