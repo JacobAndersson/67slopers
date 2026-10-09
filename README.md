@@ -140,6 +140,7 @@ Use those utilities as usual and never set `fontFamily` directly.
 
 ## Docs
 
+- [Design workspace](design/README.md): local Penpot, storyboards, foundations, and design exports.
 - [Product principles](docs/principles.md): local-only, no accounts, instant startup, no ads.
 - [MVP scope](docs/mvp.md): what ships first, based on the BoulderFIT analysis.
 - [Competitor research](competitors/README.md): one file per app.

@@ -3,7 +3,10 @@ import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-vie
 import { TextClassContext } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import * as DropdownMenuPrimitive from '@rn-primitives/dropdown-menu';
-import { Check, ChevronDown, ChevronRight, ChevronUp } from 'lucide-react-native';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
+import { CaretUpIcon } from 'phosphor-react-native/src/icons/CaretUp';
 import * as React from 'react';
 import { Platform, type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { FadeIn, ReduceMotion } from 'react-native-reanimated';
@@ -33,7 +36,7 @@ function DropdownMenuSubTrigger({
   inset?: boolean;
 }) {
   const { open } = DropdownMenuPrimitive.useSubContext();
-  const icon = Platform.OS === 'web' ? ChevronRight : open ? ChevronUp : ChevronDown;
+  const icon = Platform.OS === 'web' ? CaretRightIcon : open ? CaretUpIcon : CaretDownIcon;
   return (
     <TextClassContext.Provider
       value={cn(
@@ -190,7 +193,7 @@ function DropdownMenuCheckboxItem({
         <View className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
           <DropdownMenuPrimitive.ItemIndicator>
             <Icon
-              as={Check}
+              as={CheckIcon}
               className={cn(
                 'size-4 text-foreground',
                 Platform.select({ web: 'pointer-events-none' })

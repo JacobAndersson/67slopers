@@ -1,4 +1,4 @@
-import { XIcon } from 'lucide-react-native';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { useState } from 'react';
 import { Modal, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

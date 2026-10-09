@@ -1,6 +1,6 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { XIcon } from 'lucide-react-native';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { useCallback, useRef, useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

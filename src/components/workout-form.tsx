@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { LibraryIcon, RepeatIcon } from 'lucide-react-native';
+import { BooksIcon } from 'phosphor-react-native/src/icons/Books';
+import { RepeatIcon } from 'phosphor-react-native/src/icons/Repeat';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 
@@ -236,7 +237,7 @@ export function WorkoutForm({
       {initial ? null : (
         // Swap this screen for the library so picking a preset does not stack two builders.
         <Button variant="outline" className="self-start" onPress={() => router.replace('/presets')}>
-          <Icon as={LibraryIcon} className="size-4" />
+          <Icon as={BooksIcon} className="size-4" />
           <Text>Start from a classic workout</Text>
         </Button>
       )}

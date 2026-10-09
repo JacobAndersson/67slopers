@@ -1,5 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { CopyIcon, QrCodeIcon } from 'lucide-react-native';
+import { CopyIcon } from 'phosphor-react-native/src/icons/Copy';
+import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 

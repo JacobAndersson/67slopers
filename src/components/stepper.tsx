@@ -1,4 +1,5 @@
-import { MinusIcon, PlusIcon } from 'lucide-react-native';
+import { MinusIcon } from 'phosphor-react-native/src/icons/Minus';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { useEffect, useRef, useState } from 'react';
 import { Keyboard, Pressable, TextInput, View } from 'react-native';
 

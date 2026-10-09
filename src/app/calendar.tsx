@@ -1,5 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react-native';
+import { CaretLeftIcon } from 'phosphor-react-native/src/icons/CaretLeft';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -42,7 +43,7 @@ export default function CalendarScreen() {
                 setOffset((o) => o - 1);
                 setSelected(addMonths(month, -1));
               }}>
-              <Icon as={ChevronLeftIcon} className="size-6" />
+              <Icon as={CaretLeftIcon} className="size-6" />
             </Button>
             <Button
               variant="ghost"
@@ -53,7 +54,7 @@ export default function CalendarScreen() {
                 setOffset((o) => Math.min(0, o + 1));
                 setSelected(addMonths(month, 1));
               }}>
-              <Icon as={ChevronRightIcon} className="size-6" />
+              <Icon as={CaretRightIcon} className="size-6" />
             </Button>
           </View>
         </View>

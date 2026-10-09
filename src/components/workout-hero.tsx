@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { PlayIcon } from 'lucide-react-native';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { Pressable, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';

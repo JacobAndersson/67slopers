@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { XIcon } from 'lucide-react-native';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { useMemo } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

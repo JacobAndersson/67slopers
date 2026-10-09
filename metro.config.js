@@ -14,6 +14,7 @@ const ignored = [
   'ds-bundle',
   'dist',
   'competitors',
+  'design',
   'node_modules/hangboard-ui',
 ];
 config.resolver.blockList = [

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { ChevronRightIcon } from 'lucide-react-native';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 
@@ -143,7 +143,7 @@ export function WeekCalendar({
         accessibilityLabel="Show the month"
         onPress={() => router.push('/calendar')}>
         <Text className="font-medium">This week</Text>
-        <Icon as={ChevronRightIcon} className="size-4" />
+        <Icon as={CaretRightIcon} className="size-4" />
       </Button>
       <CalendarGrid
         rows={rows}

@@ -1,10 +1,8 @@
-import {
-  ChevronDownIcon,
-  EllipsisVerticalIcon,
-  GripVerticalIcon,
-  PlusIcon,
-  RepeatIcon,
-} from 'lucide-react-native';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
+import { DotsThreeVerticalIcon } from 'phosphor-react-native/src/icons/DotsThreeVertical';
+import { DotsSixVerticalIcon } from 'phosphor-react-native/src/icons/DotsSixVertical';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
+import { RepeatIcon } from 'phosphor-react-native/src/icons/Repeat';
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import Sortable from 'react-native-sortables';
@@ -201,7 +199,7 @@ function ReorderRow({ step }: { step: EditableStep }) {
         <View
           className="h-full items-center justify-center px-4"
           accessibilityLabel="Drag to reorder">
-          <Icon as={GripVerticalIcon} className="size-5 text-muted-foreground" />
+          <Icon as={DotsSixVerticalIcon} className="size-5 text-muted-foreground" />
         </View>
       </Sortable.Handle>
     </View>
@@ -334,7 +332,7 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
             <Text className="flex-1 font-medium">
               {step.holds?.length ? gripName(board, step.holds) : 'Choose holds'}
             </Text>
-            <Icon as={ChevronDownIcon} className="size-4 -rotate-90 text-muted-foreground" />
+            <Icon as={CaretDownIcon} className="size-4 -rotate-90 text-muted-foreground" />
           </View>
         </Pressable>
       ) : null}
@@ -434,7 +432,7 @@ function StepMenu({ step }: { step: EditableStep }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" accessibilityLabel="Step options">
-          <Icon as={EllipsisVerticalIcon} className="size-5" />
+          <Icon as={DotsThreeVerticalIcon} className="size-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">

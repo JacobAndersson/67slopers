@@ -1,5 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
-import { LibraryIcon, PlusIcon, ScanQrCodeIcon } from 'lucide-react-native';
+import { BooksIcon } from 'phosphor-react-native/src/icons/Books';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
+import { ScanIcon } from 'phosphor-react-native/src/icons/Scan';
 import { useMemo } from 'react';
 import { Platform, View } from 'react-native';
 
@@ -57,7 +59,7 @@ export default function HomeScreen() {
                     size="icon"
                     accessibilityLabel="Scan a workout code"
                     onPress={() => router.push('/scan')}>
-                    <Icon as={ScanQrCodeIcon} className="size-6" />
+                    <Icon as={ScanIcon} className="size-6" />
                   </Button>
                 ),
         }}
@@ -76,7 +78,7 @@ export default function HomeScreen() {
             </CardHeader>
             <CardContent className="gap-2">
               <Button size="lg" onPress={() => router.push('/presets')}>
-                <Icon as={LibraryIcon} className="size-5 text-primary-foreground" />
+                <Icon as={BooksIcon} className="size-5 text-primary-foreground" />
                 <Text className="text-lg">Classic workouts</Text>
               </Button>
               <Button variant="outline" onPress={() => router.push('/workout/new')}>

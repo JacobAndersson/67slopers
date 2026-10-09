@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from 'lucide-react-native';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
 import type { PropsWithChildren } from 'react';
 import Animated, {
   cubicBezier,
@@ -35,7 +35,7 @@ export function DisclosureChevron({ expanded }: { expanded: boolean }) {
         transitionDuration: reduced ? 0 : DURATION_MS,
         transitionTimingFunction: CSS_EASE_OUT,
       }}>
-      <Icon as={ChevronDownIcon} className="size-4 text-muted-foreground" />
+      <Icon as={CaretDownIcon} className="size-4 text-muted-foreground" />
     </Animated.View>
   );
 }

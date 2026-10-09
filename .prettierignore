@@ -2,6 +2,11 @@ assets/
 dist/
 .expo/
 node_modules/
+.agents/skills/
+.claude/skills/
 package-lock.json
 competitors/
 hangboard-models/
+design/.local/
+design/backups/
+design/exports/

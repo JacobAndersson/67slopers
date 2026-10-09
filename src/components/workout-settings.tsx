@@ -1,4 +1,4 @@
-import { Settings2Icon } from 'lucide-react-native';
+import { SlidersHorizontalIcon } from 'phosphor-react-native/src/icons/SlidersHorizontal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -18,7 +18,7 @@ export function WorkoutSettings() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" accessibilityLabel="Workout settings">
-          <Icon as={Settings2Icon} className="size-6" />
+          <Icon as={SlidersHorizontalIcon} className="size-6" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

@@ -1,0 +1,104 @@
+# Adapted from Penpot's official Docker Compose example (2.18).
+# https://github.com/penpot/penpot/blob/main/docker/images/docker-compose.yaml
+name: slopers67-design
+
+x-common: &common
+  PENPOT_PUBLIC_URI: http://localhost:9002
+  PENPOT_FLAGS: disable-email-verification disable-secure-session-cookies enable-prepl-server enable-mcp enable-admin-console disable-telemetry
+  PENPOT_SECRET_KEY: ${PENPOT_SECRET_KEY:?Run python3 design/penpot/manage.py up first}
+
+x-database: &database
+  PENPOT_DATABASE_URI: postgresql://penpot-postgres/penpot
+  PENPOT_DATABASE_USERNAME: penpot
+  PENPOT_DATABASE_PASSWORD: ${PENPOT_DATABASE_PASSWORD:?Run python3 design/penpot/manage.py up first}
+
+services:
+  penpot-frontend:
+    image: penpotapp/frontend:2.18
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:9002:8080'
+    volumes:
+      - ../.local/penpot/assets:/opt/data/assets
+    depends_on:
+      - penpot-backend
+      - penpot-admin-console
+      - penpot-mcp
+      - penpot-exporter
+    environment:
+      <<: *common
+      PENPOT_HTTP_SERVER_MAX_BODY_SIZE: 367001600
+      PENPOT_ADMIN_CONSOLE_URI: http://penpot-admin-console:3000
+
+  penpot-backend:
+    image: penpotapp/backend:2.18
+    restart: unless-stopped
+    volumes:
+      - ../.local/penpot/assets:/opt/data/assets
+    depends_on:
+      penpot-postgres:
+        condition: service_healthy
+      penpot-valkey:
+        condition: service_healthy
+    environment:
+      <<: [*common, *database]
+      PENPOT_HTTP_SERVER_MAX_BODY_SIZE: 367001600
+      PENPOT_ADMIN_CONSOLE_URI: http://penpot-admin-console:3000
+      PENPOT_REDIS_URI: redis://penpot-valkey/0
+      PENPOT_OBJECTS_STORAGE_BACKEND: fs
+      PENPOT_OBJECTS_STORAGE_FS_DIRECTORY: /opt/data/assets
+      PENPOT_TELEMETRY_ENABLED: 'false'
+
+  penpot-admin-console:
+    image: penpotapp/admin-console:2.18
+    restart: unless-stopped
+    depends_on:
+      penpot-postgres:
+        condition: service_healthy
+    environment:
+      <<: [*common, *database]
+      PENPOT_INTERNAL_URI: http://penpot-frontend:8080
+
+  penpot-mcp:
+    image: penpotapp/mcp:2.18
+    restart: unless-stopped
+
+  penpot-exporter:
+    image: penpotapp/exporter:2.18
+    restart: unless-stopped
+    depends_on:
+      penpot-valkey:
+        condition: service_healthy
+    environment:
+      <<: *common
+      PENPOT_INTERNAL_URI: http://penpot-frontend:8080
+      PENPOT_REDIS_URI: redis://penpot-valkey/0
+
+  penpot-postgres:
+    image: postgres:15
+    restart: unless-stopped
+    stop_signal: SIGINT
+    volumes:
+      - ../.local/penpot/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_INITDB_ARGS: --data-checksums
+      POSTGRES_DB: penpot
+      POSTGRES_USER: penpot
+      POSTGRES_PASSWORD: ${PENPOT_DATABASE_PASSWORD}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U penpot']
+      interval: 2s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+
+  penpot-valkey:
+    image: valkey/valkey:8.1
+    restart: unless-stopped
+    command: valkey-server --maxmemory 128mb --maxmemory-policy volatile-lfu
+    healthcheck:
+      test: ['CMD', 'valkey-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 3s

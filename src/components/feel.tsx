@@ -1,4 +1,7 @@
-import { BicepsFlexedIcon, SnailIcon, ThumbsUpIcon, type LucideIcon } from 'lucide-react-native';
+import { BarbellIcon } from 'phosphor-react-native/src/icons/Barbell';
+import { BatteryLowIcon } from 'phosphor-react-native/src/icons/BatteryLow';
+import { ThumbsUpIcon } from 'phosphor-react-native/src/icons/ThumbsUp';
+import type { Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Pressable, View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
@@ -6,10 +9,10 @@ import { Text } from '@/components/ui/text';
 import { FEEL_LABELS, FEELS, type Feel } from '@/lib/store/types';
 import { cn } from '@/lib/utils';
 
-export const FEEL_ICONS: Record<Feel, LucideIcon> = {
-  weak: SnailIcon,
+export const FEEL_ICONS: Record<Feel, PhosphorIcon> = {
+  weak: BatteryLowIcon,
   normal: ThumbsUpIcon,
-  strong: BicepsFlexedIcon,
+  strong: BarbellIcon,
 };
 
 type FeelPickerProps = {

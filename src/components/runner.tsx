@@ -1,6 +1,10 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { useNavigation, useRouter } from 'expo-router';
-import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, XIcon } from 'lucide-react-native';
+import { PauseIcon } from 'phosphor-react-native/src/icons/Pause';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
+import { SkipBackIcon } from 'phosphor-react-native/src/icons/SkipBack';
+import { SkipForwardIcon } from 'phosphor-react-native/src/icons/SkipForward';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -561,7 +565,7 @@ export function Runner({
                         setRestart((value) => value + 1);
                         timer.back();
                       }}>
-                      <Icon as={SkipBackIcon} className="size-7" />
+                      <Icon as={SkipBackIcon} weight="bold" className="size-7" />
                     </Button>
                   ) : null}
                   <Button
@@ -573,6 +577,7 @@ export function Runner({
                     onPress={idle ? timer.start : paused ? timer.resume : timer.pause}>
                     <Icon
                       as={idle || paused ? PlayIcon : PauseIcon}
+                      weight="bold"
                       className="size-7 text-background"
                     />
                     <Text className="text-lg font-semibold">
@@ -586,7 +591,7 @@ export function Runner({
                       className="h-14 w-14 rounded-lg"
                       accessibilityLabel="Skip"
                       onPress={timer.skip}>
-                      <Icon as={SkipForwardIcon} className="size-7" />
+                      <Icon as={SkipForwardIcon} weight="bold" className="size-7" />
                     </Button>
                   ) : null}
                 </View>

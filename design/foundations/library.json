@@ -1,0 +1,2911 @@
+{
+  "pages": [
+    {
+      "id": "83493a27-42b5-5511-8850-15e221286642",
+      "name": "00.1 Design system \u00b7 Foundations"
+    },
+    {
+      "id": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "name": "00.2 Design system \u00b7 UI components"
+    },
+    {
+      "id": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "name": "00.3 Design system \u00b7 Training patterns"
+    }
+  ],
+  "boards": [
+    {
+      "key": "ds-start",
+      "name": "Built for chalked hands.",
+      "id": "31197271-4bb8-5705-b5f3-2faebcb8410d",
+      "pageId": "83493a27-42b5-5511-8850-15e221286642",
+      "width": 1200,
+      "height": 1080,
+      "shapes": 16
+    },
+    {
+      "key": "ds-colors",
+      "name": "Color has a job.",
+      "id": "2ea35277-2e0c-54e5-b7ef-ede6d71ea2cf",
+      "pageId": "83493a27-42b5-5511-8850-15e221286642",
+      "width": 1200,
+      "height": 1200,
+      "shapes": 71
+    },
+    {
+      "key": "ds-typography",
+      "name": "One family. Clear hierarchy.",
+      "id": "2952a125-7b30-50cb-ac35-2fd255596b70",
+      "pageId": "83493a27-42b5-5511-8850-15e221286642",
+      "width": 1200,
+      "height": 1540,
+      "shapes": 48
+    },
+    {
+      "key": "ds-layout",
+      "name": "Rhythm, reach & feedback.",
+      "id": "2190b083-c38d-5eeb-9b21-5732f07fee13",
+      "pageId": "83493a27-42b5-5511-8850-15e221286642",
+      "width": 1200,
+      "height": 1380,
+      "shapes": 42
+    },
+    {
+      "key": "ds-buttons",
+      "name": "Button / variant \u00d7 size \u00d7 state",
+      "id": "36e49f82-3310-5459-b29a-6dd222dc1244",
+      "pageId": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "width": 1200,
+      "height": 1500,
+      "shapes": 246
+    },
+    {
+      "key": "ds-fields",
+      "name": "Fields & numeric entry",
+      "id": "dbae304c-22da-5edd-bbfc-68ffda23e4dd",
+      "pageId": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "width": 1200,
+      "height": 1280,
+      "shapes": 55
+    },
+    {
+      "key": "ds-selection",
+      "name": "Selection & compact labels",
+      "id": "4c87f195-00da-5e68-a3b3-0eb1131fcc7a",
+      "pageId": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "width": 1200,
+      "height": 1230,
+      "shapes": 77
+    },
+    {
+      "key": "ds-overlays",
+      "name": "Menus, decisions & structure",
+      "id": "3ee98aa6-daf1-5f91-85df-f1da5ce545d2",
+      "pageId": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "width": 1200,
+      "height": 1340,
+      "shapes": 43
+    },
+    {
+      "key": "ds-workouts",
+      "name": "Workouts & trustworthy history",
+      "id": "ea63f7c0-7863-5d72-9e70-ffb7889aabc2",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1440,
+      "shapes": 74
+    },
+    {
+      "key": "ds-calendar-feel",
+      "name": "Training rhythm & how it felt",
+      "id": "72ff75c9-7ac4-55f6-94b0-3df85bcb23e7",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1390,
+      "shapes": 124
+    },
+    {
+      "key": "ds-steps",
+      "name": "The workout is a step tree.",
+      "id": "0e5bc897-3650-538e-b150-e42639366275",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1510,
+      "shapes": 111
+    },
+    {
+      "key": "ds-grips",
+      "name": "Board & grip guidance",
+      "id": "27605e99-857b-553e-8c72-f43cc3fedc18",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1440,
+      "shapes": 35
+    },
+    {
+      "key": "ds-timer",
+      "name": "The timer stays unmistakable.",
+      "id": "17dc76ee-5d66-586d-bae1-5016a3004b3e",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1500,
+      "shapes": 35
+    },
+    {
+      "key": "ds-recovery",
+      "name": "Recovery & completion",
+      "id": "1bc1fda7-6fd7-54c2-9fa6-16440f821696",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1420,
+      "shapes": 36
+    },
+    {
+      "key": "ds-reuse",
+      "name": "Start from components.",
+      "id": "73a03b7a-dfe2-5ccf-b68f-eb7ba868fa61",
+      "pageId": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "width": 1200,
+      "height": 1410,
+      "shapes": 66
+    }
+  ],
+  "components": [
+    {
+      "id": "ffcec417-f237-58a6-9162-d5d75f2dd4dd",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "063293d9-5d54-55ff-960c-b2b4deebe415",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "ccc35c9c-89f9-5683-a89d-8473c8e8fa73",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "f8617776-1364-5d1f-a163-bcec2169e749",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "10452e42-bc6e-54ac-a35f-bb7463844661",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "5d9c4dde-b467-5d6d-967c-ea36edecdacb",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "4c5d1db1-90d8-5767-a9b3-ba8bd8a8617d",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "53050287-785f-5033-9ac2-d19033e0bf88",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "94e86cb5-7122-53c3-a227-e61e114f2a54",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "91c29c35-95e4-5805-b731-2a1492370285",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "d9d122d6-d1c0-5632-bb91-2c32dfe12913",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "1d3bee20-0581-56b5-a63e-ae29e00a1597",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "bd13bdbb-2713-5700-b5b1-319ba8e0b915",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "4e9b750a-68af-5aa3-9165-8e75672ec381",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "f9316279-74a6-5109-8e2e-3cab4d03ddb4",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "1b8176c8-057a-53f4-a7eb-fcb417a77f08",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "3fb1c290-c217-5e66-b6f4-cc546c89d282",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "4fbc1872-73dc-5b91-81e0-68e07beca21d",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "39ab03cd-e162-5268-ab29-06dfdc2b2746",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "3908f97e-475f-5e2f-8cec-069553c5185e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "e1d87740-cb90-52d5-8618-1cc447dffb88",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "2d491eab-2b01-52f3-a875-75043d671410",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "f041867a-13f4-5369-a86e-44a9c0f1acbb",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "8b18097b-6f93-5aad-8593-2251e5385d18",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "a7cf01de-fbee-5be4-84df-77ec9d6587a8",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "67e50e14-2fc6-5999-b961-4581f0c24769",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "c21b969f-a541-5e1b-8bd2-650b2d15f72e",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "08543e51-9c91-50ab-b564-8fcc64ec915c",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "f79dadef-2f41-5ccf-8d3f-6323000882f3",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "777b67ff-a62a-523f-99a3-21aa82968e0e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "b6b582e7-c984-50d5-8ef0-64370868b7b4",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "79ad5991-12f5-5683-8c51-115dac45e016",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "99fb3205-1787-5c3c-b95a-92516d3530a6",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "707edc80-dd68-558a-8bcc-5b789dd106a1",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "4e5ac633-b12b-57a5-aea5-1a4938a15445",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "060e177b-eabe-51c2-ac58-2eb926362ea6",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "a13fa9ec-b614-5d3f-9473-3590a86a8e16",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "ab8db341-5e8c-56b1-8f07-de39e3390fb6",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "6eb2f8c1-2b5b-5f71-bbcc-075ac8d22d10",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "40df2b12-d95f-5aef-86de-59824a068721",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "20afbdc4-4c1b-5fa4-9e6a-715dfd86830f",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "a6c91494-dd05-5d55-ab11-6a0a2db27b08",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "b78df72b-c1ce-5cd4-ba74-3acfeb5cc989",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "817db5e6-f929-5c6a-8510-fcc9323cc435",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "36ebc18d-488e-5e58-96f5-299117f4b9b9",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "979af6b5-a428-5da0-abf6-85dce9225bac",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "5d3d6534-43ad-5538-838f-950b24a104f4",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "bd0e5555-0b60-543b-ab5d-bece9bc3b08a",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "sm"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "980af4c7-e011-5beb-9676-dfb5177d7389",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "f611e98f-2df0-5f8e-812a-6958cfde7cce",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "1b7e9443-663c-57c2-b9d6-ffe971a13b7f",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "1bfbaf53-f64c-5130-a5fb-94a42da33721",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "ef288ecd-4e5f-5dee-bdda-98aae3c03d62",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "f6277c5e-e76a-57d0-b55e-7b61b131c1dc",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "9599a976-f33b-5f67-b336-4e19dce5d495",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "a50686aa-6a4e-5ecb-95bf-610b8307919e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "701ec4d1-f1da-5b90-8128-49c255f9183f",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "2a375434-4a1b-50b5-af61-d07c9018c00a",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "a9cd1eab-d236-57b2-8c22-ab7c3f9cf767",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "a21832c7-1fd9-5bfd-a8c8-6a0fd18985ea",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "03fa7dcc-5e1e-51d4-806b-c9e26d96543d",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "d05ff7de-3cfa-5113-a1d8-6ef5b46d30b3",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "20efd3d8-3710-500b-af12-9ee93d11f053",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "58461ee4-5058-50fc-834a-dbbb9e40a146",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "8c0e7179-e5cb-5b72-a357-6c6704cbee4a",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "44a35a6e-a41c-5f3e-8d71-befe732fbedb",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "4ce0a78d-3c26-520c-ba51-4cccdc920cb4",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "f4caefce-9366-5f99-97a0-ad2f3aafae7f",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "cc3fe7a9-458e-5173-bdab-f147edae4bec",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "56da72f5-7a38-5bec-acff-28a46116996f",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "3d87a999-9ea6-5fe6-9750-dbcdd519a267",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "c69aa4b4-d450-58b8-a488-58239d101d33",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "8e23e255-58e6-5353-a3d9-c9a094663410",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "6d7cb7eb-258f-509f-bdb4-8e81a66203f5",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "88632302-01a2-5fe9-b769-1b8400d8938d",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "4bd4b301-0fbd-5cfd-8fe3-f8988937c1ff",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "cf436ef9-c241-5d26-aa68-053d6674f0ec",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "2a0f922a-bd26-549b-9c73-3bb44c42a169",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "c32b034e-8a1c-5135-88c9-92a6957f605d",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "56610618-e6a0-5ba8-930b-30ad08b12411",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "5a5115c4-ad94-54d6-9cae-3cbe8ab91934",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "49401cf0-6c6d-59dd-bccb-f30a84d5cd53",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "ef609aae-b2a9-5ed4-96a8-5fab46f69ef2",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "47b9e102-2447-58d8-bf9e-6d34cf034d4a",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "0bbc52cc-4663-507d-992b-1dfa65f66949",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "de4c67b3-aa96-5a7b-be9e-8052ff2ea140",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "bc3625e4-5294-5cde-a343-cca28ccd04d4",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "bd7afe27-c972-528a-a24f-5fe2c9255633",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "b42dcb72-f7dd-524a-94b0-ed9eef713a10",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "881fc5e3-549c-5b74-af0c-70ae243ba112",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "40a22195-65b2-5153-97b9-1c1aeb587a8d",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "3371335b-55cf-5c02-888d-b1befa9bef5e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "41abc6a6-5b59-5872-8250-11019a0f3769",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "08a054a5-7889-57fd-8e25-6e0fcfc2dcf5",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "b3040868-2381-510f-bf59-94259a475b02",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "989fd441-2c2b-5c0d-91ba-43eb2a605525",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "default"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "3f746530-73d4-548b-ac82-3defd513ea5e",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "6afdd948-1b49-5a88-a829-6cf7d48bdd17",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "738751d6-54f9-5e09-aa05-65365f397818",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "b89d31d2-3a6f-5e08-96ef-13ab91f7fb15",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "d5b1f173-0955-5ea0-8d54-f1f526934d5e",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "e151af6b-8d33-5206-9fd5-c22e28febae3",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "7ed3e644-ef3a-5079-9c42-b928f7e21856",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "01f4828d-da6a-5e91-8401-975941dc82a9",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "8d6c3a73-f1c9-5488-9f1b-0a03e533d496",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "c149c1a9-70a1-5666-8233-eb87ab0a8a43",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "bf102efa-70cb-5d2d-a983-f344d5590b3e",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "81ebd5be-1d6a-58ea-9a07-5a7c0ff26b3f",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "enabled"
+        }
+      ]
+    },
+    {
+      "id": "5fca1df6-504e-59d2-aedb-40b5c468f56a",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "fe42e496-882c-57bd-82b1-1bb89469328b",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "fe72a3b2-8d2c-59ad-8a30-b6cb2934cd92",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "be9e4442-6bc5-5349-b75e-fdb98e75607b",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "b4e15a85-97ed-566d-a810-b281b10a619b",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "96a05498-c4bb-513f-8cb5-e5eab308fb6e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "78311f08-bd0d-563a-bafb-e73b34aeb3b8",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "3599172e-bb8c-5eaf-8b8d-9dba3bb163da",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "366d53e6-6c1f-548a-8795-d5ecb014a7ba",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "9a3bf87e-b692-5336-bf7d-f239931545f5",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "eb32569e-0114-576c-a994-ce6fe4f22795",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "9de9d2d0-4655-5d45-9642-ff268e545f94",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "pressed"
+        }
+      ]
+    },
+    {
+      "id": "13c8b553-5b89-5a84-987b-8e31ac35d6c2",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "d55d0cad-8688-50a0-b907-68bf91fb8301",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "702fe88e-0458-5362-86f2-32cdcab4bf6e",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "decf27d4-6f04-5261-8615-eb973f4354b3",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "68da7125-4676-5084-bf7f-a7ed8dde026e",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "9170a19b-83b8-508f-afba-445cf949ea32",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "b94907cf-857d-500a-98be-eb267657109a",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "380decd1-ffd7-5b21-92c5-15ae88f825ac",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "81afcc22-e8bf-59ae-be55-2597ea864816",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "3e4df248-7f8b-5205-9e27-14b6e85aa86e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "08804335-0d26-5c65-aa56-4b1b333cf8a9",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "2e3d4371-fe20-52ca-8c42-c290ad6e4c07",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "f00f2725-4192-5930-9146-ff0730757e24",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "b06077f0-431b-5f01-a529-74bfbd44d1dd",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "50be6c72-6309-5bbf-abf7-cca9970f42f6",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "a8b80c9c-ad7d-507c-9c3e-349a3f0dcd5e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "db2ff46c-4195-50f7-baff-ea45954a3f30",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "7c4cc460-bdcf-5f9b-8cfc-3683c3a44b05",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "e7a91cf6-e2a0-54d8-be5a-bbce0d6f0b28",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "08c98639-4401-5308-b532-a4649169a5ff",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "ghost"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "89448b30-5049-5d1b-b356-01547cc294d9",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "1fadd274-a255-5649-8bb5-c90189030855",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "18c9abfb-d27c-5b2f-bd90-1c3364244d9d",
+      "name": "Button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "1e29b9fb-2928-5696-b0c0-8726371cf591",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "e237e047-cec4-5505-aeb3-0e7a9b9f65b3",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "link"
+        },
+        {
+          "name": "Size",
+          "value": "lg"
+        },
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "f3b36b56-92b7-531e-8e3c-1257909cf595",
+      "name": "Input",
+      "path": "67slopers/UI",
+      "mainInstanceId": "71aa172f-68d3-53ac-b36f-ebcb4abaac00",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "fb00c09d-c0b5-52cc-839f-07884eb67496",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "empty"
+        }
+      ]
+    },
+    {
+      "id": "94e99ec7-4a0b-59f6-a15d-8a84a897679c",
+      "name": "Input",
+      "path": "67slopers/UI",
+      "mainInstanceId": "8a76bdf1-3ffa-5c62-a65b-436efddbc44a",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "fb00c09d-c0b5-52cc-839f-07884eb67496",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "filled"
+        }
+      ]
+    },
+    {
+      "id": "6783d3b2-abab-5f3e-9e4d-bb16b559084b",
+      "name": "Input",
+      "path": "67slopers/UI",
+      "mainInstanceId": "508c83f5-703a-5c34-b3ff-8b1044b57c46",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "fb00c09d-c0b5-52cc-839f-07884eb67496",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "focus"
+        }
+      ]
+    },
+    {
+      "id": "7194662d-8272-5725-8b8b-859608bf26d5",
+      "name": "Input",
+      "path": "67slopers/UI",
+      "mainInstanceId": "5adb738a-4cbe-5517-a1d3-35338f75dfa8",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "fb00c09d-c0b5-52cc-839f-07884eb67496",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "8040679c-1fed-5bd5-90d7-6c84aa35278c",
+      "name": "Input",
+      "path": "67slopers/UI",
+      "mainInstanceId": "19e6539c-4c8f-576e-ae93-014f1b823630",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "fb00c09d-c0b5-52cc-839f-07884eb67496",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "invalid"
+        }
+      ]
+    },
+    {
+      "id": "a9324a74-d317-5bd8-bbdb-36b17271ceaa",
+      "name": "Textarea",
+      "path": "67slopers/UI",
+      "mainInstanceId": "625f222d-7cab-5eb1-b8ea-d207ba3df944",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "94ae807c-2764-5140-afe6-400b53a86a44",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "empty"
+        }
+      ]
+    },
+    {
+      "id": "eee804b0-6586-5446-b02f-164ef30a6ed9",
+      "name": "Textarea",
+      "path": "67slopers/UI",
+      "mainInstanceId": "325299c3-e10b-5663-877c-6846eb694032",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "94ae807c-2764-5140-afe6-400b53a86a44",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "filled"
+        }
+      ]
+    },
+    {
+      "id": "1203019f-bc3c-56d1-ba08-b21aeb5a7289",
+      "name": "Stepper",
+      "path": "67slopers/UI",
+      "mainInstanceId": "130a5696-032f-54f3-8940-363ff9ea0a21",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cc788689-46ba-5e27-a508-7a68824ed894",
+      "variantProperties": [
+        {
+          "name": "Mode",
+          "value": "display"
+        }
+      ]
+    },
+    {
+      "id": "b000b056-2ce9-57de-946e-2271277cb78f",
+      "name": "Stepper",
+      "path": "67slopers/UI",
+      "mainInstanceId": "8257e064-b905-5e01-a873-5ae8a0cde598",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cc788689-46ba-5e27-a508-7a68824ed894",
+      "variantProperties": [
+        {
+          "name": "Mode",
+          "value": "number entry"
+        }
+      ]
+    },
+    {
+      "id": "74a3c624-9c27-5cf8-ab14-4b2e84a284d3",
+      "name": "Stepper",
+      "path": "67slopers/UI",
+      "mainInstanceId": "7da3c45d-b4cc-53dc-8964-d4e6ae081811",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cc788689-46ba-5e27-a508-7a68824ed894",
+      "variantProperties": [
+        {
+          "name": "Mode",
+          "value": "clock entry"
+        }
+      ]
+    },
+    {
+      "id": "09db479b-f4fc-5c9d-9093-1fead72fa96c",
+      "name": "Toggle",
+      "path": "67slopers/UI",
+      "mainInstanceId": "f078594f-28f7-5dc8-9aee-6c4c0604c62c",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "75da72c5-b610-5e82-91b1-dfab5488a489",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Selected",
+          "value": "off"
+        }
+      ]
+    },
+    {
+      "id": "86a3c943-a484-5344-82f3-cbdcc6ed5b35",
+      "name": "Toggle",
+      "path": "67slopers/UI",
+      "mainInstanceId": "e147a534-f5d3-5d43-bc51-58d036b05ee9",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "75da72c5-b610-5e82-91b1-dfab5488a489",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        },
+        {
+          "name": "Selected",
+          "value": "on"
+        }
+      ]
+    },
+    {
+      "id": "2924c659-1ce4-5db0-902f-ce417e3336b7",
+      "name": "Toggle",
+      "path": "67slopers/UI",
+      "mainInstanceId": "d0353d41-45ed-5272-8adc-389ad348cfac",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "75da72c5-b610-5e82-91b1-dfab5488a489",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Selected",
+          "value": "off"
+        }
+      ]
+    },
+    {
+      "id": "98956304-cce5-5ff1-8b60-25f357c6c088",
+      "name": "Toggle",
+      "path": "67slopers/UI",
+      "mainInstanceId": "17ba5a84-0a8b-58a9-8cfb-deef5fcd1321",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "75da72c5-b610-5e82-91b1-dfab5488a489",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        },
+        {
+          "name": "Selected",
+          "value": "on"
+        }
+      ]
+    },
+    {
+      "id": "a2d33686-b45a-568b-a0cb-5a9da1ce491f",
+      "name": "Badge",
+      "path": "67slopers/UI",
+      "mainInstanceId": "3bad6b74-5237-5d00-b3ec-60b9bb5d1c92",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cce612fb-57c7-5e66-a902-4a398a499269",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "default"
+        }
+      ]
+    },
+    {
+      "id": "09fdb15c-ea6b-5fc8-9de3-5b31ea35f57c",
+      "name": "Badge",
+      "path": "67slopers/UI",
+      "mainInstanceId": "7d852212-0af9-5117-8245-6c0434372475",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cce612fb-57c7-5e66-a902-4a398a499269",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "secondary"
+        }
+      ]
+    },
+    {
+      "id": "a37e900f-1b16-5772-8a0a-3dbd049b0d7a",
+      "name": "Badge",
+      "path": "67slopers/UI",
+      "mainInstanceId": "cd5c6c04-f492-5b08-bfb6-567635404a5a",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cce612fb-57c7-5e66-a902-4a398a499269",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "outline"
+        }
+      ]
+    },
+    {
+      "id": "49407278-8176-52be-bab9-9de646d08717",
+      "name": "Badge",
+      "path": "67slopers/UI",
+      "mainInstanceId": "8faab31a-6e90-5689-9377-11fdbaff1f5c",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cce612fb-57c7-5e66-a902-4a398a499269",
+      "variantProperties": [
+        {
+          "name": "Variant",
+          "value": "destructive"
+        }
+      ]
+    },
+    {
+      "id": "cd8f3f21-42a7-5e88-afb8-30156882dadf",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "23210b9c-adef-5c3c-8da3-504544bf235b",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "Plus"
+        }
+      ]
+    },
+    {
+      "id": "7d564640-fe69-5a61-b350-cce5d5e0e381",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "760a9352-cc69-5fd5-92c4-d13ebbbf7e7d",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "X"
+        }
+      ]
+    },
+    {
+      "id": "ccdc872f-91db-5c11-97e3-937c70dfef8c",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "98bcdc7d-5872-51c4-a725-3f733bb17cc4",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "CaretLeft"
+        }
+      ]
+    },
+    {
+      "id": "a2a786f8-39c4-5386-96fa-1f0119efb225",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "a45219a6-e61a-55ff-9101-0a02939ddb8e",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "DotsThreeVertical"
+        }
+      ]
+    },
+    {
+      "id": "5027b5af-9eee-565a-9ab1-d6b3a37558cf",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "91ed3a71-1cad-5bb4-be73-a999341fac02",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "SlidersHorizontal"
+        }
+      ]
+    },
+    {
+      "id": "ff18b08d-a575-5f14-8e3d-dbd847e3d8bb",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "eb25755e-bc5a-50e4-9607-10a86cfda631",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "Scan"
+        }
+      ]
+    },
+    {
+      "id": "cef80116-2356-55a4-8767-fd1ac27a4396",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "b14d1218-4c6e-586a-9f03-7197aa0156d7",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "SkipBack"
+        }
+      ]
+    },
+    {
+      "id": "4e7ce1ac-c19c-5624-886b-699d7f7bc65f",
+      "name": "Icon button",
+      "path": "67slopers/UI",
+      "mainInstanceId": "47584649-3091-5e77-8ae7-856c36101610",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "cee81a50-45ce-5edf-91bb-74c37cad9706",
+      "variantProperties": [
+        {
+          "name": "Icon",
+          "value": "SkipForward"
+        }
+      ]
+    },
+    {
+      "id": "e6062f99-f612-5133-9561-6931e0e8bb3d",
+      "name": "Menu item",
+      "path": "67slopers/UI",
+      "mainInstanceId": "57e9d3e3-7448-5c4d-a9c8-afaf8d7362ef",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "805c8462-a101-58fb-9640-b0e80dede1da",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "plain"
+        }
+      ]
+    },
+    {
+      "id": "9871ff1d-0e8a-5ef1-857c-a9a4a26826a0",
+      "name": "Menu item",
+      "path": "67slopers/UI",
+      "mainInstanceId": "e47b96ed-35dc-575c-9249-089db1789d7d",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "805c8462-a101-58fb-9640-b0e80dede1da",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "checked"
+        }
+      ]
+    },
+    {
+      "id": "534597c9-b978-59f4-9f0b-8faae47fc3f6",
+      "name": "Menu item",
+      "path": "67slopers/UI",
+      "mainInstanceId": "f6f3c77d-8d71-5cb2-9bea-ab8246f5dcc4",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "805c8462-a101-58fb-9640-b0e80dede1da",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "unchecked"
+        }
+      ]
+    },
+    {
+      "id": "6147d477-850f-5575-804c-f9469d235f5b",
+      "name": "Menu item",
+      "path": "67slopers/UI",
+      "mainInstanceId": "ed84ea4b-b7d4-59f8-88c0-aac6203a95fe",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a",
+      "variantId": "805c8462-a101-58fb-9640-b0e80dede1da",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "destructive"
+        }
+      ]
+    },
+    {
+      "id": "3513ac15-8a30-5efb-a193-224d667e0461",
+      "name": "Workout settings",
+      "path": "67slopers/UI",
+      "mainInstanceId": "0a3e151f-2f8b-56e7-924b-ab543b31491c",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a"
+    },
+    {
+      "id": "f37f666f-7313-54e0-8bd5-5b78deea8a19",
+      "name": "Confirmation dialog",
+      "path": "67slopers/UI",
+      "mainInstanceId": "dbe1d427-adc1-509c-b356-1914a2946580",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a"
+    },
+    {
+      "id": "06b9018e-082f-5e0d-9043-edb92117a274",
+      "name": "Section header",
+      "path": "67slopers/UI",
+      "mainInstanceId": "d666aec6-b18b-5e32-ab1f-dfcabcb9203d",
+      "mainInstancePage": "bd8bc6c9-aeed-5d17-b01c-27558603bc4a"
+    },
+    {
+      "id": "1f73857b-7cb9-50f8-b1c6-f6e681773673",
+      "name": "Workout card",
+      "path": "67slopers/Training",
+      "mainInstanceId": "fb2b3c03-a2f6-5e3c-b91b-3d3bbf672535",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "08a419d8-acb3-5948-8b35-1071b60fdbb8",
+      "variantProperties": [
+        {
+          "name": "Layout",
+          "value": "row"
+        }
+      ]
+    },
+    {
+      "id": "bafe3058-14dc-5ec6-aeed-f704b7185b01",
+      "name": "Workout card",
+      "path": "67slopers/Training",
+      "mainInstanceId": "6f4a09de-37ec-5d61-88d0-706761fbd875",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "08a419d8-acb3-5948-8b35-1071b60fdbb8",
+      "variantProperties": [
+        {
+          "name": "Layout",
+          "value": "compact"
+        }
+      ]
+    },
+    {
+      "id": "327ce620-d4c1-5316-a054-37e82e95a5c7",
+      "name": "Workout hero",
+      "path": "67slopers/Training",
+      "mainInstanceId": "d0a1d972-fc1c-570c-a429-bbb83b4e42ae",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    },
+    {
+      "id": "9dc2e3ec-49a9-5765-ab41-90794f31c819",
+      "name": "Session row",
+      "path": "67slopers/Training",
+      "mainInstanceId": "dbad3e2d-509c-5be8-841d-0db284d647b9",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "5c7cc8df-5aef-5c6c-a099-ede4e220a6d5",
+      "variantProperties": [
+        {
+          "name": "Context",
+          "value": "home"
+        }
+      ]
+    },
+    {
+      "id": "05a0c689-0b65-58f4-a60d-354826813257",
+      "name": "Session row",
+      "path": "67slopers/Training",
+      "mainInstanceId": "85544b35-54bd-5f96-82e7-307399e7442f",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "5c7cc8df-5aef-5c6c-a099-ede4e220a6d5",
+      "variantProperties": [
+        {
+          "name": "Context",
+          "value": "complete"
+        }
+      ]
+    },
+    {
+      "id": "1d0569b0-3a59-52d3-bf7c-c44905193de4",
+      "name": "Session row",
+      "path": "67slopers/Training",
+      "mainInstanceId": "355f7e7f-cdf0-5256-977b-110a2c972518",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "5c7cc8df-5aef-5c6c-a099-ede4e220a6d5",
+      "variantProperties": [
+        {
+          "name": "Context",
+          "value": "ended"
+        }
+      ]
+    },
+    {
+      "id": "a0681e35-2e1d-5dbf-90c1-051ab0345ffc",
+      "name": "Metric grid",
+      "path": "67slopers/Training",
+      "mainInstanceId": "7a486a18-40c0-5a09-9faf-ef140526a4d0",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "054fcafa-e060-51b3-a479-e23935116c12",
+      "variantProperties": [
+        {
+          "name": "Context",
+          "value": "workout"
+        }
+      ]
+    },
+    {
+      "id": "07f7fa7c-5fd7-53cc-a895-e58655e32fc6",
+      "name": "Metric grid",
+      "path": "67slopers/Training",
+      "mainInstanceId": "306ba8e5-3aa6-57e0-8d41-0d009d93a145",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "054fcafa-e060-51b3-a479-e23935116c12",
+      "variantProperties": [
+        {
+          "name": "Context",
+          "value": "session"
+        }
+      ]
+    },
+    {
+      "id": "4985b2f4-e340-5a98-a7a8-72e3162f5473",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "fec99680-6426-599c-9b27-90c9cb505c32",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "ordinary"
+        }
+      ]
+    },
+    {
+      "id": "a5d7e2fc-71b5-5e18-9bd3-2200e8f8fb0d",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "6ea4af83-baef-5f06-8410-e0899537ca02",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "trained"
+        }
+      ]
+    },
+    {
+      "id": "16bf9092-7eac-5851-b89a-8bd236ef0ece",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "e21b2917-c67e-51de-94ff-1c7fe3f29ac2",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "today"
+        }
+      ]
+    },
+    {
+      "id": "5fcc96ec-8fcd-5ed0-a992-71c23a956132",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "4f9270e8-d1a6-5afc-b564-f9d5d1067886",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "today trained"
+        }
+      ]
+    },
+    {
+      "id": "277d8e7d-3345-5a6e-ae94-6e604f7ddd57",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "8cfe2d1f-cd7b-57dd-9acc-0750008531d9",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "selected"
+        }
+      ]
+    },
+    {
+      "id": "492cad7f-39bb-5ff3-92c0-fc7e6a5a3e0e",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "14887527-6432-5abf-9e96-994dd6861c55",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "selected trained"
+        }
+      ]
+    },
+    {
+      "id": "a9812d03-5571-5091-bb7b-8b0263ccd267",
+      "name": "Calendar day",
+      "path": "67slopers/Training",
+      "mainInstanceId": "9fcc7f68-5e3e-5620-9a21-d8a2a396859c",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c6534031-2ac1-5afd-8b17-3d8d242e6b88",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "outside month"
+        }
+      ]
+    },
+    {
+      "id": "59b9877c-f75f-5911-a4a5-64df8d7ce849",
+      "name": "Week calendar",
+      "path": "67slopers/Training",
+      "mainInstanceId": "0ef23d95-1f73-53b2-a421-2b470e619ae2",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    },
+    {
+      "id": "01bc511b-3045-58fb-a969-bff1839c197d",
+      "name": "Feel choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "45c9464f-efea-5ace-8c47-9d663a3e1fb6",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "bc719457-e0e3-5358-bd03-2c945384d762",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "Weak"
+        },
+        {
+          "name": "Selected",
+          "value": "off"
+        }
+      ]
+    },
+    {
+      "id": "44798a30-e663-5095-99d2-8d040fcce964",
+      "name": "Feel choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "06dce848-a74c-5d5a-ae70-2309666bac90",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "bc719457-e0e3-5358-bd03-2c945384d762",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "Normal"
+        },
+        {
+          "name": "Selected",
+          "value": "off"
+        }
+      ]
+    },
+    {
+      "id": "94e0c08a-4bdc-58cf-8137-a4dd33422c2c",
+      "name": "Feel choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "dd3ed8cf-51ca-5894-8d9e-311432188a78",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "bc719457-e0e3-5358-bd03-2c945384d762",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "Strong"
+        },
+        {
+          "name": "Selected",
+          "value": "off"
+        }
+      ]
+    },
+    {
+      "id": "6e1832a3-502a-55e3-8164-f45c61fa4730",
+      "name": "Feel choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "c50b0520-0350-59f2-ac18-ced253569025",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "bc719457-e0e3-5358-bd03-2c945384d762",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "Weak"
+        },
+        {
+          "name": "Selected",
+          "value": "on"
+        }
+      ]
+    },
+    {
+      "id": "af302cd8-9b2c-5327-9801-3c4645cee3ae",
+      "name": "Feel choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "d7d59719-8a00-5997-a4d8-2f16a280be6c",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "bc719457-e0e3-5358-bd03-2c945384d762",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "Normal"
+        },
+        {
+          "name": "Selected",
+          "value": "on"
+        }
+      ]
+    },
+    {
+      "id": "b010462c-e949-55b6-93e6-0897f81cb86b",
+      "name": "Feel choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "c9461144-0b64-5a47-8b4e-f7a4cfd39511",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "bc719457-e0e3-5358-bd03-2c945384d762",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "Strong"
+        },
+        {
+          "name": "Selected",
+          "value": "on"
+        }
+      ]
+    },
+    {
+      "id": "ca7e1a21-fac8-51f6-b7a0-4c96fafd4d62",
+      "name": "Feel badge",
+      "path": "67slopers/Training",
+      "mainInstanceId": "63d8c349-4ab6-58c0-aa63-114edbff0c40",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "32bca37b-f5c0-5c56-a950-d62cd5f1f0b1",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "weak"
+        }
+      ]
+    },
+    {
+      "id": "bb7bb780-296a-5779-8b95-03d86a50dbdf",
+      "name": "Feel badge",
+      "path": "67slopers/Training",
+      "mainInstanceId": "b8cacc13-8919-5355-ad9f-f855f351e136",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "32bca37b-f5c0-5c56-a950-d62cd5f1f0b1",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "normal"
+        }
+      ]
+    },
+    {
+      "id": "10cbb5fb-e83d-59eb-a74d-f6acbd7f7e42",
+      "name": "Feel badge",
+      "path": "67slopers/Training",
+      "mainInstanceId": "cb7eebe8-36a5-54d3-9f3d-2458216868cf",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "32bca37b-f5c0-5c56-a950-d62cd5f1f0b1",
+      "variantProperties": [
+        {
+          "name": "Feel",
+          "value": "strong"
+        }
+      ]
+    },
+    {
+      "id": "43fb72e5-602f-5e03-8db2-238d00f201a3",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "d3a8c1fd-c13b-5512-b2fa-6ea99c82dd07",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "prep"
+        },
+        {
+          "name": "Mode",
+          "value": "read"
+        }
+      ]
+    },
+    {
+      "id": "465509d5-16e7-539e-a89a-050deead42aa",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "ecda2db5-8396-5a20-99e2-ca77cd115547",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "hang"
+        },
+        {
+          "name": "Mode",
+          "value": "read"
+        }
+      ]
+    },
+    {
+      "id": "96d6e04b-6f5d-5197-82fc-ffa069d34afc",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "2f3c27a0-5e4a-5717-a2ec-fef38a104265",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "rest"
+        },
+        {
+          "name": "Mode",
+          "value": "read"
+        }
+      ]
+    },
+    {
+      "id": "b7fce8a0-6665-55e7-a874-8efcdd27f08e",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "61e06dac-f2ff-5641-bf32-221d7c12da07",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "prep"
+        },
+        {
+          "name": "Mode",
+          "value": "edit"
+        }
+      ]
+    },
+    {
+      "id": "6d47dbca-7fb7-5947-988c-3ba2fbd7aa00",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "ff84ce1b-3719-5170-af8c-6c55405982f3",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "hang"
+        },
+        {
+          "name": "Mode",
+          "value": "edit"
+        }
+      ]
+    },
+    {
+      "id": "7e06d4fb-67f3-5151-952c-a4e0724f9a41",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "0571f688-e431-567a-b84e-6017dbfa85b6",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "rest"
+        },
+        {
+          "name": "Mode",
+          "value": "edit"
+        }
+      ]
+    },
+    {
+      "id": "114ee6f6-b89b-5db8-a807-4fba6fd6397e",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "b9e20f3e-960b-5068-8090-50d93b1a1ca4",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "prep"
+        },
+        {
+          "name": "Mode",
+          "value": "reorder"
+        }
+      ]
+    },
+    {
+      "id": "204eed00-02e8-52e5-869c-2655af2b8d81",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "0fb912e5-6a8f-586e-b2a6-3f3eeb0ad4f2",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "hang"
+        },
+        {
+          "name": "Mode",
+          "value": "reorder"
+        }
+      ]
+    },
+    {
+      "id": "c01b11b8-30ca-531a-9b8a-0649cbc40735",
+      "name": "Timed step",
+      "path": "67slopers/Training",
+      "mainInstanceId": "64340d03-aac7-5e90-94c9-89c1a99cb751",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "045b6e43-01df-5aee-b504-1fff532c4e28",
+      "variantProperties": [
+        {
+          "name": "Kind",
+          "value": "rest"
+        },
+        {
+          "name": "Mode",
+          "value": "reorder"
+        }
+      ]
+    },
+    {
+      "id": "4c12798a-9778-5c11-9f0e-8f9d5ad3931a",
+      "name": "Repeat group",
+      "path": "67slopers/Training",
+      "mainInstanceId": "aefe9eba-eebe-5f66-802f-07fa16980f5d",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    },
+    {
+      "id": "3e9d9939-ecd0-57d8-893b-644fb63bed68",
+      "name": "Board choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "780d11e5-2f86-5eb8-9188-f66c354c7a0e",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "e22dac17-cb5d-5943-9391-0bc8256b823e",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "3ba14e7c-ba45-5c11-ad1a-5cbabe109da2",
+      "name": "Board choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "b2bf54c2-7ad8-5aa9-9aa2-8f8de0e136f0",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "e22dac17-cb5d-5943-9391-0bc8256b823e",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "available"
+        }
+      ]
+    },
+    {
+      "id": "b40d21b0-4aab-57de-a1a8-cc44b373e9c8",
+      "name": "Board choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "b6ebb141-39f7-5842-b846-f52af969d972",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "e22dac17-cb5d-5943-9391-0bc8256b823e",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "selected"
+        }
+      ]
+    },
+    {
+      "id": "00a29f85-b769-53ae-9a14-738a68cf1245",
+      "name": "Grip choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "9946d630-ae52-569d-b41d-f2749a9928db",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "ccea2659-1c97-58f6-a6b8-5f75e5138fe6",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "available"
+        }
+      ]
+    },
+    {
+      "id": "cb45a046-1560-5e14-b5a9-5d99ba119947",
+      "name": "Grip choice",
+      "path": "67slopers/Training",
+      "mainInstanceId": "0e2a8662-e4c1-5485-9027-054ec06eafcb",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "ccea2659-1c97-58f6-a6b8-5f75e5138fe6",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "selected"
+        }
+      ]
+    },
+    {
+      "id": "191af5c6-2cfe-5e7f-a500-aab5bbd46d70",
+      "name": "Board cue",
+      "path": "67slopers/Training",
+      "mainInstanceId": "8b0781da-d31a-5f15-9197-5772870df9f4",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    },
+    {
+      "id": "bb08b2bf-ed1c-591e-b230-a0e0a93ed4a7",
+      "name": "Timer phase",
+      "path": "67slopers/Training",
+      "mainInstanceId": "4d051fd4-11ef-5abd-901a-b6ebdab4f587",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c3bdf693-2138-5a54-a218-529068742a01",
+      "variantProperties": [
+        {
+          "name": "Phase",
+          "value": "prep"
+        }
+      ]
+    },
+    {
+      "id": "d1145c34-3972-555c-aab4-41afdd35adee",
+      "name": "Timer phase",
+      "path": "67slopers/Training",
+      "mainInstanceId": "f6530fa7-d5e1-5bf8-b5df-818f02835842",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c3bdf693-2138-5a54-a218-529068742a01",
+      "variantProperties": [
+        {
+          "name": "Phase",
+          "value": "hang"
+        }
+      ]
+    },
+    {
+      "id": "a56e23e1-28d8-5d62-bd66-a9977e776db0",
+      "name": "Timer phase",
+      "path": "67slopers/Training",
+      "mainInstanceId": "9e59f70a-d802-531d-9872-fd48a795985b",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c3bdf693-2138-5a54-a218-529068742a01",
+      "variantProperties": [
+        {
+          "name": "Phase",
+          "value": "rep rest"
+        }
+      ]
+    },
+    {
+      "id": "9a552115-4776-59b2-83a0-8d95a701afc1",
+      "name": "Timer phase",
+      "path": "67slopers/Training",
+      "mainInstanceId": "4726cef7-247d-5289-a5ea-fd5a4ab0d173",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "c3bdf693-2138-5a54-a218-529068742a01",
+      "variantProperties": [
+        {
+          "name": "Phase",
+          "value": "set rest"
+        }
+      ]
+    },
+    {
+      "id": "31d6b9eb-591a-51de-b71e-80a241794a3b",
+      "name": "Timer action",
+      "path": "67slopers/Training",
+      "mainInstanceId": "1346ac2c-13b2-5b25-adae-a8214a701e8d",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "356079a9-0370-58f2-8118-4dc96bf72550",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "running"
+        }
+      ]
+    },
+    {
+      "id": "f8c72061-c3b9-529d-944c-daee2f25ef51",
+      "name": "Timer action",
+      "path": "67slopers/Training",
+      "mainInstanceId": "eac3e7c2-eed7-5943-b7c6-e609839f295d",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e",
+      "variantId": "356079a9-0370-58f2-8118-4dc96bf72550",
+      "variantProperties": [
+        {
+          "name": "State",
+          "value": "paused"
+        }
+      ]
+    },
+    {
+      "id": "5fdf0ae2-ce8a-5081-9926-32732d4f0abf",
+      "name": "Next interval",
+      "path": "67slopers/Training",
+      "mainInstanceId": "f1d75551-46d8-52d6-8b0e-f36c2dcaf1a9",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    },
+    {
+      "id": "e3b3b27b-d7df-51a2-847d-7f4fc6f8cbfa",
+      "name": "Unfinished run",
+      "path": "67slopers/Training",
+      "mainInstanceId": "de5025d7-4a6c-59ab-b7f9-35e4c6d2eb40",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    },
+    {
+      "id": "ccf9aee1-020a-5748-a624-105f8997f7dc",
+      "name": "Completion heading",
+      "path": "67slopers/Training",
+      "mainInstanceId": "9e277db4-2c4f-55ca-b791-35560034c823",
+      "mainInstancePage": "1840204f-86cd-57a6-be7c-5ec062c2182e"
+    }
+  ],
+  "tokens": 87,
+  "typographies": 15,
+  "families": 29,
+  "variantSets": 19
+}
