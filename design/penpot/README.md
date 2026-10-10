@@ -9,7 +9,7 @@ Keep editable design exports (`.penpot`) in this directory. The live workspace i
 
 ## Current app reference
 
-`67slopers.penpot` contains the 76-board app recreation and 15 design-system boards, with local
+`67slopers.penpot` contains the 75-board app recreation, 15 design-system boards and the 42-board MoonBoard exploration, with local
 images, shared colors, typography, native tokens and reusable component variants. Use this file for portable design review/import;
 use the live Penpot file for collaborative editing. Duplicate boards for new explorations.
 Custom fonts belong to the Penpot team and are not embedded in the export. On another team,
@@ -25,6 +25,11 @@ The recreation helpers are development tools outside the app bundle:
 - `render.mjs` renders app SVGs and contact sheets with the bundled font files.
 - `design_system.py` adds the isolated component library, tokens and documentation pages.
 - `render_design_system.mjs` renders the library review boards.
+- `moonboard.py` and `render_moonboard.mjs` build and render page 07, the MoonBoard exploration.
+- `repair_text.py` rewrote the text layout data of the earlier pages to match Penpot's own
+  layout (it only touches text that still carries the old generated values).
+- `Penpot().render(page, board, path)` in `api.py` renders a board with Penpot's exporter. Check
+  alignment against that, not only against the SVG review images.
 
 Icons use Phosphor Regular, with Bold for timer playback controls. The generator retains stable
 layer IDs and hidden anchors from the initial recreation so existing component instances and

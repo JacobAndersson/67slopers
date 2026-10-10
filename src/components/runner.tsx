@@ -11,9 +11,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   FadeIn,
+  FadeInDown,
   FadeOut,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -49,12 +51,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { getBoard, gripName } from '@/lib/boards';
 import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
+import { EASE_OUT } from '@/lib/motion';
 import { measure } from '@/lib/perf';
 import { THEME } from '@/lib/theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import { shouldShowBoard } from '@/lib/timer/board-visibility';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import type { Phase } from '@/lib/timer/intervals';
+import { nextUp } from '@/lib/timer/next-up';
 import { useCues } from '@/lib/timer/useCues';
 import { useRunCheckpoint } from '@/lib/timer/useRunCheckpoint';
 import { useTimer } from '@/lib/timer/useTimer';
@@ -77,7 +81,9 @@ const PHASE_COLOR: Record<Phase, string> = {
 const BrainrotVideo = lazy(() => import('@/components/brainrot-video'));
 
 const BG_TRANSITION_MS = 250;
-/** How long the board slot takes to open or close. */
+/** The board never grows past this (dp), so the band above the digits always holds it. */
+const BOARD_MAX_WIDTH = 340;
+/** How long the board takes to fade in or out. */
 const SLOT_MS = 250;
 /** How long the timer panel takes to glide into and out of the Gen Z split. */
 const SPLIT_MS = 300;
@@ -86,6 +92,24 @@ const FILL_STEP_MS = 100;
 /** Beat between the timer stopping and the summary fading in. */
 const SUMMARY_DELAY_MS = 900;
 
+/** The finish word settles in with a little weight; only a completed workout earns it. */
+const donePop = () => {
+  'worklet';
+  return {
+    initialValues: { transform: [{ scale: 0.9 }] },
+    animations: {
+      transform: [{ scale: withSpring(1, { duration: 350, dampingRatio: 0.8 }) }],
+    },
+  };
+};
+
+/** Summary blocks follow each other in, after the finish word has faded out. */
+const summaryEnter = (index: number) =>
+  FadeInDown.duration(300)
+    .delay(150 + index * 50)
+    .easing(EASE_OUT)
+    .withInitialValues({ transform: [{ translateY: 8 }] });
+
 const PHASE_LABEL: Record<Phase, string> = {
   prep: 'Get ready',
   hang: 'Hang',
@@ -93,6 +117,23 @@ const PHASE_LABEL: Record<Phase, string> = {
   rest: 'Rest',
   done: 'Done',
 };
+
+/** Equal bands above and below the digits: whatever fills one, the digits stay centred. */
+const BAND = { flex: 1, flexBasis: 0 } as const;
+
+/** Two quiet lines on the phase colour: what it is, then which one. */
+function Announcement({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="items-center gap-1">
+      <Text
+        className="text-center text-xs uppercase tracking-wide text-muted-foreground font-semibold"
+        numberOfLines={1}>
+        {label}
+      </Text>
+      <Text className="text-center text-xl font-semibold">{value}</Text>
+    </View>
+  );
+}
 
 type RunnerProps = {
   timings: WorkoutTimings;
@@ -110,7 +151,7 @@ type RunnerProps = {
 
 /**
  * Full-screen timer. Opens ready on the first interval and waits for Play; while running
- * only Pause is shown, Back and Skip appear when paused. Ending (or finishing) leads to
+ * only Pause is shown, Back and Skip appear when paused; the X ends it. Ending (or finishing) leads to
  * the grade step, plus an offer to save the workout when it was not a saved one.
  */
 export function Runner({
@@ -286,36 +327,44 @@ export function Runner({
     finished,
   });
   const holdsCaption = board ? gripName(board, shownHolds) : '';
-  const holdsPrefix = interval.phase === 'hang' ? 'Now' : 'Next';
-  const nextHoldsName =
-    board && timer.nextInterval?.holds ? gripName(board, timer.nextInterval.holds) : '';
-  // The slot the board slides into. Its content is measured once laid out; until then the
-  // board's aspect plus room for the caption is a close estimate.
+  const holdsPrefix = timer.previousHang
+    ? 'Next grip'
+    : interval.phase === 'hang'
+      ? 'Grip'
+      : 'First grip';
+  const compact = settings.genZMode && !finished;
+  // The board sits in the band above the digits, which stay where they are whether it shows
+  // or not. Only the Gen Z split, short on room, opens a slot for it instead. Its content is
+  // measured once laid out; until then the board's aspect plus the caption is a close estimate.
+  const boardWidth = Math.min(width - 80, BOARD_MAX_WIDTH);
   const [slotContent, setSlotContent] = useState(0);
-  const slotEstimate = board ? ((width - 48) * board.height) / board.width + 52 : 0;
+  const slotEstimate = board ? (boardWidth * board.height) / board.width + 70 : 0;
   const slotHeight = slotContent || slotEstimate;
   const slotOpen = useSharedValue(showBoard ? 1 : 0);
   useEffect(() => {
     slotOpen.set(withTiming(showBoard ? 1 : 0, { duration: SLOT_MS }));
   }, [showBoard, slotOpen]);
   const slotStyle = useAnimatedStyle(() => ({
-    height: slotOpen.get() * slotHeight,
+    height: (compact ? slotOpen.get() : 1) * slotHeight,
     opacity: slotOpen.get(),
   }));
   const showRep = interval.repCount > 1 && interval.phase !== 'rest';
-  const compact = settings.genZMode && !finished;
-  const [headerHeight, setHeaderHeight] = useState(48);
-  const [phaseHeight, setPhaseHeight] = useState(72);
-  const [previewHeight, setPreviewHeight] = useState(48);
+  const set = `Set ${interval.setIndex + 1} of ${interval.setCount}`;
+  const counter = showRep
+    ? `Rep ${interval.repIndex + 1} of ${interval.repCount} · ${set}`
+    : interval.phase === 'rest' && timer.previousHang
+      ? `${set} done`
+      : set;
+  // Said only when the pattern breaks; the name of the workout fills the line before Start.
+  const announced = idle
+    ? { label: name, value: 'Press Start when ready' }
+    : nextUp(timer.engineState.intervals, timer.engineState.index, showBoard);
+  const [headerHeight, setHeaderHeight] = useState(80);
   const [controlsHeight, setControlsHeight] = useState(96);
   const requiredHeight =
     insets.top +
     24 +
     headerHeight +
-    phaseHeight +
-    // Compact hides the set/rep row and the next-up preview (see below), so they
-    // leave the measured height out and the video below grows into the space.
-    (compact ? 0 : previewHeight) +
     controlsHeight +
     106 * fontScale +
     (showBoard ? slotHeight : 0);
@@ -336,7 +385,7 @@ export function Runner({
     (width * 0.9) / (countdown.length * 0.62 * fontScale),
     split
       ? Math.max(96, (panelHeight - requiredHeight + 106 * fontScale) / (1.1 * fontScale))
-      : height * (showBoard ? 0.24 : 0.28)
+      : height * 0.24
   );
 
   const hanging = !idle && !finished && interval.phase === 'hang';
@@ -394,41 +443,66 @@ export function Runner({
             paddingTop: insets.top + 8,
             paddingBottom: split ? 12 : insets.bottom + 16,
           }}>
-          <View
-            className="flex-row items-center justify-between gap-3"
-            onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
-            <Button variant="ghost" size="icon" accessibilityLabel="Close" onPress={onClose}>
-              <Icon as={XIcon} className="size-6" />
-            </Button>
-            <Text className="flex-1 text-center font-medium" numberOfLines={2}>
-              {name}
-            </Text>
-            {finished ? <View className="w-11" /> : <WorkoutSettings />}
+          <View className="gap-1" onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
+            <View className="flex-row items-center justify-between gap-3">
+              <Button variant="ghost" size="icon" accessibilityLabel="Close" onPress={onClose}>
+                <Icon as={XIcon} className="size-6" />
+              </Button>
+              <View className="flex-1 items-center">
+                {finished ? (
+                  <Text className="text-center font-medium" numberOfLines={2}>
+                    {name}
+                  </Text>
+                ) : (
+                  <TimerPhaseLabel
+                    label={idle ? 'Ready' : paused ? 'Paused' : PHASE_LABEL[interval.phase]}
+                  />
+                )}
+              </View>
+              {finished ? <View className="w-11" /> : <WorkoutSettings />}
+            </View>
+            {finished ? null : (
+              <View className="items-center gap-0.5">
+                {/* Kept in place before Start, so pressing it moves nothing. */}
+                <Text
+                  className={cn(
+                    'text-center text-sm text-muted-foreground font-medium',
+                    idle && 'opacity-0'
+                  )}>
+                  {counter}
+                </Text>
+                {interval.label && !idle ? (
+                  <Text className="text-center text-sm text-muted-foreground font-medium">
+                    {interval.label}
+                  </Text>
+                ) : null}
+              </View>
+            )}
           </View>
 
           {finished ? (
             showSummary ? (
-              <Animated.View
-                entering={FadeIn.duration(300)}
-                className="w-full max-w-3xl gap-6 self-center py-6">
-                <View className="gap-2">
+              <View className="w-full max-w-3xl gap-6 self-center py-6">
+                <Animated.View entering={summaryEnter(0)} className="gap-2">
                   <Text className="text-3xl tracking-tight font-bold">
                     {timer.status === 'done' ? 'Workout complete' : 'Workout ended'}
                   </Text>
                   <Text variant="muted">Your session is saved.</Text>
-                </View>
-                <SessionFacts
-                  snapshot={timings}
-                  elapsedSeconds={timer.elapsedSeconds}
-                  completedSets={timer.completedSets}
-                  totalSets={timer.totalSets}
-                  hangs={timer.hangResults}
-                />
-                <View className="gap-3">
+                </Animated.View>
+                <Animated.View entering={summaryEnter(1)} className="gap-6">
+                  <SessionFacts
+                    snapshot={timings}
+                    elapsedSeconds={timer.elapsedSeconds}
+                    completedSets={timer.completedSets}
+                    totalSets={timer.totalSets}
+                    hangs={timer.hangResults}
+                  />
+                </Animated.View>
+                <Animated.View entering={summaryEnter(2)} className="gap-3">
                   <Text className="text-xl font-semibold">How did you feel?</Text>
                   <FeelPicker value={feel} onChange={grade} />
-                </View>
-                <View className="gap-2">
+                </Animated.View>
+                <Animated.View entering={summaryEnter(3)} className="gap-2">
                   <Label nativeID="run-note">Session note (optional)</Label>
                   <Textarea
                     aria-labelledby="run-note"
@@ -441,9 +515,9 @@ export function Runner({
                         updateSession(sessionId.current, { note: value.trim() || undefined });
                     }}
                   />
-                </View>
+                </Animated.View>
                 {isDraft ? (
-                  <View className="gap-2">
+                  <Animated.View entering={summaryEnter(4)} className="gap-2">
                     <Text className="text-xl font-semibold">Save this workout?</Text>
                     <Input
                       value={saveName}
@@ -453,21 +527,26 @@ export function Runner({
                       returnKeyType="done"
                     />
                     <Text variant="muted">Leave it empty to finish without saving.</Text>
-                  </View>
+                  </Animated.View>
                 ) : null}
-                <Button size="lg" onPress={finish}>
-                  <Text className="text-lg">
-                    {isDraft && saveName.trim() ? 'Save and finish' : 'Finish'}
-                  </Text>
-                </Button>
-              </Animated.View>
+                <Animated.View entering={summaryEnter(isDraft ? 5 : 4)}>
+                  <Button size="lg" onPress={finish}>
+                    <Text className="text-lg">
+                      {isDraft && saveName.trim() ? 'Save and finish' : 'Finish'}
+                    </Text>
+                  </Button>
+                </Animated.View>
+              </View>
             ) : (
               <Animated.View
                 entering={FadeIn.duration(300)}
+                exiting={FadeOut.duration(150)}
                 className="flex-1 items-center justify-center gap-2">
-                <Text className="text-5xl tracking-tight font-bold">
-                  {timer.status === 'done' ? 'Done' : 'Ended'}
-                </Text>
+                <Animated.View entering={timer.status === 'done' ? donePop : undefined}>
+                  <Text className="text-5xl tracking-tight font-bold">
+                    {timer.status === 'done' ? 'Done' : 'Ended'}
+                  </Text>
+                </Animated.View>
                 <Text className="text-2xl">
                   {setsLine(timer.completedSets, timer.totalSets)} ·{' '}
                   {formatClock(timer.elapsedSeconds)}
@@ -476,83 +555,47 @@ export function Runner({
             )
           ) : (
             <>
-              <View
-                className={cn(compact ? 'mt-2 items-center gap-1' : 'mt-6 items-center gap-1')}
-                onLayout={(e) => setPhaseHeight(e.nativeEvent.layout.height + (compact ? 8 : 24))}>
-                <TimerPhaseLabel label={paused ? 'Paused' : PHASE_LABEL[interval.phase]} />
-                {interval.label ? (
-                  <Text className="text-lg text-muted-foreground">{interval.label}</Text>
-                ) : null}
-                {compact ? null : (
-                  <View className="flex-row flex-wrap items-center justify-center gap-x-6 gap-y-1">
-                    {showRep ? (
-                      <Text className="text-2xl font-semibold">
-                        Rep {interval.repIndex + 1}/{interval.repCount}
-                      </Text>
-                    ) : null}
-                    <Text className="text-2xl font-semibold">
-                      Set {interval.setIndex + 1}/{interval.setCount}
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              {board ? (
-                <Animated.View style={[{ overflow: 'hidden' }, slotStyle]}>
-                  <View
-                    className="gap-1 pb-1 pt-4"
-                    onLayout={(e) => setSlotContent(e.nativeEvent.layout.height)}>
-                    <BoardView board={board} holds={shownHolds} mounted={allHolds} animated />
-                    {holdsCaption ? (
-                      <Text
-                        key={`${holdsPrefix}:${shownHolds.slice().sort().join('|')}`}
-                        className="text-center text-muted-foreground">
-                        {holdsPrefix}: {holdsCaption}
-                      </Text>
-                    ) : null}
-                  </View>
-                </Animated.View>
-              ) : null}
-
-              <View className="flex-1 items-center justify-center">
+              <View className="flex-1 justify-center">
+                <View style={compact ? undefined : BAND}>
+                  {board ? (
+                    <Animated.View style={[{ overflow: 'hidden' }, slotStyle]}>
+                      <View
+                        className="items-center gap-4 pt-4"
+                        onLayout={(e) => setSlotContent(e.nativeEvent.layout.height)}>
+                        <BoardView
+                          board={board}
+                          holds={shownHolds}
+                          mounted={allHolds}
+                          animated
+                          spotlight
+                          style={{ width: boardWidth }}
+                        />
+                        {holdsCaption ? (
+                          <Announcement label={holdsPrefix} value={holdsCaption} />
+                        ) : null}
+                      </View>
+                    </Animated.View>
+                  ) : null}
+                </View>
                 <Text
-                  className="tracking-tight font-bold"
+                  className="text-center tracking-tight font-bold"
                   style={{ fontSize: digitSize, lineHeight: digitSize * 1.1 }}
                   accessibilityLiveRegion="polite">
                   {countdown}
                 </Text>
-                <View
-                  className={cn('w-full max-w-3xl self-center', !compact && 'py-3')}
-                  onLayout={(e) => setPreviewHeight(e.nativeEvent.layout.height)}>
-                  {compact ? null : idle ? (
-                    <Text className="text-center text-muted-foreground">
-                      Press Start when you’re ready.
-                    </Text>
-                  ) : timer.nextInterval && timer.nextInterval.phase !== 'done' ? (
-                    <View className="gap-1 rounded-lg border border-border bg-background px-4 py-3">
-                      <Text variant="small" className="text-muted-foreground">
-                        Next up
-                      </Text>
-                      <Text className="font-medium">
-                        {PHASE_LABEL[timer.nextInterval.phase]}{' '}
-                        {timer.nextInterval.seconds >= 60
-                          ? formatClock(timer.nextInterval.seconds)
-                          : `${timer.nextInterval.seconds}s`}
-                        {timer.nextInterval.label
-                          ? ` · ${timer.nextInterval.label}`
-                          : nextHoldsName
-                            ? ` · ${nextHoldsName}`
-                            : ''}
-                      </Text>
-                    </View>
-                  ) : (
-                    <Text className="text-center text-muted-foreground">Final step</Text>
-                  )}
+                <View style={compact ? undefined : BAND} className="pt-4">
+                  {announced && !compact ? (
+                    <Animated.View
+                      key={`${announced.label}:${announced.value}`}
+                      entering={FadeIn.duration(200)}>
+                      <Announcement {...announced} />
+                    </Animated.View>
+                  ) : null}
                 </View>
               </View>
 
               <View
-                className="w-full max-w-3xl gap-2 self-center"
+                className="w-full max-w-3xl self-center"
                 onLayout={(e) => setControlsHeight(e.nativeEvent.layout.height)}>
                 <View className="flex-row items-center justify-center gap-3">
                   {paused ? (
@@ -595,11 +638,6 @@ export function Runner({
                     </Button>
                   ) : null}
                 </View>
-                {!compact && !idle ? (
-                  <Button variant="ghost" className="self-center" onPress={askConfirm}>
-                    <Text>End workout</Text>
-                  </Button>
-                ) : null}
               </View>
             </>
           )}

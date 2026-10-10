@@ -31,8 +31,8 @@ This checkout's login is saved in `design/.local/credentials.json` (owner-readab
 | `.local/`       | Live Penpot database, uploaded assets, and local credentials; ignored by Git |
 | `backups/`      | Full local backups; ignored by Git                                           |
 
-The local **67slopers** project contains **67slopers — App design**, populated with 76 editable
-boards recreated from the app on 8 October 2026:
+The local **67slopers** project contains **67slopers — App design**, populated with 75 editable
+boards recreated from the app on 8 October 2026, plus the MoonBoard exploration:
 
 1. **01 Foundations** — palette, Geist Mono, shared controls, vector icons, and button components.
 2. **02 Current app** — Home, workouts, all ten classic protocols, calendar, sessions, and desktop Home.
@@ -40,12 +40,13 @@ boards recreated from the app on 8 October 2026:
 4. **04 Timer & recovery** — preparation, hangs, rests, pause, settings, Gen Z playback, completion, and interruption.
 5. **05 Sharing & edge states** — QR sharing, camera permission, import, unavailable content, and deletion.
 6. **06 Storyboards** — six journeys and notes explaining the reference.
-7. **07 MoonBoard exploration** — a reserved exploration canvas, separate from the current app.
+7. **07 MoonBoard & dock** — the MoonBoard draft and the dock navigation: 42 boards, separate
+   from the current app. See [the exploration notes](explorations/moonboard/README.md).
 
 The **design system** is on three additional pages at the top of the file: **00.1 Foundations**,
 **00.2 UI components**, and **00.3 Training patterns**. It adds 15 reference boards, 29 component
 families (155 main components including variants), 87 native tokens, and 15 typography styles.
-The complete file now has **91 reference boards across 10 pages**.
+The complete file now has **90 reference boards and 42 exploration boards across 10 pages**.
 
 [Open the design system](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=3da52804-324a-803a-8008-ba7ae8423fdc&page-id=83493a27-42b5-5511-8850-15e221286642&board-id=31197271-4bb8-5705-b5f3-2faebcb8410d).
 Use **Assets → 67slopers → UI / Training** to reuse components, or **Tokens** to inspect the
@@ -95,3 +96,9 @@ agent edits. MCP URLs containing keys belong in local configuration, never in th
 
 Upstream references: [Docker setup](https://help.penpot.app/technical-guide/getting-started/docker/)
 and [MCP documentation](https://github.com/penpot/penpot/blob/develop/docs/mcp/index.md).
+
+## Custom dock icon studies
+
+**08 Dock icon studies** adds six Hang and MoonBoard candidates, each with Regular and Fill
+variants, actual-size dock previews, optical checks, and editable vector masters.
+[Open the comparison and export guide](explorations/dock-icons/README.md).

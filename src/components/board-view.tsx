@@ -25,6 +25,12 @@ const FADE_MS = 150;
 const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
 /** How far (in dp) a tap may land from a hold's centre and still pick it. */
 const TAP_RADIUS = 28;
+/** Spotlight: how much of the board's strength is left outside the highlighted holds. */
+const SPOTLIGHT_REST = 0.38;
+/** Spotlight windows are drawn for a board this wide (dp) and scale with it. */
+const SPOTLIGHT_REFERENCE_WIDTH = 310;
+const SPOTLIGHT_GROW = 4;
+const SPOTLIGHT_RADIUS = 7;
 
 type BoardViewProps = {
   board: Board;
@@ -37,6 +43,12 @@ type BoardViewProps = {
   mounted?: string[];
   /** Fade highlights in and out instead of switching them. */
   animated?: boolean;
+  /**
+   * Mark the holds by leaving them alone: the rest of the board fades towards whatever is behind
+   * it and the highlighted holds keep their full colour, inside a faint hairline. Nothing is
+   * painted on the wood. The timer uses it.
+   */
+  spotlight?: boolean;
   /** Makes the board tappable; the nearest hold to the tap is reported. */
   onPressHold?: (holdId: string) => void;
   className?: string;
@@ -53,6 +65,7 @@ export function BoardView({
   holds,
   mounted,
   animated = false,
+  spotlight = false,
   onPressHold,
   className,
   style,
@@ -73,7 +86,7 @@ export function BoardView({
     <>
       <Image
         source={images.base}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, spotlight && { opacity: SPOTLIGHT_REST }]}
         contentFit="fill"
         // Bundled assets keep the same resource name across app updates, so a disk cache would
         // keep serving the previous build's artwork. Memory only.
@@ -83,7 +96,20 @@ export function BoardView({
       {ids.map((id) => {
         const hold = board.holds.find((h) => h.id === id);
         const source = images.holds[id];
-        if (!hold || !source) return null;
+        if (!hold) return null;
+        if (spotlight) {
+          return (
+            <Spotlit
+              key={id}
+              hold={hold}
+              source={images.base}
+              size={size}
+              visible={holds.includes(id)}
+              animated={animated}
+            />
+          );
+        }
+        if (!source) return null;
         return (
           <Overlay
             key={id}
@@ -141,6 +167,76 @@ function Overlay({
     width: `${overlay.w * 100}%`,
     height: `${overlay.h * 100}%`,
   };
+  const fade = useFade(visible, animated);
+
+  return (
+    <Animated.View style={[position, fade]} pointerEvents="none">
+      <Image
+        source={source}
+        style={StyleSheet.absoluteFill}
+        contentFit="fill"
+        cachePolicy="memory"
+      />
+    </Animated.View>
+  );
+}
+
+/** A window onto the board at full strength, the size of one hold and a little more. */
+function Spotlit({
+  hold,
+  source,
+  size,
+  visible,
+  animated,
+}: {
+  hold: Hold;
+  source: number;
+  size: { width: number; height: number };
+  visible: boolean;
+  animated: boolean;
+}) {
+  const fade = useFade(visible, animated);
+  if (size.width === 0) return null;
+  const scale = size.width / SPOTLIGHT_REFERENCE_WIDTH;
+  const grow = SPOTLIGHT_GROW * scale;
+  const left = hold.box.x * size.width - grow;
+  const top = hold.box.y * size.height - grow;
+  const window: ViewStyle = {
+    position: 'absolute',
+    left,
+    top,
+    width: hold.box.w * size.width + 2 * grow,
+    height: hold.box.h * size.height + 2 * grow,
+    borderRadius: SPOTLIGHT_RADIUS * scale,
+  };
+
+  return (
+    <Animated.View style={[window, fade]} pointerEvents="none">
+      <View
+        style={[StyleSheet.absoluteFill, { borderRadius: window.borderRadius }]}
+        className="overflow-hidden">
+        <Image
+          source={source}
+          style={{
+            position: 'absolute',
+            left: -left,
+            top: -top,
+            width: size.width,
+            height: size.height,
+          }}
+          contentFit="fill"
+          cachePolicy="memory"
+        />
+      </View>
+      <View
+        style={[StyleSheet.absoluteFill, { borderRadius: window.borderRadius }]}
+        className="border border-foreground/30"
+      />
+    </Animated.View>
+  );
+}
+
+function useFade(visible: boolean, animated: boolean) {
   const opacity = useSharedValue(visible ? 1 : 0);
   useEffect(() => {
     opacity.set(
@@ -155,18 +251,7 @@ function Overlay({
           : 0
     );
   }, [visible, animated, opacity]);
-  const fade = useAnimatedStyle(() => ({ opacity: opacity.get() }));
-
-  return (
-    <Animated.View style={[position, fade]} pointerEvents="none">
-      <Image
-        source={source}
-        style={StyleSheet.absoluteFill}
-        contentFit="fill"
-        cachePolicy="memory"
-      />
-    </Animated.View>
-  );
+  return useAnimatedStyle(() => ({ opacity: opacity.get() }));
 }
 
 /** The hold whose centre is closest to a point given as board fractions, within TAP_RADIUS dp. */

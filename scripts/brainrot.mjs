@@ -113,6 +113,10 @@ if (command === 'download') {
     ]);
   }
 } else if (command === 'build') {
+  // The clips play muted in the lower half of a phone behind a timer: 480 on the long side is
+  // as sharp as that needs. A clip encoded with other settings is encoded again.
+  const ENCODE = { size: 480, bitrate: 330 };
+  const encode = `${ENCODE.size}p-${ENCODE.bitrate}k`;
   const selected = json(path.join(assets, 'catalog.json')).filter((c) => c.selected);
   if (selected.length !== 48) throw new Error(`Select exactly 48 clips; got ${selected.length}`);
   const previous = existsSync(path.join(assets, 'manifest.json'))
@@ -126,6 +130,7 @@ if (command === 'download') {
     if (
       existsSync(output) &&
       recorded?.videoId === clip.videoId &&
+      recorded.encode === encode &&
       recorded.start === clip.start &&
       recorded.seconds === clip.seconds
     ) {
@@ -151,19 +156,19 @@ if (command === 'download') {
         '0:v:0',
         '-an',
         '-vf',
-        'scale=720:720:force_original_aspect_ratio=decrease:force_divisible_by=2,fps=30',
+        `scale=${ENCODE.size}:${ENCODE.size}:force_original_aspect_ratio=decrease:force_divisible_by=2,fps=30`,
         '-c:v',
         'libx264',
         '-preset',
-        'fast',
+        'slow',
         '-threads',
         '2',
         '-b:v',
-        '650k',
+        `${ENCODE.bitrate}k`,
         '-maxrate',
-        '800k',
+        `${Math.round(ENCODE.bitrate * 1.3)}k`,
         '-bufsize',
-        '1300k',
+        `${ENCODE.bitrate * 2}k`,
         '-pix_fmt',
         'yuv420p',
         '-movflags',
@@ -188,6 +193,7 @@ if (command === 'download') {
     const track = probe(output).streams.find((stream) => stream.codec_type === 'video');
     manifest.push({
       ...clip,
+      encode,
       width: track.width,
       height: track.height,
       focalY: track.height > track.width ? 0.65 : 0.5,
@@ -241,7 +247,7 @@ if (command === 'download') {
     run('ffmpeg', ['-v', 'error', '-xerror', '-i', file, '-f', 'null', '-']);
     bytes += statSync(file).size + statSync(path.join(assets, `${clip.id}.jpg`)).size;
   }
-  if (manifest.length !== 48 || bytes > 100_000_000)
+  if (manifest.length !== 48 || bytes > 50_000_000)
     throw new Error(`Pack budget: ${manifest.length} clips, ${bytes} bytes`);
   console.log(
     `Verified ${manifest.length} clips, ${bytes.toLocaleString()} bytes, full decode successful`

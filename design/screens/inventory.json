@@ -823,16 +823,5 @@
     "height": 800,
     "note": "",
     "shapes": 7
-  },
-  {
-    "key": "moonboard-placeholder",
-    "name": "MoonBoard / reserved exploration",
-    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
-    "boardId": "b2dd782e-c44b-56bb-b195-289438c9ee63",
-    "route": "",
-    "width": 1120,
-    "height": 520,
-    "note": "",
-    "shapes": 10
   }
 ]

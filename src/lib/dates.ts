@@ -41,7 +41,12 @@ export function relativeDay(iso: string, now = new Date()): string {
   if (days <= 0) return 'Today';
   if (days === 1) return 'Yesterday';
   if (days < 7) return `${days} days ago`;
-  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+  return formatShortDate(iso);
+}
+
+/** "9 Oct", in the reader's own order and language. */
+export function formatShortDate(date: Date | string): string {
+  return new Date(date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
 /** Always minutes and seconds: 7 -> "0:07", 180 -> "3:00", 3725 -> "62:05". */

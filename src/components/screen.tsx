@@ -22,6 +22,8 @@ cssInterop(Animated.ScrollView, {
 type ScreenProps = PropsWithChildren<{
   /** Scroll the content (default) or keep it fixed. */
   scroll?: boolean;
+  /** A dock-level screen: no native header above it, the dock floating over its end. */
+  tab?: boolean;
   /** Pinned above the bottom safe area, for the screen's primary action. */
   footer?: ReactNode;
   className?: string;
@@ -43,10 +45,31 @@ export function useScreenScroll(): ScreenScroll | null {
 }
 
 const CONTENT = 'w-full max-w-3xl self-center gap-4 px-6 pt-4 pb-6';
+/** Room a scrolling tab leaves so its last row clears the dock. */
+const DOCK_CLEARANCE = 116;
+/** The column `CONTENT` describes, for lists that cannot take class names. */
+const COLUMN = { maxWidth: 768, gutter: 24 };
+
+/**
+ * The content padding of a dock-level screen, for a tab that scrolls its own list instead of
+ * using `Screen`: clear of the status bar above and of the dock below, in the same column.
+ */
+export function useTabContentStyle() {
+  const insets = useSafeAreaInsets();
+  return {
+    width: '100%' as const,
+    maxWidth: COLUMN.maxWidth,
+    alignSelf: 'center' as const,
+    paddingHorizontal: COLUMN.gutter,
+    paddingTop: insets.top + 12,
+    paddingBottom: DOCK_CLEARANCE + insets.bottom,
+  };
+}
 
 /** Shared page frame under the native header: centered column, optional pinned footer. */
 export function Screen({
   scroll = true,
+  tab = false,
   footer,
   className,
   contentClassName,
@@ -68,7 +91,13 @@ export function Screen({
   // footer (Home, session view) need the inset on the scroll content itself, or the
   // last rows slide under the gesture bar on edge-to-edge Android. Never pad the
   // scroll view or gesture root: that breaks Sortable.Grid measuring and drag preview.
-  const bottomPad = footer ? undefined : Math.max(24, insets.bottom + 12);
+  const tabStyle = useTabContentStyle();
+  const bottomPad = footer
+    ? undefined
+    : tab
+      ? tabStyle.paddingBottom
+      : Math.max(24, insets.bottom + 12);
+  const topPad = tab ? tabStyle.paddingTop : undefined;
 
   return (
     <ScreenScrollContext.Provider value={api}>
@@ -78,7 +107,7 @@ export function Screen({
             ref={scrollRef}
             className="flex-1"
             contentContainerClassName={cn(CONTENT, contentClassName)}
-            contentContainerStyle={bottomPad ? { paddingBottom: bottomPad } : undefined}
+            contentContainerStyle={{ paddingBottom: bottomPad, paddingTop: topPad }}
             keyboardShouldPersistTaps="handled"
             onScroll={(e) => {
               offset.current = e.nativeEvent.contentOffset.y;
@@ -89,7 +118,7 @@ export function Screen({
         ) : (
           <View
             className={cn('flex-1', CONTENT, contentClassName)}
-            style={bottomPad ? { paddingBottom: bottomPad } : undefined}>
+            style={{ paddingBottom: bottomPad, paddingTop: topPad }}>
             {children}
           </View>
         )}

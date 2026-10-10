@@ -31,7 +31,7 @@ export function TimerPhaseLabel({ label }: { label: string }) {
   }));
   return (
     <Animated.View style={motion}>
-      <Text className="text-2xl uppercase tracking-wide font-semibold">{label}</Text>
+      <Text className="text-center text-2xl uppercase tracking-wide font-bold">{label}</Text>
     </Animated.View>
   );
 }

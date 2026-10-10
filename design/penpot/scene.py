@@ -146,12 +146,14 @@ class Board:
         attrs=dict(fontId=FONT,fontFamily='Geist Mono',fontVariantId=f'normal-{weight}',fontWeight=str(weight),fontStyle='normal',fontSize=str(size),lineHeight=str(lh/size),textAlign=align,letterSpacing='0',textTransform='none',textDecoration='none',fills=fill)
         o['growType']='fixed'
         o['content']={'type':'root','children':[{'type':'paragraph-set','children':[{'type':'paragraph',**attrs,'children':[{'text':line,**attrs}]} for line in lines]}]}
-        # Penpot's render/export path also consumes measured text runs.
+        # Penpot's export and viewer draw from these measured runs: y is the bottom of a
+        # run box 1.3 em tall, centred in the line; the baseline sits 0.31 em under the
+        # line's centre. Values measured from Penpot's own layout of Geist Mono.
         o['positionData']=[]
         for i,line in enumerate(lines):
             tw=len(line)*size*.602;tx=x+(w-tw)/2 if align=='center' else x+w-tw if align=='right' else x
-            baseline=y+i*lh+(lh-size)/2+size*.96
-            o['positionData'].append(dict(x=tx+self.x,y=baseline+self.y,width=tw,height=lh,fontFamily='"Geist Mono"',fontSize=f'{size}px',fontWeight=str(weight),fontStyle='normal',text=line,fills=fill,textDecoration='none',textTransform='none',direction='ltr',letterSpacing='0'))
+            baseline=y+i*lh+lh/2+size*.31;bottom=y+i*lh+round((lh+size*1.3)/2)
+            o['positionData'].append(dict(x=tx+self.x,y=bottom+self.y,width=tw,height=round(size*1.3),fontFamily='"Geist Mono"',fontSize=f'{size}px',fontWeight=str(weight),fontStyle='normal',text=line,fills=fill,textDecoration='none',textTransform='none',direction='ltr',letterSpacing='0'))
             self.svg.append(f'<text x="{tx}" y="{baseline}" font-family="Geist Mono" font-size="{size}" font-weight="{weight}" fill="{self.color(color)}">{html.escape(line)}</text>')
         return height,o
 
@@ -184,7 +186,7 @@ class Board:
         o=self.rect(x,y,w,h,fill,'border' if variant=='outline' else None,12 if h>=56 else 10,'Button / '+label)
         col='primaryForeground' if variant=='primary' else 'foreground'
         if icon:
-            tw=len(label)*size*.602;start=x+(w-tw-28)/2;self.icon(icon,start,y+(h-20)/2,20,col);self.text(label,start+28,y+(h-size*1.5)/2,w-(start-x)-32,size,600,col)
+            tw=len(label)*size*.602;start=x+(w-tw-28)/2;self.icon(icon,start,y+(h-20)/2,20,col);self.text(label,start+28,y+(h-size*1.5)/2,w-(start-x)-32,size,600,col,lh=size*1.5)
         else:self.text(label,x+8,y+(h-size*1.5)/2,w-16,size,500,col,'center',lh=size*1.5)
         if target:self.link(o,target)
         return o

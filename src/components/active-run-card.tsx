@@ -1,6 +1,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
+import Animated, { FadeIn, ReduceMotion } from 'react-native-reanimated';
 
 import {
   AlertDialog,
@@ -17,10 +18,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { timeAgo } from '@/lib/dates';
+import { EASE_OUT } from '@/lib/motion';
 import { clearActiveRun, loadActiveRun } from '@/lib/store/active-run';
 import { useStore } from '@/lib/store/store';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import { expandWorkout } from '@/lib/timer/intervals';
+
+const CARD_ENTER = FadeIn.duration(200).easing(EASE_OUT).reduceMotion(ReduceMotion.System);
 
 /**
  * A workout that was still going when the app closed. Continue picks it up paused where it
@@ -65,59 +69,61 @@ export function ActiveRunCard() {
   };
 
   return (
-    <Card className="border-border bg-accent">
-      <CardHeader>
-        <CardDescription>Unfinished workout</CardDescription>
-        <CardTitle>{run.name}</CardTitle>
-        <CardDescription>
-          {where}stopped {timeAgo(run.savedAt)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="gap-2">
-        <Button
-          size="lg"
-          onPress={() => {
-            setResume(run);
-            setRun(null);
-            router.push('/workout/run');
-          }}>
-          <Text className="text-lg">Continue</Text>
-        </Button>
-        <View className="flex-row gap-2">
+    <Animated.View entering={CARD_ENTER}>
+      <Card className="border-border bg-accent">
+        <CardHeader>
+          <CardDescription>Unfinished workout</CardDescription>
+          <CardTitle>{run.name}</CardTitle>
+          <CardDescription>
+            {where}stopped {timeAgo(run.savedAt)}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="gap-2">
           <Button
-            variant="outline"
-            className="flex-1"
+            size="lg"
             onPress={() => {
-              addSession(sessionFromCheckpoint(run));
-              drop();
+              setResume(run);
+              setRun(null);
+              router.push('/workout/run');
             }}>
-            <Text>Save as ended</Text>
+            <Text className="text-lg">Continue</Text>
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" className="flex-1">
-                <Text className="text-destructive">Discard</Text>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Discard this workout?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Nothing from it is kept in your history.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>
-                  <Text>Keep it</Text>
-                </AlertDialogCancel>
-                <AlertDialogAction onPress={drop}>
-                  <Text>Discard</Text>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </View>
-      </CardContent>
-    </Card>
+          <View className="flex-row gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onPress={() => {
+                addSession(sessionFromCheckpoint(run));
+                drop();
+              }}>
+              <Text>Save as ended</Text>
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" className="flex-1">
+                  <Text className="text-destructive">Discard</Text>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Discard this workout?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Nothing from it is kept in your history.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    <Text>Keep it</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction onPress={drop}>
+                    <Text>Discard</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </View>
+        </CardContent>
+      </Card>
+    </Animated.View>
   );
 }

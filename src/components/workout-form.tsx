@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { BoardPicker } from '@/components/board-picker';
 import { BoardView } from '@/components/board-view';
 import { DisclosureChevron, EditorReveal } from '@/components/disclosure-motion';
+import { Glide, GlideContainer } from '@/components/glide';
 import { HoldPicker } from '@/components/hold-picker';
 import { Screen } from '@/components/screen';
 import {
@@ -14,7 +15,6 @@ import {
   AddStepButton,
   StepList,
   StepListBoardProvider,
-  type ReorderTarget,
   type StepListActions,
 } from '@/components/step-list';
 import {
@@ -41,6 +41,7 @@ import { templateSteps } from '@/lib/store/presets';
 import { useStore } from '@/lib/store/store';
 import type { Step, Workout } from '@/lib/store/types';
 import { validateWorkout } from '@/lib/workout-board';
+import { moveStepTo } from '@/lib/workout-rows';
 import {
   appendTo,
   clearHolds,
@@ -53,7 +54,6 @@ import {
   newRepeat,
   newTimedStep,
   removeStep,
-  reorderWithin,
   stripIds,
   updateStep,
   withIds,
@@ -104,7 +104,6 @@ export function WorkoutForm({
     withIds(initial?.steps ?? template?.steps ?? templateSteps())
   );
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [reorderTarget, setReorderTarget] = useState<ReorderTarget | undefined>(undefined);
   const [boardId, setBoardId] = useState<BoardId | undefined>(
     initial ? initial.board : (template?.board ?? preferredBoard)
   );
@@ -149,7 +148,6 @@ export function WorkoutForm({
   };
   const picking = pickingId ? findStep(steps, pickingId) : undefined;
   const pickingHolds = picking && picking.kind !== 'repeat' ? picking.holds : undefined;
-  const reordering = reorderTarget !== undefined;
 
   const actions = useMemo<StepListActions>(
     () => ({
@@ -165,7 +163,7 @@ export function WorkoutForm({
         setExpandedId(step.id);
       },
       addRepeat: (parentId) => setSteps((s) => appendTo(s, parentId, newRepeat())),
-      reorder: (parentId, ids) => setSteps((s) => reorderWithin(s, parentId, ids)),
+      moveTo: (id, parentId, index) => setSteps((s) => moveStepTo(s, id, parentId, index)),
     }),
     []
   );
@@ -279,117 +277,108 @@ export function WorkoutForm({
 
       <Separator />
 
-      <View className="flex-row items-center justify-between gap-3">
-        <View className="flex-1 gap-1">
-          <Text className="text-xl font-semibold">Steps</Text>
-          <Text variant="muted">{formatClock(total)} total</Text>
-        </View>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={!reordering && steps.length < 2}
-          onPress={() => setReorderTarget(reordering ? undefined : null)}>
-          <Text>{reordering ? 'Done' : 'Reorder'}</Text>
-        </Button>
+      <View className="gap-1">
+        <Text className="text-xl font-semibold">Steps</Text>
+        <Text variant="muted">{formatClock(total)} total</Text>
       </View>
 
-      <Text variant="muted">Tap a step to edit its length, type, grip or label.</Text>
+      <Text variant="muted">Tap a step to edit it. Hold and drag to move it.</Text>
 
-      <StepListBoardProvider board={board}>
-        <StepEditorProvider
-          value={{
-            steps,
-            actions,
-            openHoldPicker: setPickingId,
-            expandedId,
-            setExpandedId,
-            reorderTarget,
-            setReorderTarget,
-          }}>
-          <StepList steps={steps} parentId={null} depth={0} />
-        </StepEditorProvider>
-      </StepListBoardProvider>
+      <GlideContainer className="gap-4">
+        <StepListBoardProvider board={board}>
+          <StepEditorProvider
+            value={{
+              steps,
+              actions,
+              openHoldPicker: setPickingId,
+              expandedId,
+              setExpandedId,
+            }}>
+            <StepList steps={steps} parentId={null} depth={0} />
+          </StepEditorProvider>
+        </StepListBoardProvider>
 
-      {board ? (
-        <HoldPicker
-          board={board}
-          visible={pickingId !== null}
-          initial={pickingHolds}
-          onClose={() => setPickingId(null)}
-          onDone={(holds) => {
-            if (pickingId) actions.update(pickingId, { holds });
-            setPickingId(null);
-          }}
-        />
-      ) : null}
+        {board ? (
+          <HoldPicker
+            board={board}
+            visible={pickingId !== null}
+            initial={pickingHolds}
+            onClose={() => setPickingId(null)}
+            onDone={(holds) => {
+              if (pickingId) actions.update(pickingId, { holds });
+              setPickingId(null);
+            }}
+          />
+        ) : null}
 
-      <AlertDialog
-        open={pendingBoard !== null}
-        onOpenChange={(open) => !open && setPendingBoard(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Clear hold choices?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Holds belong to a board, so changing it forgets which holds each hang uses.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>
-              <Text>Keep board</Text>
-            </AlertDialogCancel>
-            <AlertDialogAction onPress={() => applyBoard(pendingBoard ?? undefined)}>
-              <Text>Change board</Text>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {reordering ? null : (
-        <View className="flex-row flex-wrap gap-3">
-          <AddStepButton onAdd={(kind) => actions.addStep(null, kind)} />
-          <Button
-            variant="secondary"
-            className="min-w-32 flex-1"
-            onPress={() => actions.addRepeat(null)}>
-            <Icon as={RepeatIcon} className="size-4" />
-            <Text>Add repeat</Text>
-          </Button>
-        </View>
-      )}
-
-      <Separator />
-
-      {errors.length ? <Text className="text-destructive">{errors[0]}</Text> : null}
-      <View className="flex-row items-center justify-between">
-        <Text variant="muted">Total</Text>
-        <Text className="text-xl font-semibold">≈ {formatClock(total)}</Text>
-      </View>
-
-      {onDelete ? (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" className="mt-4 self-start">
-              <Text className="text-destructive">Delete workout</Text>
-            </Button>
-          </AlertDialogTrigger>
+        <AlertDialog
+          open={pendingBoard !== null}
+          onOpenChange={(open) => !open && setPendingBoard(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete this workout?</AlertDialogTitle>
+              <AlertDialogTitle>Clear hold choices?</AlertDialogTitle>
               <AlertDialogDescription>
-                Past sessions keep their own copy of the timings, so history is not affected.
+                Holds belong to a board, so changing it forgets which holds each hang uses.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>
-                <Text>Cancel</Text>
+                <Text>Keep board</Text>
               </AlertDialogCancel>
-              <AlertDialogAction onPress={onDelete}>
-                <Text>Delete</Text>
+              <AlertDialogAction onPress={() => applyBoard(pendingBoard ?? undefined)}>
+                <Text>Change board</Text>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      ) : null}
+
+        <Glide active watch={steps} still={expandedId} className="gap-4">
+          <View className="flex-row flex-wrap gap-3">
+            <AddStepButton onAdd={(kind) => actions.addStep(null, kind)} />
+            <Button
+              variant="secondary"
+              className="min-w-32 flex-1"
+              onPress={() => actions.addRepeat(null)}>
+              <Icon as={RepeatIcon} className="size-4" />
+              <Text>Add repeat</Text>
+            </Button>
+          </View>
+
+          <Separator />
+
+          {errors.length ? <Text className="text-destructive">{errors[0]}</Text> : null}
+          <View className="flex-row items-center justify-between">
+            <Text variant="muted">Total</Text>
+            <Text className="text-xl font-semibold">≈ {formatClock(total)}</Text>
+          </View>
+
+          {onDelete ? (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" className="mt-4 self-start">
+                  <Text className="text-destructive">Delete workout</Text>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this workout?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Past sessions keep their own copy of the timings, so history is not affected.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    <Text>Cancel</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction onPress={onDelete}>
+                    <Text>Delete</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : null}
+        </Glide>
+      </GlideContainer>
     </Screen>
   );
 }

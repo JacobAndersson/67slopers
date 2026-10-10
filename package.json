@@ -39,6 +39,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-ble-plx": "^3.5.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
@@ -68,6 +69,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
+    "postinstall": "node scripts/moonboard-benchmarks.mjs --ensure",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -77,7 +79,7 @@
     "format:check": "prettier --check . \"!design/.local/**\" \"!design/backups/**\"",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test \"src/**/*.test.ts\"",
-    "build:android": "expo prebuild --platform android --no-install && cd android && ./gradlew :app:assembleRelease --console=plain",
+    "build:android": "expo prebuild --platform android --no-install && cd android && ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a --console=plain",
     "icons": "node scripts/gen-icons.mjs",
     "boards": "node scripts/gen-board-images.mjs",
     "tones": "node scripts/gen-tones.mjs"

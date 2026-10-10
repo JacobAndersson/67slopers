@@ -6,22 +6,13 @@ import { Pressable, View } from 'react-native';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { dayKey, isSameDay, isSameMonth, weekDays } from '@/lib/dates';
-import { sessionsByDay, weekStreak } from '@/lib/store/selectors';
-import type { Session } from '@/lib/store/types';
+import { dayKey, isSameDay, weekDays } from '@/lib/dates';
 import { cn } from '@/lib/utils';
 
 const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-/** Week streak and total sessions, shown above both calendar views. */
-export function CalendarStats({
-  sessions,
-  today = new Date(),
-}: {
-  sessions: Session[];
-  today?: Date;
-}) {
-  const streak = useMemo(() => weekStreak(sessions, today), [sessions, today]);
+/** Week streak and total sessions, counting every kind of training. */
+export function CalendarStats({ streak, sessions }: { streak: number; sessions: number }) {
   return (
     <View className="flex-row flex-wrap gap-x-8 gap-y-3">
       <View className="gap-1">
@@ -32,125 +23,73 @@ export function CalendarStats({
       </View>
       <View className="gap-1">
         <Text variant="muted">Sessions</Text>
-        <Text className="text-2xl font-bold">{sessions.length}</Text>
+        <Text className="text-2xl font-bold">{sessions}</Text>
       </View>
     </View>
   );
 }
 
-type CalendarGridProps = {
-  rows: Date[][];
-  month?: Date;
-  sessions: Session[];
+type WeekCalendarProps = {
+  /** Days with any training, as `dayKey`s (see `trainedDays` in `src/lib/training-log.ts`). */
+  trained: Set<string>;
   today?: Date;
-  selected?: Date;
-  onDayPress?: (day: Date) => void;
 };
 
-/** Seven equal columns. Dates stay visible; an amber surface marks training days. */
-export function CalendarGrid({
-  rows,
-  month,
-  sessions,
-  today = new Date(),
-  selected,
-  onDayPress,
-}: CalendarGridProps) {
+/**
+ * The current week as seven equal columns. Dates stay visible; an amber surface marks the
+ * days trained. The header or any date opens the log.
+ */
+export function WeekCalendar({ trained, today = new Date() }: WeekCalendarProps) {
   const router = useRouter();
-  const byDay = useMemo(() => sessionsByDay(sessions), [sessions]);
-  const shownMonth = month ?? today;
-
+  const days = useMemo(() => weekDays(today), [today]);
+  const openLog = () => router.push('/log');
   return (
-    <View className="gap-1">
-      <View className="flex-row pb-1">
-        {WEEKDAYS.map((label, i) => (
-          <Text key={i} variant="small" className="flex-1 text-center text-muted-foreground">
-            {label}
-          </Text>
-        ))}
-      </View>
-      {rows.map((week, r) => (
-        <View key={r} className="flex-row">
-          {week.map((day) => {
-            const daySessions = byDay.get(dayKey(day)) ?? [];
-            const done = daySessions.length > 0;
-            const inMonth = isSameMonth(day, shownMonth);
+    <View className="gap-2">
+      <Button
+        variant="ghost"
+        className="justify-between px-0"
+        accessibilityLabel="Open the log"
+        onPress={openLog}>
+        <Text className="font-medium">This week</Text>
+        <Icon as={CaretRightIcon} className="size-4" />
+      </Button>
+      <View className="gap-1">
+        <View className="flex-row pb-1">
+          {WEEKDAYS.map((label, i) => (
+            <Text key={i} variant="small" className="flex-1 text-center text-muted-foreground">
+              {label}
+            </Text>
+          ))}
+        </View>
+        <View className="flex-row">
+          {days.map((day) => {
+            const done = trained.has(dayKey(day));
             const isToday = isSameDay(day, today);
-            const isSelected = !!selected && isSameDay(day, selected);
-            const enabled = !!onDayPress || done;
             return (
               <Pressable
                 key={dayKey(day)}
-                disabled={!enabled}
-                onPress={() => {
-                  if (onDayPress) onDayPress(day);
-                  else if (daySessions.length === 1) router.push(`/session/${daySessions[0].id}`);
-                  else router.push('/sessions');
-                }}
-                accessibilityRole={enabled ? 'button' : undefined}
-                accessibilityState={{ selected: isSelected }}
-                accessibilityLabel={`${day.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}${isToday ? ', today' : ''}, ${daySessions.length} ${daySessions.length === 1 ? 'session' : 'sessions'}`}
+                onPress={openLog}
+                accessibilityRole="button"
+                accessibilityLabel={`${day.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}${isToday ? ', today' : ''}, ${done ? 'trained' : 'no training'}`}
                 className="h-12 flex-1 items-center justify-center active:opacity-70">
                 <View
                   className={cn(
                     'h-9 w-9 items-center justify-center rounded-lg',
                     done && 'bg-chart-1',
-                    isToday && 'border border-foreground',
-                    isSelected && 'bg-primary'
+                    isToday && 'border border-foreground'
                   )}>
-                  <Text
-                    className={cn(
-                      'font-medium',
-                      !inMonth && !isSelected && 'text-muted-foreground',
-                      isSelected && 'text-primary-foreground',
-                      isToday && 'font-semibold'
-                    )}>
+                  <Text className={cn('font-medium', isToday && 'font-semibold')}>
                     {day.getDate()}
                   </Text>
                   {done ? (
-                    <View
-                      className={cn(
-                        'absolute bottom-1 h-1 w-1 rounded-full bg-foreground',
-                        isSelected && 'bg-primary-foreground'
-                      )}
-                    />
+                    <View className="absolute bottom-1 h-1 w-1 rounded-full bg-foreground" />
                   ) : null}
                 </View>
               </Pressable>
             );
           })}
         </View>
-      ))}
-    </View>
-  );
-}
-
-/** The current week; either its header or a date opens the month view. */
-export function WeekCalendar({
-  sessions,
-  today = new Date(),
-}: {
-  sessions: Session[];
-  today?: Date;
-}) {
-  const router = useRouter();
-  const rows = useMemo(() => [weekDays(today)], [today]);
-  return (
-    <View className="gap-2">
-      <Button
-        variant="ghost"
-        className="justify-between px-0"
-        accessibilityLabel="Show the month"
-        onPress={() => router.push('/calendar')}>
-        <Text className="font-medium">This week</Text>
-        <Icon as={CaretRightIcon} className="size-4" />
-      </Button>
-      <CalendarGrid
-        rows={rows}
-        sessions={sessions}
-        today={today}
-        onDayPress={() => router.push('/calendar')}
-      />
+      </View>
     </View>
   );
 }

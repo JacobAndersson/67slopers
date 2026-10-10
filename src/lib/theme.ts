@@ -31,6 +31,10 @@ export const THEME = {
   chart3: 'hsl(32.692 100.000% 30.588%)',
   chart4: 'hsl(75.000 8.163% 19.216%)',
   chart5: 'hsl(200.000 30.612% 90.392%)',
+  holdStart: 'hsl(148.000 55.000% 40.000%)',
+  holdMove: 'hsl(217.000 69.000% 52.000%)',
+  holdFinish: 'hsl(9.000 68.000% 52.000%)',
+  holdWood: 'hsl(34.000 46.000% 60.000%)',
   radius: '0.75rem',
 } as const;
 

@@ -17,7 +17,7 @@ PAGES = {
     'timer': (uid('page/timer'), '04 Timer & recovery'),
     'share': (uid('page/share'), '05 Sharing & edge states'),
     'flows': ('01a9e3e6-c5b9-4411-ad50-dc125a035c71', '06 Storyboards'),
-    'moonboard': ('f135c210-f44f-4df4-a087-1e4ae0026f09', '07 MoonBoard exploration'),
+    'moonboard': ('f135c210-f44f-4df4-a087-1e4ae0026f09', '07 MoonBoard & dock'),
 }
 SCENE = Scene()
 PRESETS = {p['id']:p for p in REF['presets']}
@@ -522,10 +522,7 @@ def storyboards():
     ]
     y=134
     for paragraph in paragraphs:y+=b.text(paragraph,40,y,1040,18,400,lh=28)[0]+24
-    b=board('moonboard-placeholder','MoonBoard / reserved exploration','moonboard',0,0,520,w=1120)
-    b.text('MoonBoard exploration',40,40,1040,40,700);b.text('Start here after reviewing the current app.',40,118,1040,24,500)
-    label(b,'This page is intentionally separate from the implemented app.\nNo MoonBoard support has been designed or added in this recreation.',200,40,1040,size=18)
-    for i,title in enumerate(['User story','Board & problem flow','Design alternatives']):b.rect(40+i*350,328,324,120,'card','border');b.text(title,60+i*350,372,284,18,600)
+    # Page 07 belongs to moonboard.py.
 
 
 def add_library(p):

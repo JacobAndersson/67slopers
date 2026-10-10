@@ -10,3 +10,4 @@ hangboard-models/
 design/.local/
 design/backups/
 design/exports/
+src/lib/moonboard/data/

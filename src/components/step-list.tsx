@@ -1,15 +1,15 @@
 import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
 import { DotsThreeVerticalIcon } from 'phosphor-react-native/src/icons/DotsThreeVertical';
-import { DotsSixVerticalIcon } from 'phosphor-react-native/src/icons/DotsSixVertical';
 import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { RepeatIcon } from 'phosphor-react-native/src/icons/Repeat';
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
-import Sortable from 'react-native-sortables';
 
 import { BoardView } from '@/components/board-view';
 import { DisclosureChevron, EditorReveal } from '@/components/disclosure-motion';
+import { DragHandle, DragList } from '@/components/drag-list';
 import { useScreenScroll } from '@/components/screen';
+import { Segmented } from '@/components/segmented';
 import { Stepper } from '@/components/stepper';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,26 +22,22 @@ import {
 import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { gripName, type Board } from '@/lib/boards';
 import { formatShort } from '@/lib/dates';
 import type { StepKind } from '@/lib/store/types';
 import { cn } from '@/lib/utils';
 import {
   canNest,
+  findStep,
   LIMITS,
   parentOf,
   STEP_NAMES,
-  stripIds,
   type EditableRepeatStep,
   type EditableStep,
   type EditableTimedStep,
   type StepPatch,
 } from '@/lib/workout-steps';
-import { summaryLine } from '@/lib/workout-summary';
-
-/** Which list is being reordered: `null` is the root list, a repeat id is that repeat's steps. */
-export type ReorderTarget = null | string;
+import { flattenSteps, slotsFor } from '@/lib/workout-rows';
 
 export type StepListActions = {
   update: (id: string, patch: StepPatch) => void;
@@ -52,7 +48,8 @@ export type StepListActions = {
   moveInto: (id: string, repeatId: string) => void;
   addStep: (parentId: string | null, kind?: StepKind) => void;
   addRepeat: (parentId: string | null) => void;
-  reorder: (parentId: string | null, ids: string[]) => void;
+  /** Puts a step, or a repeat with its steps, at a place in the tree. */
+  moveTo: (id: string, parentId: string | null, index: number) => void;
 };
 
 type EditorState = {
@@ -62,9 +59,6 @@ type EditorState = {
   openHoldPicker: (stepId: string) => void;
   expandedId: string | null;
   setExpandedId: (id: string | null) => void;
-  /** `undefined` when nothing is being reordered. */
-  reorderTarget: ReorderTarget | undefined;
-  setReorderTarget: (target: ReorderTarget | undefined) => void;
 };
 
 /** Absent below a read-only list; present in the builder. */
@@ -134,80 +128,149 @@ type StepListProps = {
   depth: number;
 };
 
-/** Renders steps and repeat groups; without an editor provider it is read-only. */
-export function StepList({ steps, parentId, depth }: StepListProps) {
+/**
+ * Renders steps and repeat groups. Without an editor provider it is read-only: plain nested
+ * boxes. In the builder the same picture is drawn as one flat column of rows (see
+ * `src/lib/workout-rows.ts`), so a step can be held and dragged anywhere: among its
+ * neighbours, out of its repeat, into another. A repeat is held by its header and travels whole.
+ */
+export function StepList({ steps, depth }: StepListProps) {
   const editor = useContext(EditorContext);
-  const screen = useScreenScroll();
-  const reordering = editor !== null && editor.reorderTarget === parentId;
-
-  const renderItem = useCallback(
-    ({ item }: { item: EditableStep }) => <ReorderRow step={item} />,
-    []
-  );
-
   if (steps.length === 0) {
     return <Text variant="muted">No steps yet.</Text>;
   }
-
-  if (reordering) {
-    return (
-      <Sortable.Grid
-        columns={1}
-        rowGap={12}
-        data={steps}
-        renderItem={renderItem}
-        customHandle
-        {...(screen ? { scrollableRef: screen.scrollableRef } : {})}
-        onDragEnd={({ data }) =>
-          editor.actions.reorder(
-            parentId,
-            data.map((s) => s.id)
+  if (editor) return <EditorRows steps={steps} />;
+  return (
+    <DepthContext.Provider value={depth}>
+      <View className="gap-3">
+        {steps.map((step) =>
+          step.kind === 'repeat' ? (
+            <RepeatGroup key={step.id} step={step} />
+          ) : (
+            <StepCard key={step.id} step={step} />
           )
-        }
-      />
-    );
-  }
-
-  return (
-    <View className="gap-3">
-      {steps.map((step) =>
-        step.kind === 'repeat' ? (
-          <RepeatGroup key={step.id} step={step} depth={depth} />
-        ) : (
-          <StepCard key={step.id} step={step} depth={depth} />
-        )
-      )}
-    </View>
-  );
-}
-
-/** Compact draggable row used while reordering; repeats travel as one unit. */
-function ReorderRow({ step }: { step: EditableStep }) {
-  const title = step.kind === 'repeat' ? 'Repeat' : step.label || STEP_NAMES[step.kind];
-  const subtitle =
-    step.kind === 'repeat' ? summaryLine({ steps: stripIds([step]) }) : duration(step);
-  return (
-    <View className="flex-row items-center overflow-hidden rounded-lg border border-border bg-card">
-      <View className={cn('w-1.5 self-stretch', BAR[step.kind])} />
-      <View className="flex-1 gap-0.5 px-3 py-3">
-        <Text className="font-medium">{title}</Text>
-        <Text variant="muted" numberOfLines={1}>
-          {subtitle}
-        </Text>
+        )}
       </View>
-      <Sortable.Handle>
-        <View
-          className="h-full items-center justify-center px-4"
-          accessibilityLabel="Drag to reorder">
-          <Icon as={DotsSixVerticalIcon} className="size-5 text-muted-foreground" />
-        </View>
-      </Sortable.Handle>
+    </DepthContext.Provider>
+  );
+}
+
+/** How deep the list being rendered is: 0 at the top, 1 inside a repeat, 2 inside its repeat. */
+const DepthContext = createContext(0);
+
+/**
+ * The side borders of the repeats a row is inside, one layer per level, so stacked rows read
+ * as the same boxes the read-only list draws. `clear` layers keep the inset without the lines:
+ * a row in the air takes the width of the place it is over, not the borders of the one it left.
+ */
+function Rails({
+  depth,
+  clear = 0,
+  children,
+}: {
+  depth: number;
+  clear?: number;
+  children: ReactNode;
+}) {
+  // Always the same nesting, whatever the depth: a row in the air changes depth as it crosses
+  // a repeat, and a change of nesting would remount it and drop the gesture holding it.
+  const layer = (level: number) =>
+    level >= depth
+      ? 'flex-1'
+      : cn(
+          'flex-1 border-x-2 px-3',
+          level < clear ? 'border-transparent' : 'border-border bg-background'
+        );
+  return (
+    <View className={layer(0)}>
+      <View className={layer(1)}>{children}</View>
     </View>
   );
 }
 
-function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
+function EditorRows({ steps }: { steps: EditableStep[] }) {
+  const editor = useContext(EditorContext)!;
+  const screen = useScreenScroll();
+  const rows = useMemo(() => flattenSteps(steps), [steps]);
+  const byKey = useMemo(() => new Map(rows.map((row) => [row.key, row])), [rows]);
+  const slots = useMemo(
+    () =>
+      Object.fromEntries(
+        rows
+          .filter((row) => row.size > 0)
+          .map((row) => [
+            row.key,
+            slotsFor(steps, row.key).map(({ valid, depth }) => ({ valid, depth })),
+          ])
+      ),
+    [steps, rows]
+  );
+  const { moveTo } = editor.actions;
+  const onDrop = useCallback(
+    (key: string, slot: number) => {
+      const target = slotsFor(steps, key)[slot];
+      if (target?.valid) moveTo(key, target.parentId, target.index);
+    },
+    [steps, moveTo]
+  );
+  return (
+    <DragList
+      rows={rows}
+      slots={slots}
+      onDrop={onDrop}
+      onTouch={blockPress}
+      scrollRef={screen?.scrollableRef}
+      renderGap={(depth) => (
+        <Rails depth={depth}>
+          <View className="mb-3 flex-1 rounded-lg bg-foreground/5" />
+        </Rails>
+      )}
+      renderRow={(key, air) => {
+        const row = byKey.get(key);
+        const step = row ? findStep(steps, row.id) : undefined;
+        if (!row || !step) return null;
+        // In the air a row keeps the lines of the group travelling with it, and takes the
+        // inset of where it would land in place of the lines of where it was.
+        const held = air ? byKey.get(air.heldBy) : undefined;
+        const rails = air
+          ? { depth: air.landing + row.depth - (held?.depth ?? 0), clear: air.landing }
+          : { depth: row.depth };
+        return (
+          <DepthContext.Provider value={row.depth}>
+            {row.kind === 'step' && step.kind !== 'repeat' ? (
+              <Rails {...rails}>
+                <View className="pb-3">
+                  <StepCard step={step} />
+                </View>
+              </Rails>
+            ) : step.kind === 'repeat' ? (
+              <Rails {...rails}>
+                {row.kind === 'head' ? <RepeatHead step={step} /> : <RepeatFoot step={step} />}
+              </Rails>
+            ) : null}
+          </DepthContext.Provider>
+        );
+      }}
+    />
+  );
+}
+
+/**
+ * When a drag last ended. Native cancels the press under a drag; a browser still delivers it
+ * on release, and a step must not open its editor because it was just moved.
+ */
+let lastPressBlockedAt = 0;
+const blockPress = () => {
+  lastPressBlockedAt = Date.now();
+};
+const justDragged = () => Date.now() - lastPressBlockedAt < 400;
+
+/** In the builder, what it wraps is where a step is held to drag it. */
+const Grip = DragHandle;
+
+function StepCard({ step }: { step: EditableTimedStep }) {
   const editor = useContext(EditorContext);
+  const depth = useContext(DepthContext);
   const board = useContext(BoardContext);
   const expanded = editor?.expandedId === step.id;
   const title = step.label || STEP_NAMES[step.kind];
@@ -219,27 +282,32 @@ function StepCard({ step, depth }: { step: EditableTimedStep; depth: number }) {
 
   return (
     <View className="gap-2">
-      <View
-        className={cn(
-          'flex-row items-center overflow-hidden rounded-lg border bg-card',
-          expanded ? 'border-foreground' : 'border-border'
-        )}>
-        <View className={cn('w-1.5 self-stretch', BAR[step.kind])} />
-        <Pressable
-          disabled={!editor}
-          onPress={() => editor?.setExpandedId(expanded ? null : step.id)}
-          accessibilityRole={editor ? 'button' : undefined}
-          accessibilityState={editor ? { expanded } : undefined}
-          accessibilityLabel={`${editor ? 'Edit ' : ''}${title}, ${duration(step)}${grip ? `, ${grip}` : ''}`}
-          className="min-h-16 flex-1 flex-row items-center gap-2 px-3 py-3 active:bg-accent">
-          <View className="flex-1 gap-0.5">
-            <Text className="font-medium">{title}</Text>
-            <Text variant="muted">{subtitle}</Text>
-          </View>
-          {editor ? <DisclosureChevron expanded={expanded} /> : null}
-        </Pressable>
-        {editor ? <StepMenu step={step} /> : null}
-      </View>
+      <Grip>
+        <View
+          className={cn(
+            'select-none flex-row items-center overflow-hidden rounded-lg border bg-card',
+            expanded ? 'border-foreground' : 'border-border'
+          )}>
+          <View className={cn('w-1.5 self-stretch', BAR[step.kind])} />
+          <Pressable
+            disabled={!editor}
+            onPress={() => {
+              if (!justDragged()) editor?.setExpandedId(expanded ? null : step.id);
+            }}
+            accessibilityRole={editor ? 'button' : undefined}
+            accessibilityState={editor ? { expanded } : undefined}
+            accessibilityHint={editor ? 'Hold and drag to move it' : undefined}
+            accessibilityLabel={`${editor ? 'Edit ' : ''}${title}, ${duration(step)}${grip ? `, ${grip}` : ''}`}
+            className="min-h-16 flex-1 flex-row items-center gap-2 px-3 py-3 active:bg-accent">
+            <View className="flex-1 gap-0.5">
+              <Text className="font-medium">{title}</Text>
+              <Text variant="muted">{subtitle}</Text>
+            </View>
+            {editor ? <DisclosureChevron expanded={expanded} /> : null}
+          </Pressable>
+          {editor ? <StepMenu step={step} /> : null}
+        </View>
+      </Grip>
       {showBoard ? (
         <View className="px-3">
           <HoldThumb board={board} step={step} />
@@ -291,25 +359,11 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
 
   return (
     <EditorReveal className="gap-3 rounded-lg border border-border bg-card p-3">
-      <ToggleGroup
-        type="single"
-        variant="outline"
+      <Segmented
+        options={KINDS.map((kind) => ({ value: kind, label: KIND_SHORT[kind] }))}
         value={step.kind}
-        onValueChange={(v) => {
-          if (v) setKind(v as StepKind);
-        }}
-        className="w-full">
-        {KINDS.map((kind, i) => (
-          <ToggleGroupItem
-            key={kind}
-            value={kind}
-            isFirst={i === 0}
-            isLast={i === KINDS.length - 1}
-            className="flex-1">
-            <Text>{KIND_SHORT[kind]}</Text>
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+        onChange={setKind}
+      />
       <Stepper
         label={`${KIND_SHORT[step.kind]} length`}
         value={step.seconds}
@@ -348,38 +402,50 @@ function StepEditor({ step, depth }: { step: EditableTimedStep; depth: number })
   );
 }
 
-function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number }) {
-  const editor = useContext(EditorContext);
-  const [editingCount, setEditingCount] = useState(false);
-  const reorderingHere = editor?.reorderTarget === step.id;
-
+/** A repeat in a read-only list: one box around its steps. */
+function RepeatGroup({ step }: { step: EditableRepeatStep }) {
+  const depth = useContext(DepthContext);
   return (
-    <View className="rounded-lg border-2 border-border">
-      <View className="flex-row items-center py-1 pl-3 pr-1">
-        <Pressable
-          disabled={!editor}
-          onPress={() => setEditingCount((v) => !v)}
-          accessibilityRole="button"
-          accessibilityLabel={`Repeat ${step.times} times`}
-          className="flex-1 flex-row items-center gap-2 py-2">
-          <Icon as={RepeatIcon} className="size-5 text-muted-foreground" />
-          <Text className="text-lg font-semibold">
-            {step.times} {step.times === 1 ? 'time' : 'times'}
-          </Text>
-          {editor ? <DisclosureChevron expanded={editingCount} /> : null}
-        </Pressable>
-        {editor ? (
-          reorderingHere ? (
-            <Button variant="ghost" size="sm" onPress={() => editor.setReorderTarget(undefined)}>
-              <Text>Done</Text>
-            </Button>
-          ) : (
-            <StepMenu step={step} />
-          )
-        ) : null}
+    <View className="rounded-lg border-2 border-border bg-background">
+      <View className="flex-row items-center gap-2 py-3 pl-3 pr-1">
+        <Icon as={RepeatIcon} className="size-5 text-muted-foreground" />
+        <Text className="text-lg font-semibold">
+          {step.times} {step.times === 1 ? 'time' : 'times'}
+        </Text>
       </View>
+      <View className="gap-3 px-3 pb-3">
+        <StepList steps={step.steps} parentId={step.id} depth={depth + 1} />
+      </View>
+    </View>
+  );
+}
 
-      {editingCount && editor ? (
+/** The top of a repeat in the builder: its count, its menu, and where the group is held. */
+function RepeatHead({ step }: { step: EditableRepeatStep }) {
+  const editor = useContext(EditorContext)!;
+  const [editingCount, setEditingCount] = useState(false);
+  return (
+    <View className="rounded-t-lg border-2 border-b-0 border-border bg-background">
+      <Grip>
+        <View className="select-none flex-row items-center py-1 pl-3 pr-1">
+          <Pressable
+            onPress={() => {
+              if (!justDragged()) setEditingCount((v) => !v);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={`Repeat ${step.times} times`}
+            accessibilityHint="Hold and drag to move the group"
+            className="flex-1 flex-row items-center gap-2 py-2">
+            <Icon as={RepeatIcon} className="size-5 text-muted-foreground" />
+            <Text className="text-lg font-semibold">
+              {step.times} {step.times === 1 ? 'time' : 'times'}
+            </Text>
+            <DisclosureChevron expanded={editingCount} />
+          </Pressable>
+          <StepMenu step={step} />
+        </View>
+      </Grip>
+      {editingCount ? (
         <EditorReveal className="px-3 pb-2">
           <Stepper
             label="Rounds"
@@ -390,33 +456,41 @@ function RepeatGroup({ step, depth }: { step: EditableRepeatStep; depth: number 
           />
         </EditorReveal>
       ) : null}
+      {step.steps.length === 0 ? (
+        <Text variant="muted" className="px-3 pb-3">
+          No steps yet.
+        </Text>
+      ) : null}
+    </View>
+  );
+}
 
-      <View className="gap-3 px-3 pb-3">
-        <StepList steps={step.steps} parentId={step.id} depth={depth + 1} />
-        {editor && editor.reorderTarget === undefined ? (
-          <View className="flex-row flex-wrap gap-2">
-            <AddStepButton onAdd={(kind) => editor.actions.addStep(step.id, kind)} />
-            {depth === 0 ? (
-              <Button
-                variant="outline"
-                className="min-w-32 flex-1"
-                onPress={() => editor.actions.addRepeat(step.id)}>
-                <Icon as={RepeatIcon} className="size-4" />
-                <Text>Add repeat</Text>
-              </Button>
-            ) : null}
-          </View>
+/** The bottom of a repeat in the builder: where steps are added to it. */
+function RepeatFoot({ step }: { step: EditableRepeatStep }) {
+  const editor = useContext(EditorContext)!;
+  const depth = useContext(DepthContext);
+  return (
+    <View className="pb-3">
+      <View className="flex-row flex-wrap gap-2 rounded-b-lg border-2 border-t-0 border-border bg-background px-3 pb-3">
+        <AddStepButton onAdd={(kind) => editor.actions.addStep(step.id, kind)} />
+        {depth === 0 ? (
+          <Button
+            variant="outline"
+            className="min-w-32 flex-1"
+            onPress={() => editor.actions.addRepeat(step.id)}>
+            <Icon as={RepeatIcon} className="size-4" />
+            <Text>Add repeat</Text>
+          </Button>
         ) : null}
       </View>
     </View>
   );
 }
 
-/** The ⋮ menu on a step or repeat. Hidden while any list is being reordered. */
+/** The ⋮ menu on a step or repeat. */
 function StepMenu({ step }: { step: EditableStep }) {
   const editor = useContext(EditorContext)!;
   const { steps, actions } = editor;
-  if (editor.reorderTarget !== undefined) return null;
 
   const parent = parentOf(steps, step.id);
   const siblings = parent ? parent.steps : steps;
@@ -446,11 +520,6 @@ function StepMenu({ step }: { step: EditableStep }) {
                 <Text>Add repeat</Text>
               </DropdownMenuItem>
             ) : null}
-            <DropdownMenuItem
-              disabled={step.steps.length < 2}
-              onPress={() => editor.setReorderTarget(step.id)}>
-              <Text>Reorder steps</Text>
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         ) : null}

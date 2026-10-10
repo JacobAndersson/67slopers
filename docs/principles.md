@@ -17,8 +17,9 @@ Implications:
 - Storage is an on-device database (see [mvp.md](mvp.md#data-and-storage)). Backups, if
   we add them, are local file export and import that the user controls.
 - Only the permissions a feature needs, asked for when it is used: keep-awake for the timer,
-  and the camera only when the user opens the workout scanner. No location, no contacts, no
-  notifications for marketing.
+  the camera only when the user opens the scanner, and Bluetooth only when the user chooses to
+  connect the MoonBoard lights. Bluetooth talks to the board and nothing else; it is not a
+  network. No location, no contacts, no notifications for marketing.
 - If sync is ever added, it is optional, additive and opt-in. The local copy stays the
   source of truth.
 

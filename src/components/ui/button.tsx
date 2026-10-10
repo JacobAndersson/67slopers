@@ -1,13 +1,30 @@
 import { TextClassContext } from '@/components/ui/text';
+import { EASE_OUT } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, Pressable } from 'react-native';
+import { useEffect } from 'react';
+import { Platform, Pressable, type GestureResponderEvent } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+// Native only: on web the press scale is the `active:` class, and an inline transform from
+// Reanimated would override it.
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const ButtonPressable = Platform.OS === 'web' ? Pressable : AnimatedPressable;
+
+const PRESS_SCALE = 0.97;
+const PRESS_IN_MS = 100;
+const PRESS_OUT_MS = 160;
 
 const buttonVariants = cva(
   cn(
     'group shrink-0 flex-row items-center justify-center gap-2 rounded-md shadow-none',
     Platform.select({
-      web: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap outline-none transition-all focus-visible:ring-[3px] disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+      web: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-[3px] disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 active:scale-[0.97] motion-reduce:active:scale-100",
     })
   ),
   {
@@ -92,13 +109,41 @@ type ButtonProps = React.ComponentProps<typeof Pressable> &
   React.RefAttributes<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
-function Button({ className, variant, size, ...props }: ButtonProps) {
+/** Every button dips slightly under the finger; the colour change alone is too quiet. */
+function Button({ className, variant, size, style, onPressIn, onPressOut, ...props }: ButtonProps) {
+  const reduced = useReducedMotion();
+  const scale = useSharedValue(1);
+  const pressStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
+  const disabled = !!props.disabled;
+
+  // A button disabled mid-press (the stepper reaching its limit) may never get onPressOut.
+  useEffect(() => {
+    if (disabled) scale.set(1);
+  }, [disabled, scale]);
+
+  // Web scales through the `active:` class instead.
+  const handlePressIn = (event: GestureResponderEvent) => {
+    if (!reduced && Platform.OS !== 'web') {
+      scale.set(withTiming(PRESS_SCALE, { duration: PRESS_IN_MS, easing: EASE_OUT }));
+    }
+    onPressIn?.(event);
+  };
+  const handlePressOut = (event: GestureResponderEvent) => {
+    if (Platform.OS !== 'web') {
+      scale.set(withTiming(1, { duration: PRESS_OUT_MS, easing: EASE_OUT }));
+    }
+    onPressOut?.(event);
+  };
+
   return (
     <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
-      <Pressable
+      <ButtonPressable
         className={cn(props.disabled && 'opacity-50', buttonVariants({ variant, size }), className)}
         role="button"
         {...props}
+        style={Platform.OS === 'web' ? style : [style as never, pressStyle]}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
       />
     </TextClassContext.Provider>
   );

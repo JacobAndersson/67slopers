@@ -72,3 +72,50 @@ make a workout with a board, and start it from the Home card.
 | Date | Device | OS  | Build | Failed checks | Notes |
 | ---- | ------ | --- | ----- | ------------- | ----- |
 |      |        |     |       |               |       |
+
+## MoonBoard lights
+
+Nothing here has been run on a real board yet: the protocol comes from reverse-engineered
+projects and is proven by them on the V1 control box only. Needs a MoonBoard with the LED kit.
+
+What has been checked, on the Android emulator on 9 October 2026 against
+`scripts/fake-moonboard.py` (a stand-in LED box on the emulator's virtual Bluetooth that logs
+every write):
+
+- The system Bluetooth prompt appears on Continue of the connect screen and not before.
+- Bluetooth off shows "Bluetooth is off"; with nothing in range the search ends after 15
+  seconds in "No board found".
+- The fake box is found by name, connected to by itself, and receives the corner test
+  `l#P0,P17,P180,P197#`; "Yes, it matches" sends `l##`.
+- Lighting a nine-hold benchmark arrives as two writes of at most 20 bytes that join to
+  `l#S4,P28,S31,E54,P93,P98,P116,P128,P132#`: ascending LED order, roles intact.
+- Lights off sends `l##`. Setting a problem mirrors every tap. A circuit lights each problem
+  and clears the wall at the end.
+- When the box hangs up, the problem screen says the lights dropped and the app is connected
+  again within a few seconds. Reopening the app reconnects on entering Climb.
+
+The same run, on the release APK, also covered board setup, switching between two boards,
+dragging between problems, logging and deleting sends, building and drag-reordering a circuit,
+running it, "Climb these again" from a board session, setting and sharing an own problem (the
+QR code was read back off the screen), and opening a shared problem by link.
+
+Not possible on this machine: an iPhone build, and anything that needs a real board.
+
+That proves the app's side. Whether a real box lights the right holds is what the steps below
+are for.
+
+1. Connect: Climb, Connect, Continue. Expected: the system Bluetooth prompt appears here and
+   nowhere earlier; the board is listed by name and connects.
+2. Corner test. Expected: A1, K1, A18 and K18 light blue (A12 and K12 on a Mini). If they are
+   mirrored or upside down, the two fixes on "No, something is off" correct them.
+3. Light a benchmark with one start, several holds and one finish. Expected: green, blue and
+   red on exactly the holds drawn in the app.
+4. Lights off. Expected: the wall goes dark (the app sends an empty problem, `l##`).
+5. "Light above holds too" on a V2 or newer kit. Expected: the extra LED above each hold.
+6. A problem with 30 holds, set in the app. Expected: every hold lights; none are cut off.
+7. Walk out of range and back. Expected: the problem screen says the lights dropped, and the
+   app reconnects by itself within 30 seconds.
+8. Close and reopen the app next to the board. Expected: Climb reconnects without asking.
+9. Run a circuit. Expected: each problem lights as it comes up, and the wall goes dark at the
+   end.
+10. A V4 or V5 control box, and a Mini. Expected: the same behaviour; record any difference.

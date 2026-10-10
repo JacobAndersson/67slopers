@@ -7,11 +7,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1728345,
-    "sha256": "aa7eefeacab4617c57f1d20d181a4a75b8f7a758f175cf8f51b85d5ad840ab3c"
+    "bytes": 878442,
+    "sha256": "d270a97b799497ca4eef8039416f9a81611da7b536fbf3f1de58d524e4ba571d"
   },
   {
     "id": "_lT2rBwUutw-4",
@@ -21,11 +22,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1589716,
-    "sha256": "a937b52cc8970e6a34c95f9d07fa886ed6e26e1db19ce9af57e604d0fb1266cf"
+    "bytes": 815588,
+    "sha256": "696feb22e76d8b7726eff81b718ee6964e7bf3ec54e7c060ab88a9032edc436d"
   },
   {
     "id": "_lT2rBwUutw-8",
@@ -35,11 +37,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1623896,
-    "sha256": "fb479c2c6ee098f76fcbf9076629a8b3317e44e4927eac9660a25e7db785289e"
+    "bytes": 833362,
+    "sha256": "efa4ee545af22864de68a1ea81579a6bece12a1aa0d845d9a3ffd38f773b00cc"
   },
   {
     "id": "_lT2rBwUutw-10",
@@ -49,11 +52,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1644200,
-    "sha256": "138992e43dc22e78143f5cdcbc44674354c1dfd87fe414c1e11161d2a132a63e"
+    "bytes": 838668,
+    "sha256": "e7dfed8456a3ed7db7fa5eb8ffa915c9e0693f702c572ed7646ff18cfe4bae7e"
   },
   {
     "id": "-1DjoUL7Lww-1",
@@ -63,11 +67,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1606911,
-    "sha256": "1d70c7f900c7d855b62b93de9b87caafab33451a0beb0f4667f9d9718b93accb"
+    "bytes": 825676,
+    "sha256": "8dd51b716c72ba1d57e0598d4433e149fe18a53891886698b381c67763a54cb8"
   },
   {
     "id": "-1DjoUL7Lww-4",
@@ -77,11 +82,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1587879,
-    "sha256": "7deeb82d710d3b4ccf6b24d931dad881b08ebd537085ba955e677f2519dd7fcb"
+    "bytes": 838684,
+    "sha256": "5c6d58986415a23c98744333df8ece559b3b8f34969cf356622071c4e92c50d3"
   },
   {
     "id": "-1DjoUL7Lww-6",
@@ -91,11 +97,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1596108,
-    "sha256": "5d88ceb3d1698f5679ef9d26e760a30ac6cef7248e83194dde41cf844b2464ee"
+    "bytes": 817552,
+    "sha256": "f4debfefbb6c9988297c5baea5702f0ab101a2cc5445fa9b5f779391bc2ebdde"
   },
   {
     "id": "-1DjoUL7Lww-9",
@@ -105,11 +112,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1623204,
-    "sha256": "2cf8304c0c081f89631e3e019f6499929f914f7523bc9ebc0c18ca51defcf484"
+    "bytes": 840900,
+    "sha256": "5c8a12ae2d005d1374f91bba7fe46f145e3e8a9aa96039d46ec15d8ed6280995"
   },
   {
     "id": "NYDWRcl82Xk-1",
@@ -119,11 +127,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1568180,
-    "sha256": "854dc8e0a5cfc64c95697d5c728a727da57fe83f5028f31605769f16d278529a"
+    "bytes": 824784,
+    "sha256": "6a5f4703ff17f24b6971fd9107404801ea01e8330277a661cf9f4c0a787c6d16"
   },
   {
     "id": "NYDWRcl82Xk-4",
@@ -133,11 +142,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1582645,
-    "sha256": "ae0dd264919a361363e18f7124f61616b910db213d8181696ce47277133109b4"
+    "bytes": 812263,
+    "sha256": "5b39773ccdeb6600bb76047ee8484e50ee56788208e7e86bc86dbf6dae9b130b"
   },
   {
     "id": "NYDWRcl82Xk-7",
@@ -147,11 +157,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1602325,
-    "sha256": "3fd224c954fbb02e187397582475f823eaeb35a6cfd03227ae2f70dbc778d086"
+    "bytes": 822955,
+    "sha256": "06ed4297b55ba08f4208eebf58bc29f4bc5d83589d226a93f7bc1bb09b40a01f"
   },
   {
     "id": "NYDWRcl82Xk-9",
@@ -161,11 +172,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1584557,
-    "sha256": "36f06e6d31714b2def472d0ba161f993f0cdaeecbe509f1f9ca43fee6cb2bed8"
+    "bytes": 816165,
+    "sha256": "2388940fbc2d6630a8d66b60f82137522e835a33b4f2c45ab4b72dc0fd30442c"
   },
   {
     "id": "kCPrJcv3Reg-1",
@@ -175,11 +187,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1637259,
-    "sha256": "d952362b80eea6b0ccee9dd1c7f0f15a1d809921cbdc81e2be247020018628da"
+    "bytes": 834976,
+    "sha256": "e8851da070b56e685d8f374a0d8a667cdd35e58610df0ce52c517602a104f5fd"
   },
   {
     "id": "kCPrJcv3Reg-4",
@@ -189,11 +202,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1575163,
-    "sha256": "3286ab5da319390a00ab04eda7943f7ae0e664cdf1a94063ca716d3844c596d5"
+    "bytes": 802640,
+    "sha256": "b52a5bc629494766586d186b0d13267478534c910f11dab311a1a08aa35d404c"
   },
   {
     "id": "kCPrJcv3Reg-6",
@@ -203,11 +217,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1627748,
-    "sha256": "362303a22e1a071d840fca9343fa508cae25b24caca710926b0bad538e9efd18"
+    "bytes": 835834,
+    "sha256": "9a80b14a3e129ddac66f90b56a148032cd2377d0c61fbf937322db5182f8a842"
   },
   {
     "id": "kCPrJcv3Reg-8",
@@ -217,11 +232,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1630836,
-    "sha256": "e07eef585e53b835b85167901bb25b5120367812f24360917ab39f5dbf0bf9d2"
+    "bytes": 836955,
+    "sha256": "8aaa22591aeb9692e4c49a7ca48c340527d4487de2f0f5d281018fe40f015a2c"
   },
   {
     "id": "dmgRe9cNED8-2",
@@ -231,11 +247,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1558617,
-    "sha256": "4f5d5b9799abc46c1641719e86a4da9b337600e9e45edc1345671f5526f8cfd3"
+    "bytes": 801578,
+    "sha256": "983144fd7a1e0440537bc8faa29f14ba16eaaf420176baa67747d185cf582feb"
   },
   {
     "id": "dmgRe9cNED8-4",
@@ -245,11 +262,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1627863,
-    "sha256": "8072b3ef3670ceffa6c3ba1bc82573e96192e2e8c58dd2c2c02c8af9c06b8980"
+    "bytes": 827595,
+    "sha256": "7f7d14e58f955057056181cb452e56a5c5e4f93c90146eb235022de4e5a0652f"
   },
   {
     "id": "dmgRe9cNED8-6",
@@ -259,11 +277,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1662923,
-    "sha256": "7ce6ae75fe315cd8637f82b68dcb3f0335314514dc1f078a88ad88c3debf8785"
+    "bytes": 852156,
+    "sha256": "c3231b466f104a78248a862f87b9d6fb62467ccabe8f1ebe68c02b6984e9e9b0"
   },
   {
     "id": "dmgRe9cNED8-10",
@@ -273,11 +292,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1711158,
-    "sha256": "1f62423f9a8fe8125b1687bc5b1abe4e5c56c2612e395b4d58f98c211a0c6226"
+    "bytes": 871052,
+    "sha256": "a02bd949d94808c4f9e6cef7356c8c17ee4bea7a1131ed9b70363680e49e5690"
   },
   {
     "id": "Q0-JRH5VIvM-1",
@@ -287,11 +307,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1501333,
-    "sha256": "997189aa6b9b13d77755bc34f83638c310dd698fe6461dd904c1486fa725c53b"
+    "bytes": 769326,
+    "sha256": "210974b7c7f8ca251bdf68ee5fb3c4821c8332f0349b5406d11d6ea39307cd17"
   },
   {
     "id": "Q0-JRH5VIvM-2",
@@ -301,11 +322,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1689148,
-    "sha256": "427f910fae05e66487ab17bce6b054a42bde444022a6d4eb5c34760fcda5c19f"
+    "bytes": 862035,
+    "sha256": "f9cd91aef809f410e4b3d8823dcf68dabaf98425e34373bea02bb6aeb5846e1d"
   },
   {
     "id": "Q0-JRH5VIvM-4",
@@ -315,11 +337,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1585145,
-    "sha256": "d93a36c62be0515fa9d6bd7a971d202d145360f94364a9a1f579c2457e8e5475"
+    "bytes": 816617,
+    "sha256": "3c6b8f04afa38c37d1d8591bd6a918544136722d0008e3050eb07f0602f410c4"
   },
   {
     "id": "Q0-JRH5VIvM-6",
@@ -329,11 +352,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1405031,
-    "sha256": "1c31f1862b0cd03b5fa4c9575a27b501e7dc2b42b7d3680359ebf1395a8b15a3"
+    "bytes": 728986,
+    "sha256": "054a74550c323e475c2bd9e9c325262eb5695bed28a591727c253c2fb3cc58f3"
   },
   {
     "id": "Q0-JRH5VIvM-8",
@@ -343,11 +367,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1787212,
-    "sha256": "5e1e6059b73ea86bc4bf1010875b9dee205b148f21c693a4f0dbea973ffdbd3d"
+    "bytes": 902226,
+    "sha256": "b178d042940d8ce90710f4b75406cf8c7aff97ee8b3bf28a5830f022d54fa68c"
   },
   {
     "id": "Q0-JRH5VIvM-10",
@@ -357,11 +382,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1605763,
-    "sha256": "e00da180ec80bf7ab15addc5871a91fffb5fa084c01f031ca573b8af48058bf3"
+    "bytes": 826157,
+    "sha256": "f673ecc8cd4fff591abcb426f46d67727a2a5ab4bde5c1b4b13267861167419b"
   },
   {
     "id": "Unwb9wHc6Mg-1",
@@ -371,11 +397,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1676481,
-    "sha256": "3f96149fd69a4f8f3caab98a13c8f48bfb856c35f55070a4ead399d953742b78"
+    "bytes": 862475,
+    "sha256": "cee33dab52ca2e95c83232c123be3f26bcd8d26640371e1f47abdff0cc626d49"
   },
   {
     "id": "Unwb9wHc6Mg-3",
@@ -385,11 +412,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1517030,
-    "sha256": "6bbeabc4c84b06188013e78b9781049ddc06613343ccc159f5e619b968517c6a"
+    "bytes": 771499,
+    "sha256": "3a8079c5019d9e723c04254f735f0a8a0d8f7430ca29848230051ac732d709af"
   },
   {
     "id": "Unwb9wHc6Mg-5",
@@ -399,11 +427,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1673804,
-    "sha256": "b2e10cddc71d2d12a8d4958ce70161967b33da633c67e912c069feff2a88a1a8"
+    "bytes": 852276,
+    "sha256": "54830941e13bc4c99d252211bbce1dc7319e2e054e14212e52f455bc6e5c683a"
   },
   {
     "id": "Unwb9wHc6Mg-7",
@@ -413,11 +442,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1538858,
-    "sha256": "c3d5f7becf0bba2cad418afa7344819c99dbcb1e79ee609bf39bdc49ac067e90"
+    "bytes": 785736,
+    "sha256": "d8b2323bb6e47d43d1972964cbfee29e83b72941cf421ad1fd647025d5a1e4a9"
   },
   {
     "id": "Unwb9wHc6Mg-9",
@@ -427,11 +457,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1682122,
-    "sha256": "09ad83d780d836e82cc5b02bd1eb71695e5e6bbcdcc169a97750d965bfdb1d22"
+    "bytes": 867250,
+    "sha256": "adc135242cc76a6d4d0a64d2ee8d258ace1d7715c8e40fdf4502ec0a715c2b32"
   },
   {
     "id": "W03tVvMdkco-1",
@@ -441,11 +472,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1630242,
-    "sha256": "d033e0878cd651a7fb419bf01c3ac2963a3142c435c9e0ec4a1ae3700a36659e"
+    "bytes": 831713,
+    "sha256": "521ae8dc5a8f09cce5d218b5c1165e1083cf2615cd8b016970987dffa45b3175"
   },
   {
     "id": "W03tVvMdkco-2",
@@ -455,11 +487,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1503024,
-    "sha256": "2c4599b4eada592d2a74079468fb241ad75484e265ffb6b34cd6c46964d88db9"
+    "bytes": 766752,
+    "sha256": "5a1cffb89b162332c3828ae2355bfca042a8a9d4a5feb46d9775802b348557c8"
   },
   {
     "id": "W03tVvMdkco-4",
@@ -469,11 +502,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1530905,
-    "sha256": "074596f0f5b6fe9a33e4db1cb54af37722e90614a7e1308c7efa47b38f1f2593"
+    "bytes": 785582,
+    "sha256": "a9153f21a0e734fc18701422df5672b3601a7319b10a23292a50190fc806ad14"
   },
   {
     "id": "W03tVvMdkco-8",
@@ -483,11 +517,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1731013,
-    "sha256": "b7b6655e51cf7c223db8fc3850571fc02c76d7d5946e7bd67c9293a21f2bac77"
+    "bytes": 879923,
+    "sha256": "c8081ed06071abd2e61007f4d734f8fd672da79efb9ddef73b128f3c7f712123"
   },
   {
     "id": "2TDcP63ruS4-2",
@@ -497,11 +532,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1625490,
-    "sha256": "e30f4e7dcaf2312d1a9f29b37a2ae26cf965d8b439c6ce0d976c0bd4426dcf25"
+    "bytes": 828689,
+    "sha256": "5a58faf5c0d766841c9f5855c3fbcbf6b174d61850f336afeb9ce8094937302c"
   },
   {
     "id": "2TDcP63ruS4-4",
@@ -511,11 +547,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1663216,
-    "sha256": "bb174aad518e40b1bd85feadf1d7a9a73eb0349b464c685543ee43026eba2aaa"
+    "bytes": 841596,
+    "sha256": "6aa273a9b6bd8ae137710b13c71d015c9e4b88f801848db0a3fd79f1cf41382e"
   },
   {
     "id": "2TDcP63ruS4-7",
@@ -525,11 +562,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1583877,
-    "sha256": "2d7040332cc0abf22dc6fcd4b5b5c1ab06f80adb1a7d4928171d0d2d3494ffa5"
+    "bytes": 808485,
+    "sha256": "4f90df7cb660750f8d3687699473dba2ac1c5fe40fe888fd9ee5d9c283c1af89"
   },
   {
     "id": "2TDcP63ruS4-9",
@@ -539,11 +577,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1624135,
-    "sha256": "5a7304a6e92bfeb52208e0588c00cce33652cc98e4fe1d85535427a023146462"
+    "bytes": 835281,
+    "sha256": "5d3073662bdafdd51596979c96c8c202f381acf86635cf434b39e8ab836287f1"
   },
   {
     "id": "wVyENNqahaA-1",
@@ -553,11 +592,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1643870,
-    "sha256": "bc200678c2b641456b4c2d58f9ab86c9ffad08df8df762b8b76ed16e8085c6c4"
+    "bytes": 842272,
+    "sha256": "a081ffad7599f139d2605c6fcd39a20b527f2844cf3dd102765c557fcf994159"
   },
   {
     "id": "wVyENNqahaA-3",
@@ -567,11 +607,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1614024,
-    "sha256": "fabd70f3d3d1b91d61544f8e67574bb2f9ea446287bfbf5c20ac054d381b1c79"
+    "bytes": 815765,
+    "sha256": "ac24bf97ad186d36ad9b739b9a39a571b46381786922fcdd5ca6e699525aef55"
   },
   {
     "id": "wVyENNqahaA-5",
@@ -581,11 +622,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1648175,
-    "sha256": "6b0157ea41846b23b65293ee606ea4e657257ba32c156f9c0cabe73f784de39f"
+    "bytes": 847396,
+    "sha256": "954b800cb9f7396ad0c2cb8dc16c0de0c14de9e1e009d5af743030d154f28296"
   },
   {
     "id": "wVyENNqahaA-9",
@@ -595,11 +637,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 406,
-    "height": 720,
+    "encode": "480p-330k",
+    "width": 270,
+    "height": 480,
     "focalY": 0.65,
-    "bytes": 1628549,
-    "sha256": "777b1582f69034896828b223785383000630b62c4913ce5836cf7f51808bbaf1"
+    "bytes": 828891,
+    "sha256": "fb8b21af044f32243f21f214c22c8e340192e09ef65e6de1b6b98068831cdd20"
   },
   {
     "id": "fgnDWdfEbgk-1",
@@ -609,11 +652,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1672030,
-    "sha256": "827d9d98777157bcd9ec29470559734cdc4789b2b14ce559d1507680b28e82be"
+    "bytes": 841194,
+    "sha256": "28996c0c5ba00c9c3db33dbc440e973fc8a1318e3231ab1e03e8c95b3662dcdb"
   },
   {
     "id": "fgnDWdfEbgk-3",
@@ -623,11 +667,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1635972,
-    "sha256": "de56f66e54acee70d2bf1664725241e047d8a8e7ac8c85aa508f30571b4006d1"
+    "bytes": 839404,
+    "sha256": "7b18580efc863fa728638e9d11015cb660a11d9b1e27c390b70c0e857d0a5c23"
   },
   {
     "id": "fgnDWdfEbgk-5",
@@ -637,11 +682,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1607707,
-    "sha256": "f1231b5f1f14c269df64600a750ccadf03922c4c79bfafdb9ac9281d662de68b"
+    "bytes": 818921,
+    "sha256": "c48932b854d6c97ca1307c121debe18dc70c2fbcf14b8330c51043a949081a2b"
   },
   {
     "id": "fgnDWdfEbgk-7",
@@ -651,11 +697,12 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1578260,
-    "sha256": "9cdce8501104d195ca2cd0feca4e317a3705b7ccfbecc9136f1ffc3546b7df9f"
+    "bytes": 813710,
+    "sha256": "0ddbd0ba806250ccd01251765a538a4e305d51ec4ac7e8415d161547a8321b16"
   },
   {
     "id": "fgnDWdfEbgk-9",
@@ -665,10 +712,11 @@
     "seconds": 20,
     "selected": true,
     "review": "reviewed: poster and seven frames across the 20-second sequence; centre/action crop reviewed",
-    "width": 720,
-    "height": 406,
+    "encode": "480p-330k",
+    "width": 480,
+    "height": 270,
     "focalY": 0.5,
-    "bytes": 1728089,
-    "sha256": "b3185819017dfd49d3ae1e8dc0830146b20a99416cd90767a76e6cc4c2778418"
+    "bytes": 885568,
+    "sha256": "f11ec454f25df0db0aec375ce05337b9ae37200d673cfc940c8cd06059186afc"
   }
 ]

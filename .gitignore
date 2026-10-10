@@ -59,3 +59,7 @@ modules/*/android/build/
 
 # Downloaded gameplay masters and media QA artifacts
 .media-work/
+
+# MoonBoard benchmark lists: third-party data, generated locally by
+# scripts/moonboard-benchmarks.mjs and never published.
+/src/lib/moonboard/data/

@@ -1,6 +1,7 @@
 import { Icon } from '@/components/ui/icon';
 import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
 import { TextClassContext } from '@/components/ui/text';
+import { EASE_OUT } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import * as DropdownMenuPrimitive from '@rn-primitives/dropdown-menu';
 import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
@@ -9,8 +10,16 @@ import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { CaretUpIcon } from 'phosphor-react-native/src/icons/CaretUp';
 import * as React from 'react';
 import { Platform, type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
-import { FadeIn, ReduceMotion } from 'react-native-reanimated';
+import { FadeIn, Keyframe, ReduceMotion } from 'react-native-reanimated';
 import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens';
+
+/** Menus grow out of the corner nearest their trigger. */
+const MENU_ENTER = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 0.95 }] },
+  100: { opacity: 1, transform: [{ scale: 1 }], easing: EASE_OUT },
+})
+  .duration(150)
+  .reduceMotion(ReduceMotion.System);
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
@@ -88,12 +97,22 @@ function DropdownMenuContent({
   overlayClassName,
   overlayStyle,
   portalHost,
+  children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content> & {
   overlayStyle?: StyleProp<ViewStyle>;
   overlayClassName?: string;
   portalHost?: string;
 }) {
+  // Native: the primitive positions a bare wrapper (and hides it until measured), so the
+  // visible box is an inner view that can scale and fade without fighting that. Web keeps the
+  // classes on the content itself; NativeOnlyAnimatedView renders only its children there.
+  const box = cn(
+    'min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-lg shadow-black/5',
+    className
+  );
+  const vertical = props.side === 'top' ? 'bottom' : 'top';
+  const horizontal = props.align === 'end' ? 'right' : props.align === 'center' ? 'center' : 'left';
   return (
     <DropdownMenuPrimitive.Portal hostName={portalHost}>
       <FullWindowOverlay>
@@ -107,28 +126,26 @@ function DropdownMenuContent({
                 ])
               : StyleSheet.absoluteFill,
           })}
-          className={overlayClassName}
-          asChild={Platform.OS !== 'web'}>
-          <NativeOnlyAnimatedView
-            entering={FadeIn.reduceMotion(ReduceMotion.System)}
-            as="Pressable">
-            <TextClassContext.Provider value="text-popover-foreground">
-              <DropdownMenuPrimitive.Content
-                className={cn(
-                  'min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-lg shadow-black/5',
-                  Platform.select({
-                    web: cn(
-                      'max-h-(--radix-context-menu-content-available-height) origin-(--radix-context-menu-content-transform-origin) z-50 cursor-default animate-in fade-in-0 zoom-in-95',
-                      props.side === 'bottom' && 'slide-in-from-top-2',
-                      props.side === 'top' && 'slide-in-from-bottom-2'
-                    ),
-                  }),
-                  className
-                )}
-                {...props}
-              />
-            </TextClassContext.Provider>
-          </NativeOnlyAnimatedView>
+          className={overlayClassName}>
+          <TextClassContext.Provider value="text-popover-foreground">
+            <DropdownMenuPrimitive.Content
+              className={Platform.select({
+                web: cn(
+                  box,
+                  'max-h-(--radix-context-menu-content-available-height) origin-(--radix-context-menu-content-transform-origin) z-50 cursor-default animate-in fade-in-0 zoom-in-95',
+                  props.side === 'bottom' && 'slide-in-from-top-2',
+                  props.side === 'top' && 'slide-in-from-bottom-2'
+                ),
+              })}
+              {...props}>
+              <NativeOnlyAnimatedView
+                entering={MENU_ENTER}
+                className={box}
+                style={{ transformOrigin: `${vertical} ${horizontal}` }}>
+                <>{children}</>
+              </NativeOnlyAnimatedView>
+            </DropdownMenuPrimitive.Content>
+          </TextClassContext.Provider>
         </DropdownMenuPrimitive.Overlay>
       </FullWindowOverlay>
     </DropdownMenuPrimitive.Portal>

@@ -9,12 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { normalizeDigits } from '@/lib/codec/digits';
+import { decodeProblemCode } from '@/lib/moonboard/problem-code';
 import { CODEC_ERRORS, decodeWorkout } from '@/lib/workout-codec';
 
-const NOT_OURS = 'That QR code is not a 67slopers workout.';
+const NOT_OURS = 'That QR code is not a 67slopers workout or problem.';
 
 /**
- * Reads a workout's QR code with the camera. The camera is only asked for when the user taps
+ * Reads the QR code of a workout or a board problem with the camera. The camera is only asked for when the user taps
  * Allow here, and only the code is read: no photo is taken or kept. A QR code that is not a
  * workout leaves the camera running with a note instead of opening anything.
  */
@@ -42,6 +43,11 @@ export default function ScanScreen() {
   const onScan = (data: string) => {
     if (opened.current || data === lastData.current) return;
     lastData.current = data;
+    if (decodeProblemCode(data)) {
+      opened.current = true;
+      router.replace({ pathname: '/climb/import', params: { code: data.trim() } });
+      return;
+    }
     const code = normalizeDigits(data);
     const result = code ? decodeWorkout(code) : null;
     if (!result || !result.ok) {
@@ -61,7 +67,7 @@ export default function ScanScreen() {
       className="flex-1 bg-background"
       style={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }}>
       <View className="flex-row items-center justify-between pl-6 pr-4">
-        <Text className="text-xl font-semibold">Scan a workout</Text>
+        <Text className="text-xl font-semibold">Scan a code</Text>
         <Button
           variant="ghost"
           size="icon"

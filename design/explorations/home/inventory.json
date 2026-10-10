@@ -1,0 +1,68 @@
+[
+  {
+    "key": "home2-notes",
+    "name": "H0 Home redesign / what changes",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "b875ab3d-dde9-5b62-9e22-549b2ce65b95",
+    "route": "",
+    "width": 2350,
+    "height": 880,
+    "note": "Proposal. A1 at the top of this page shows Home as built.",
+    "shapes": 133
+  },
+  {
+    "key": "home2-morning",
+    "name": "H1 Home / morning, hung last",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "4e68b96e-972b-5cb2-96af-c99d37939965",
+    "route": "/",
+    "width": 390,
+    "height": 844,
+    "note": "Saturday morning. The workout was the last thing done, so it is on top.",
+    "shapes": 74
+  },
+  {
+    "key": "home2-evening",
+    "name": "H2 Home / evening, climbed last, lights on",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "9bd284cb-e250-56a7-82f0-21401dc1938b",
+    "route": "/",
+    "width": 390,
+    "height": 844,
+    "note": "The board was last, and its lights are connected: the bulb lights the problem and opens it.",
+    "shapes": 77
+  },
+  {
+    "key": "home2-night",
+    "name": "H3 Home / small hours",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "cd64d209-ab72-5e4b-950b-79ed63adc09c",
+    "route": "/",
+    "width": 390,
+    "height": 844,
+    "note": "The same screen at 1 am. Only the line changes.",
+    "shapes": 74
+  },
+  {
+    "key": "home2-first",
+    "name": "H4 Home / first launch",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "3bf04219-7f2b-5f79-8ee3-5afaaa014c0a",
+    "route": "/",
+    "width": 390,
+    "height": 844,
+    "note": "Nothing done yet. The seeded workout is ready; the board is an invitation, not a demand.",
+    "shapes": 68
+  },
+  {
+    "key": "home2-unfinished",
+    "name": "H5 Home / unfinished workout",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "2eff604a-457f-5aa4-ac78-b8e4cc60caf9",
+    "route": "/",
+    "width": 390,
+    "height": 844,
+    "note": "An interrupted run still comes before everything else, under the greeting.",
+    "shapes": 83
+  }
+]

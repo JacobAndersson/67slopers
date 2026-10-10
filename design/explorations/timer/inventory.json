@@ -1,0 +1,101 @@
+[
+  {
+    "key": "timer2-notes",
+    "name": "T0 Timer redesign / what changes",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "da8c7ad2-5e38-5458-be3a-8b887ee2f0ab",
+    "route": "",
+    "width": 1880,
+    "height": 812,
+    "note": "Proposal. The boards above this row show the timer as built.",
+    "shapes": 37
+  },
+  {
+    "key": "timer2-ready",
+    "name": "T1 Timer / ready",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "2482d47d-a3b9-5d9f-9331-5be3566a4a7e",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "Before Start the workout name still has a place: nothing else is happening yet.",
+    "shapes": 18
+  },
+  {
+    "key": "timer2-prep",
+    "name": "T2 Timer / get ready, first grip",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "2486410a-ae22-54c1-a694-2e11567d46c8",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "The grip to start on is the change worth showing here.",
+    "shapes": 24
+  },
+  {
+    "key": "timer2-hang",
+    "name": "T3 Timer / hang, mid-set",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "6530ef76-7652-5f6c-9175-e1d396a846df",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "Nothing but the phase, the counter and the time. The next thing is the same short rest as always.",
+    "shapes": 19
+  },
+  {
+    "key": "timer2-rep-rest",
+    "name": "T4 Timer / rest between reps",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "e9955f18-f6ee-5dda-99dd-b2aea82d3670",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "Same quiet layout on the rest colour.",
+    "shapes": 18
+  },
+  {
+    "key": "timer2-hang-last",
+    "name": "T5 Timer / last hang of a set",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "13faf1bc-37a2-53b3-b903-64be0e2dc85f",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "The pattern breaks after this hang, so Next up appears: a long rest is coming.",
+    "shapes": 21
+  },
+  {
+    "key": "timer2-set-rest",
+    "name": "T6 Timer / rest before a new set",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "c0cf47cc-12ae-5067-9e92-4f51a6785c5d",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "Same grip next: one line says which set is coming.",
+    "shapes": 20
+  },
+  {
+    "key": "timer2-set-rest-grip",
+    "name": "T7 Timer / rest before a new grip",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "3e63d6f3-38bf-56b7-998c-e4fa70357f49",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "A grip change gets the board: the rest of it fades into the screen and the holds to use keep their colour.",
+    "shapes": 24
+  },
+  {
+    "key": "timer2-paused",
+    "name": "T8 Timer / paused",
+    "pageId": "ae5bc9e7-a441-5945-ac9e-fff3292c330f",
+    "boardId": "d339d47a-a4f9-5440-b0e1-538ae3b83dca",
+    "route": "/workout/[id]/run",
+    "width": 390,
+    "height": 844,
+    "note": "Back and skip only while paused, as now. Ending is the X.",
+    "shapes": 26
+  }
+]

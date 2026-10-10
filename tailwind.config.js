@@ -59,6 +59,12 @@ module.exports = {
       },
       colors: {
         border: 'hsl(var(--border))',
+        hold: {
+          start: 'hsl(var(--hold-start))',
+          move: 'hsl(var(--hold-move))',
+          finish: 'hsl(var(--hold-finish))',
+          wood: 'hsl(var(--hold-wood))',
+        },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',

@@ -57,6 +57,19 @@ class Penpot:
             "features": file["features"], "changes": changes,
         })
 
+    def render(self, page, board, path, scale=2):
+        """Render one board to PNG with Penpot's own exporter: the reference for what a design looks like."""
+        import re
+
+        profile = self.rpc("get-profile", {})
+        body = {"~:cmd": "~:export-shapes", "~:profile-id": "~u" + profile["id"], "~:wait": True, "~:exports": [{
+            "~:file-id": "~u" + self.workspace["fileId"], "~:page-id": "~u" + page, "~:object-id": "~u" + board,
+            "~:type": "~:png", "~:suffix": "", "~:scale": scale, "~:name": "board"}]}
+        req = urllib.request.Request(self.base + "/api/export", data=json.dumps(body).encode(), headers={
+            "Content-Type": "application/transit+json", "Accept": "application/transit+json"})
+        result = self.opener.open(req, timeout=180).read().decode()
+        path.write_bytes(self.opener.open(re.search(r'"~#uri":"([^"]+)"', result)[1], timeout=180).read())
+
     def export(self, path):
         import io
         import re

@@ -59,7 +59,16 @@
           "recordAudioAndroid": false
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": false,
+          "neverForLocation": true,
+          "bluetoothAlwaysPermission": "67slopers uses Bluetooth to light problems on your MoonBoard."
+        }
+      ],
+      "./plugins/with-bundle-inputs"
     ],
     "experiments": {
       "typedRoutes": true,

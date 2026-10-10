@@ -13,7 +13,10 @@ import { Icon } from '@/components/ui/icon';
 const DURATION_MS = 150;
 const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
 const CSS_EASE_OUT = cubicBezier(0.23, 1, 0.32, 1);
-const REVEAL = FadeIn.duration(DURATION_MS).easing(EASE_OUT).reduceMotion(ReduceMotion.System);
+/** A short reveal for controls and step cards the user just added or opened. */
+export const REVEAL = FadeIn.duration(DURATION_MS)
+  .easing(EASE_OUT)
+  .reduceMotion(ReduceMotion.System);
 
 /** A short reveal for controls opened by the user; closing removes them immediately. */
 export function EditorReveal({ children, className }: PropsWithChildren<{ className?: string }>) {

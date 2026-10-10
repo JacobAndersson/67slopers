@@ -31,7 +31,15 @@ export function sessionsByDay(sessions: Session[]): Map<string, Session[]> {
  * from last week.
  */
 export function weekStreak(sessions: Session[], now = new Date()): number {
-  const weeks = new Set(sessions.map((s) => dayKey(startOfWeek(new Date(s.completedAt)))));
+  return streakOfWeeks(
+    sessions.map((s) => s.completedAt),
+    now
+  );
+}
+
+/** The same count for any list of ISO timestamps: timer sessions, board sessions, or both. */
+export function streakOfWeeks(dates: string[], now = new Date()): number {
+  const weeks = new Set(dates.map((date) => dayKey(startOfWeek(new Date(date)))));
   const monday = startOfWeek(now);
   if (!weeks.has(dayKey(monday))) monday.setDate(monday.getDate() - 7);
   let streak = 0;

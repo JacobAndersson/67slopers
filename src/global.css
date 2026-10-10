@@ -29,6 +29,11 @@
     --chart-3: 32.692 100% 30.588%;
     --chart-4: 75 8.163% 19.216%;
     --chart-5: 200 30.612% 90.392%;
+    /* MoonBoard LED roles; they follow the lights on the wall. */
+    --hold-start: 148 55% 40%;
+    --hold-move: 217 69% 52%;
+    --hold-finish: 9 68% 52%;
+    --hold-wood: 34 46% 60%;
     --radius: 0.75rem;
   }
 }
