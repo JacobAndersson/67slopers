@@ -43,7 +43,7 @@ import {
 } from '@/lib/moonboard/lights';
 import { cornerHolds } from '@/lib/moonboard/protocol';
 import { useClimb } from '@/lib/store/climb';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 import { cn } from '@/lib/utils';
 
 type Phase = 'why' | 'search' | 'test' | 'fix' | 'done';
@@ -96,6 +96,7 @@ function Lead({ title, children }: { title: string; children?: ReactNode }) {
  * dead end offers a way on without lights, and Bluetooth is only asked for after Continue.
  */
 export default function ConnectScreen() {
+  const { theme } = useAppTheme();
   const router = useRouter();
   const status = useLights((s) => s.status);
   const devices = useLights((s) => s.devices);
@@ -397,7 +398,7 @@ export default function ConnectScreen() {
                   </Text>
                 </View>
                 {busy ? (
-                  <ActivityIndicator color={THEME.foreground} />
+                  <ActivityIndicator color={theme.foreground} />
                 ) : (
                   <Icon as={CaretRightIcon} size={18} className="text-muted-foreground" />
                 )}

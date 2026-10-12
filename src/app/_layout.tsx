@@ -5,7 +5,7 @@ import { useFonts } from 'expo-font';
 import { Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { cssInterop } from 'nativewind';
+import { colorScheme, cssInterop } from 'nativewind';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -15,7 +15,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FONTS } from '@/lib/fonts';
 import { useStore } from '@/lib/store/store';
 import { mark, measure } from '@/lib/perf';
-import { NAV_THEME, THEME } from '@/lib/theme';
+import { navigationTheme } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 
 // On web an Animated.View drops its class names unless it is registered; native passes them
 // through to the inner View already.
@@ -27,6 +28,13 @@ mark('launch');
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(FONTS);
   const hydrated = useStore((s) => s.hydrated);
+  const { dark, theme } = useAppTheme();
+  const appearance = useStore((s) => s.settings.appearance);
+
+  useEffect(() => {
+    // Native resets the OS override for Auto. Web needs the resolved class for CSS variables.
+    colorScheme.set(Platform.OS === 'web' ? (dark ? 'dark' : 'light') : appearance);
+  }, [appearance, dark]);
 
   // Native waits for fonts and the persisted store (a few ms of AsyncStorage) behind the
   // splash so the first frame is the populated home screen. Web is statically rendered
@@ -50,16 +58,16 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider value={NAV_THEME}>
-          <StatusBar style="dark" />
+        <ThemeProvider value={navigationTheme(theme, dark)}>
+          <StatusBar style={dark ? 'light' : 'dark'} />
           <Stack
             screenOptions={{
-              headerStyle: { backgroundColor: THEME.background },
-              headerTintColor: THEME.foreground,
+              headerStyle: { backgroundColor: theme.background },
+              headerTintColor: theme.foreground,
               headerTitleStyle: { fontFamily: 'GeistMono_600SemiBold' },
               headerShadowVisible: false,
               headerBackButtonDisplayMode: 'minimal',
-              contentStyle: { backgroundColor: THEME.background },
+              contentStyle: { backgroundColor: theme.background },
             }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false, title: '67slopers' }} />
             <Stack.Screen name="sessions" options={{ title: 'Sessions' }} />

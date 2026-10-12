@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "slopers67",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.sloppyslopers.app"
@@ -32,7 +32,8 @@
         {
           "backgroundColor": "#FAFAF7",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 150
+          "imageWidth": 150,
+          "dark": { "backgroundColor": "#171A16" }
         }
       ],
       [

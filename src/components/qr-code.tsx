@@ -3,13 +3,14 @@ import { View } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 
 import { makeQr, qrPath, QUIET_ZONE } from '@/lib/qr';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 
 /**
  * A QR code as one SVG path, quiet zone included. Theme ink on the background colour: scanners
  * need contrast, not pure black and white.
  */
 export function QrCode({ value, size }: { value: string; size: number }) {
+  const { theme } = useAppTheme();
   const qr = useMemo(() => makeQr(value), [value]);
   const modules = qr.size + QUIET_ZONE * 2;
   // Whole pixels per module, so neighbouring rows meet without anti-aliased seams.
@@ -20,8 +21,8 @@ export function QrCode({ value, size }: { value: string; size: number }) {
       accessibilityLabel="QR code of the workout"
       style={{ width: side, height: side }}>
       <Svg width={side} height={side} viewBox={`0 0 ${modules} ${modules}`}>
-        <Rect width={modules} height={modules} fill={THEME.background} />
-        <Path d={qrPath(qr)} fill={THEME.foreground} />
+        <Rect width={modules} height={modules} fill={theme.background} />
+        <Path d={qrPath(qr)} fill={theme.foreground} />
       </Svg>
     </View>
   );

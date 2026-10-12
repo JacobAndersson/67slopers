@@ -73,6 +73,6 @@ Not principles, but defaults that follow from how a hangboard timer is actually 
 - Timing you can trust: the clock is monotonic, not `setInterval`, so 7:3 repeaters stay
   in sync. One beep and one tap mark every interval change, nothing before it; both are
   toggles in the workout settings menu and the choice is remembered. Gameplay clips are always muted.
-- One appearance. There are no themes and no dark mode; the palette is fixed.
+- Light and dark appearances share semantic colors; follow the device by default and allow a local override.
 - Cross-platform from one codebase: iOS, Android and web, with native tab bars where the
   platform has them.

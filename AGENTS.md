@@ -172,8 +172,8 @@ from failing on the design workspace's Docker-owned folders.
 - The palette ("Stella" from tweakcn) is defined twice on purpose: CSS variables in `src/global.css`
   and a TS mirror in `src/lib/theme.ts` (`THEME`, `NAV_THEME`). Change both together. Use `THEME`
   only where a class name cannot be used (native tab bar, navigation theme, animations).
-- One appearance only: no themes, no dark mode, no color-scheme hooks. Do not add `dark:`
-  variants or a `.dark` palette.
+- Light and dark appearances share semantic tokens. Follow the device by default, with a local
+  Settings override. Prefer semantic color classes over `dark:` variants or hard-coded colors.
 - The typeface is Geist Mono, loaded per weight in `src/lib/fonts.ts` and applied through the
   `font-*` weight utilities, which a plugin in `tailwind.config.js` maps to the per-weight family
   names. Never set `fontFamily`/`fontWeight` by hand; use `font-medium`, `font-semibold`, etc.

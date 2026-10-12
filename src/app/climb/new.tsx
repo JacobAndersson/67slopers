@@ -6,7 +6,8 @@ import { ScrollView, View, useWindowDimensions } from 'react-native';
 
 import { ButtonLabel } from '@/components/button-label';
 import { Chip } from '@/components/chip';
-import { MoonBoard, ProblemThumb, ROLE_COLOR, boardWidthFor } from '@/components/moon-board';
+import { MoonBoard, ProblemThumb, boardWidthFor } from '@/components/moon-board';
+import { useAppTheme } from '@/lib/use-theme';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ const DRAFT = 'draft';
  * wall mirrors every tap, so it can be set standing in front of the board.
  */
 export default function NewProblemScreen() {
+  const { theme } = useAppTheme();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const board = useBoard();
@@ -162,9 +164,9 @@ export default function NewProblemScreen() {
           <View className="gap-3">
             <Segmented
               options={[
-                { value: 'start', label: 'Start', dot: ROLE_COLOR.start },
-                { value: 'hold', label: 'Hold', dot: ROLE_COLOR.hold },
-                { value: 'finish', label: 'Finish', dot: ROLE_COLOR.finish },
+                { value: 'start', label: 'Start', dot: theme.holdStart },
+                { value: 'hold', label: 'Hold', dot: theme.holdMove },
+                { value: 'finish', label: 'Finish', dot: theme.holdFinish },
               ]}
               value={role}
               onChange={setRole}

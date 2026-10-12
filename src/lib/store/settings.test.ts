@@ -12,13 +12,17 @@ test('old and partial settings preserve false without losing new defaults', () =
     sound: false,
     vibration: false,
     genZMode: false,
+    appearance: 'system',
   });
   assert.deepEqual(normalizeSettings({ genZMode: true }), {
     sound: true,
     vibration: true,
     genZMode: true,
+    appearance: 'system',
   });
   assert.deepEqual(normalizeSettings({ sound: 'false', genZMode: 1 }), DEFAULT_SETTINGS);
+  assert.equal(normalizeSettings({ appearance: 'dark' }).appearance, 'dark');
+  assert.equal(normalizeSettings({ appearance: 'unknown' }).appearance, 'system');
 });
 
 test('versions 1–4 preserve records and initialize the new preference', async () => {
@@ -34,6 +38,7 @@ test('versions 1–4 preserve records and initialize the new preference', async 
       sound: version === 1,
       vibration: version === 1,
       genZMode: false,
+      appearance: 'system',
     });
     assert.equal((result.workouts as (typeof workout)[])[0].id, 'saved');
     assert.equal((result.sessions as (typeof session)[])[0].snapshot.steps[0].seconds, 7);

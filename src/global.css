@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Pulse / amber: one fixed appearance, mirrored in src/lib/theme.ts. */
+/* Semantic light and dark palettes, mirrored in src/lib/theme.ts. */
 @layer base {
   :root {
     --background: 60 23.077% 97.451%;
@@ -35,5 +35,36 @@
     --hold-finish: 9 68% 52%;
     --hold-wood: 34 46% 60%;
     --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 100 7% 9%;
+    --foreground: 60 15% 93%;
+    --card: 100 6% 14%;
+    --card-foreground: 60 15% 93%;
+    --popover: 100 6% 14%;
+    --popover-foreground: 60 15% 93%;
+    --primary: 40 90% 72%;
+    --primary-foreground: 100 7% 9%;
+    --secondary: 39 24% 24%;
+    --secondary-foreground: 60 15% 93%;
+    --muted: 100 5% 23%;
+    --muted-foreground: 60 11% 73%;
+    --accent: 39 27% 27%;
+    --accent-foreground: 60 15% 93%;
+    --destructive: 0 72% 64%;
+    --destructive-foreground: 100 7% 9%;
+    --border: 100 5% 32%;
+    --input: 100 5% 41%;
+    --ring: 40 90% 72%;
+    --chart-1: 40 46% 26%;
+    --chart-2: 40 47% 40%;
+    --chart-3: 40 90% 72%;
+    --chart-4: 60 15% 83%;
+    --chart-5: 100 5% 38%;
+    --hold-start: 148 58% 55%;
+    --hold-move: 217 79% 70%;
+    --hold-finish: 9 80% 68%;
+    --hold-wood: 34 46% 60%;
   }
 }

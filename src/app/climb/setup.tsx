@@ -28,7 +28,7 @@ import {
 } from '@/lib/moonboard/problems';
 import type { Angle, MoonSetup } from '@/lib/moonboard/types';
 import { useClimb } from '@/lib/store/climb';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 import { cn } from '@/lib/utils';
 
 type StepId = 'layout' | 'angle' | 'holds' | 'lights';
@@ -76,20 +76,21 @@ function Choice({
 
 /** The wall seen from the side: floor, kicker, and the board leaning over. */
 function Profile({ angle }: { angle: Angle }) {
+  const { theme } = useAppTheme();
   const length = 104;
   const rad = (angle * Math.PI) / 180;
   const x = 28 + length * Math.sin(rad);
   const y = 130 - length * Math.cos(rad);
   return (
     <Svg width={125} height={150}>
-      <Line x1={0} y1={148} x2={125} y2={148} stroke={THEME.border} strokeWidth={2} />
-      <Line x1={28} y1={130} x2={28} y2={y} stroke={THEME.border} strokeWidth={1.5} />
+      <Line x1={0} y1={148} x2={125} y2={148} stroke={theme.border} strokeWidth={2} />
+      <Line x1={28} y1={130} x2={28} y2={y} stroke={theme.border} strokeWidth={1.5} />
       <Line
         x1={28}
         y1={148}
         x2={28}
         y2={130}
-        stroke={THEME.foreground}
+        stroke={theme.foreground}
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -98,7 +99,7 @@ function Profile({ angle }: { angle: Angle }) {
         y1={130}
         x2={x}
         y2={y}
-        stroke={THEME.foreground}
+        stroke={theme.foreground}
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -120,6 +121,7 @@ const SWATCH: Record<string, string> = {
  * with `?add=1` sets up another one.
  */
 export default function SetupScreen() {
+  const { theme } = useAppTheme();
   const router = useRouter();
   // `?add=1` sets up one more wall instead of changing the current one.
   const { add } = useLocalSearchParams<{ add?: string }>();
@@ -242,7 +244,7 @@ export default function SetupScreen() {
                               cx={(i % 11) + 0.5}
                               cy={Math.floor(i / 11) + 0.5}
                               r={0.28}
-                              fill={THEME.input}
+                              fill={theme.input}
                             />
                           ))}
                         </Svg>

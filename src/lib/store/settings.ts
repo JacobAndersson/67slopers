@@ -8,5 +8,7 @@ export function normalizeSettings(value: unknown): Settings {
     vibration:
       typeof record.vibration === 'boolean' ? record.vibration : DEFAULT_SETTINGS.vibration,
     genZMode: typeof record.genZMode === 'boolean' ? record.genZMode : false,
+    appearance:
+      record.appearance === 'light' || record.appearance === 'dark' ? record.appearance : 'system',
   };
 }

@@ -1,12 +1,7 @@
 import { DefaultTheme, type Theme } from 'expo-router';
 
-/**
- * Pulse / amber palette, mirrored from the CSS variables in `src/global.css`.
- * The app has one appearance: no themes, no dark mode. Use these values only where a
- * Tailwind class cannot be used (native tab bar, navigation theme, inline styles).
- * Keep both files in sync.
- */
-export const THEME = {
+/** Semantic colors mirrored in src/global.css; use classes unless an inline color is required. */
+export const LIGHT_THEME = {
   background: 'hsl(60.000 23.077% 97.451%)',
   foreground: 'hsl(100.000 4.615% 12.745%)',
   card: 'hsl(0.000 0.000% 100.000%)',
@@ -38,17 +33,52 @@ export const THEME = {
   radius: '0.75rem',
 } as const;
 
-export type ThemeColor = keyof typeof THEME;
+export const DARK_THEME = {
+  background: 'hsl(100 7% 9%)',
+  foreground: 'hsl(60 15% 93%)',
+  card: 'hsl(100 6% 14%)',
+  cardForeground: 'hsl(60 15% 93%)',
+  popover: 'hsl(100 6% 14%)',
+  popoverForeground: 'hsl(60 15% 93%)',
+  primary: 'hsl(40 90% 72%)',
+  primaryForeground: 'hsl(100 7% 9%)',
+  secondary: 'hsl(39 24% 24%)',
+  secondaryForeground: 'hsl(60 15% 93%)',
+  muted: 'hsl(100 5% 23%)',
+  mutedForeground: 'hsl(60 11% 73%)',
+  accent: 'hsl(39 27% 27%)',
+  accentForeground: 'hsl(60 15% 93%)',
+  destructive: 'hsl(0 72% 64%)',
+  destructiveForeground: 'hsl(100 7% 9%)',
+  border: 'hsl(100 5% 32%)',
+  input: 'hsl(100 5% 41%)',
+  ring: 'hsl(40 90% 72%)',
+  chart1: 'hsl(40 46% 26%)',
+  chart2: 'hsl(40 47% 40%)',
+  chart3: 'hsl(40 90% 72%)',
+  chart4: 'hsl(60 15% 83%)',
+  chart5: 'hsl(100 5% 38%)',
+  holdStart: 'hsl(148 58% 55%)',
+  holdMove: 'hsl(217 79% 70%)',
+  holdFinish: 'hsl(9 80% 68%)',
+  holdWood: 'hsl(34 46% 60%)',
+  radius: LIGHT_THEME.radius,
+} as const;
 
-export const NAV_THEME: Theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: THEME.background,
-    border: THEME.border,
-    card: THEME.card,
-    notification: THEME.destructive,
-    primary: THEME.primary,
-    text: THEME.foreground,
-  },
-};
+export type AppTheme = typeof LIGHT_THEME | typeof DARK_THEME;
+
+export function navigationTheme(theme: AppTheme, dark: boolean): Theme {
+  return {
+    ...DefaultTheme,
+    dark,
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.background,
+      border: theme.border,
+      card: theme.card,
+      notification: theme.destructive,
+      primary: theme.primary,
+      text: theme.foreground,
+    },
+  };
+}

@@ -53,7 +53,7 @@ import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { EASE_OUT } from '@/lib/motion';
 import { measure } from '@/lib/perf';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import { shouldShowBoard } from '@/lib/timer/board-visibility';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
@@ -70,14 +70,6 @@ import { setsLine } from '@/lib/workout-summary';
  * Flat background per phase, so the state reads from across the room without the digits.
  * Theme values rather than classes because the colour is tweened with Reanimated.
  */
-const PHASE_COLOR: Record<Phase, string> = {
-  prep: THEME.accent,
-  hang: THEME.chart1,
-  pause: THEME.secondary,
-  rest: THEME.muted,
-  done: THEME.background,
-};
-
 const BrainrotVideo = lazy(() => import('@/components/brainrot-video'));
 
 const BG_TRANSITION_MS = 250;
@@ -162,6 +154,14 @@ export function Runner({
   resume,
   autoStart = false,
 }: RunnerProps) {
+  const { theme } = useAppTheme();
+  const phaseColor: Record<Phase, string> = {
+    prep: theme.accent,
+    hang: theme.chart1,
+    pause: theme.secondary,
+    rest: theme.muted,
+    done: theme.background,
+  };
   useKeepAwake();
   const router = useRouter();
   const navigation = useNavigation();
@@ -389,7 +389,7 @@ export function Runner({
   );
 
   const hanging = !idle && !finished && interval.phase === 'hang';
-  const background = idle || finished ? THEME.background : PHASE_COLOR[interval.phase];
+  const background = idle || finished ? theme.background : phaseColor[interval.phase];
   const backgroundValue = useSharedValue(background);
   // What the previous render showed, so a hang that ran to its end switches instantly: the
   // rising fill has already painted the whole screen in the pause colour by then.
@@ -428,7 +428,7 @@ export function Runner({
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: PHASE_COLOR.pause,
+              backgroundColor: phaseColor.pause,
             },
             fillStyle,
           ]}

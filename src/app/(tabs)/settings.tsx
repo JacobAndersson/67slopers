@@ -11,6 +11,7 @@ import { boardLabel } from '@/lib/moonboard/boards';
 import { useLights } from '@/lib/moonboard/lights';
 import { useClimb } from '@/lib/store/climb';
 import { useStore } from '@/lib/store/store';
+import type { AppearancePreference } from '@/lib/store/types';
 
 /** Boards, timer cues and grade scale. The timer's own menu keeps its quick toggles too. */
 export default function SettingsScreen() {
@@ -46,6 +47,22 @@ export default function SettingsScreen() {
             onPress={() => router.push(connected ? '/climb/lights' : '/climb/connect')}
           />
         ) : null}
+      </SettingGroup>
+
+      <SettingGroup title="Appearance">
+        <SettingRow title="Theme">
+          <View className="w-56">
+            <Segmented
+              options={[
+                { value: 'system', label: 'Auto' },
+                { value: 'light', label: 'Light' },
+                { value: 'dark', label: 'Dark' },
+              ]}
+              value={settings.appearance}
+              onChange={(appearance: AppearancePreference) => setSettings({ appearance })}
+            />
+          </View>
+        </SettingRow>
       </SettingGroup>
 
       <SettingGroup title="Timer">

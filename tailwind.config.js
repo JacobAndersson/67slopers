@@ -43,8 +43,7 @@ const geistMonoWeights = plugin(({ addUtilities }) => {
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // The app has a single light appearance. 'class' keeps the components' dark: variants
-  // inert (nothing ever adds the class); 'media' would switch them on with the system.
+  // NativeWind follows the system by default; a saved preference can override the class.
   darkMode: 'class',
   content: ['./src/**/*.{ts,tsx}'],
   presets: [require('nativewind/preset')],

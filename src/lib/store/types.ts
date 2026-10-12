@@ -79,14 +79,23 @@ export type Session = {
   note?: string;
 };
 
-/** Timer cues, remembered across workouts. Both default to on. */
+/** Device appearance preference; system follows the phone or browser. */
+export type AppearancePreference = 'system' | 'light' | 'dark';
+
+/** Timer cues and appearance, remembered across workouts. */
 export type Settings = {
   sound: boolean;
   vibration: boolean;
   genZMode: boolean;
+  appearance: AppearancePreference;
 };
 
-export const DEFAULT_SETTINGS: Settings = { sound: true, vibration: true, genZMode: false };
+export const DEFAULT_SETTINGS: Settings = {
+  sound: true,
+  vibration: true,
+  genZMode: false,
+  appearance: 'system',
+};
 
 /** Timings to run without saving them first. Lives in memory only. */
 export type Draft = {

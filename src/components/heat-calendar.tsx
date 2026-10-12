@@ -4,7 +4,7 @@ import { View, type GestureResponderEvent } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { formatShortDate, isSameDay } from '@/lib/dates';
 import { HEAT_STEPS, heatGrid, monthLabels, type TrainedSpan } from '@/lib/moonboard/heat';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 import { cn } from '@/lib/utils';
 
 const CELL = 16;
@@ -25,6 +25,7 @@ type HeatCalendarProps = {
  * The squares are small, so a finger can slide across the grid and the pin follows it.
  */
 export function HeatCalendar({ spans, today, selected, onSelect }: HeatCalendarProps) {
+  const { theme } = useAppTheme();
   const now = useMemo(() => today ?? new Date(), [today]);
   const grid = useMemo(() => heatGrid(spans, now), [spans, now]);
   const months = useMemo(() => monthLabels(grid), [grid]);
@@ -100,7 +101,7 @@ export function HeatCalendar({ spans, today, selected, onSelect }: HeatCalendarP
                     style={{
                       width: CELL,
                       height: CELL,
-                      backgroundColor: day.level ? THEME.chart1 : THEME.foreground,
+                      backgroundColor: day.level ? theme.chart1 : theme.foreground,
                       opacity: day.future
                         ? 0
                         : (day.level ? HEAT_STEPS[day.level] : 0.06) *
@@ -128,7 +129,7 @@ export function HeatCalendar({ spans, today, selected, onSelect }: HeatCalendarP
               key={level}
               className="size-3 rounded-[3px]"
               style={{
-                backgroundColor: level ? THEME.chart1 : THEME.foreground,
+                backgroundColor: level ? theme.chart1 : theme.foreground,
                 opacity: step || 0.06,
               }}
             />

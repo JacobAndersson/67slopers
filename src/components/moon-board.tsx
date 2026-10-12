@@ -14,17 +14,15 @@ import { COLUMNS } from '@/lib/moonboard/boards';
 import { EASE_OUT } from '@/lib/motion';
 import { holdName, parseHold } from '@/lib/moonboard/grid';
 import { ROLES, type ProblemHolds, type Role } from '@/lib/moonboard/types';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 import { cn } from '@/lib/utils';
 
 /** How wide the full board is drawn on a screen of this width: room either side, never huge. */
 export const boardWidthFor = (screenWidth: number) => Math.min(screenWidth - 96, 340);
 
-export const ROLE_COLOR: Record<Role, string> = {
-  start: THEME.holdStart,
-  hold: THEME.holdMove,
-  finish: THEME.holdFinish,
-};
+function roleColors(theme: ReturnType<typeof useAppTheme>['theme']): Record<Role, string> {
+  return { start: theme.holdStart, hold: theme.holdMove, finish: theme.holdFinish };
+}
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const GLOW = 0.2;
@@ -90,6 +88,8 @@ export const MoonBoard = memo(function MoonBoard({
   labels = true,
   onHoldPress,
 }: MoonBoardProps) {
+  const { theme } = useAppTheme();
+  const roleColor = roleColors(theme);
   const left = labels ? 22 : 8;
   const top = labels ? 20 : 8;
   const pad = labels ? 10 : 8;
@@ -164,7 +164,7 @@ export const MoonBoard = memo(function MoonBoard({
               y={14}
               fontSize={10}
               fontFamily="GeistMono_500Medium"
-              fill={THEME.mutedForeground}
+              fill={theme.mutedForeground}
               textAnchor="middle">
               {letter}
             </SvgText>
@@ -178,18 +178,18 @@ export const MoonBoard = memo(function MoonBoard({
               y={cy(row) + 3.5}
               fontSize={10}
               fontFamily="GeistMono_500Medium"
-              fill={THEME.mutedForeground}
+              fill={theme.mutedForeground}
               textAnchor="end">
               {row + 1}
             </SvgText>
           ))
         : null}
-      <Path d={wall.all} fill={THEME.border} />
-      <Path d={chosenPath} fill={THEME.foreground} />
+      <Path d={wall.all} fill={theme.border} />
+      <Path d={chosenPath} fill={theme.foreground} />
       {[...chosen].map(([hold, role]) => {
         const at = parseHold(hold, rows);
         if (!at) return null;
-        const color = ROLE_COLOR[role];
+        const color = roleColor[role];
         return (
           <G key={hold}>
             {lit ? (
@@ -269,6 +269,8 @@ export const ProblemThumb = memo(function ProblemThumb({
   rows: number;
   width?: number;
 }) {
+  const { theme } = useAppTheme();
+  const roleColor = roleColors(theme);
   const cell = (width - 8) / COLUMNS.length;
   const height = rows * cell + 8;
   return (
@@ -277,7 +279,7 @@ export const ProblemThumb = memo(function ProblemThumb({
       style={{ width, height }}>
       <Svg width={width} height={height}>
         {ROLES.map((role) => (
-          <Path key={role} d={dots(holds[role], rows, cell)} fill={ROLE_COLOR[role]} />
+          <Path key={role} d={dots(holds[role], rows, cell)} fill={roleColor[role]} />
         ))}
       </Svg>
     </View>

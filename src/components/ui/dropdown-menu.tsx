@@ -174,10 +174,10 @@ function DropdownMenuItem({
           Platform.select({
             web: cn(
               'cursor-default outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none',
-              variant === 'destructive' && 'focus:bg-destructive/10 dark:focus:bg-destructive/20'
+              variant === 'destructive' && 'focus:bg-destructive/10'
             ),
           }),
-          variant === 'destructive' && 'active:bg-destructive/10 dark:active:bg-destructive/20',
+          variant === 'destructive' && 'active:bg-destructive/10',
           props.disabled && 'opacity-50',
           inset && 'pl-8',
           className

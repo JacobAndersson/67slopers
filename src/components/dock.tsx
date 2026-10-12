@@ -18,7 +18,7 @@ import { DeadHangIcon, MoonBoardIcon } from '@/components/training-icons';
 import { Icon } from '@/components/ui/icon';
 import { useLights } from '@/lib/moonboard/lights';
 import { SPRING_SETTLE } from '@/lib/motion';
-import { THEME } from '@/lib/theme';
+import { useAppTheme } from '@/lib/use-theme';
 
 const ITEM = 48;
 const GAP = 4;
@@ -74,6 +74,7 @@ function DockItem({ icon, label, badge, onActive, isFocused, ...props }: DockIte
  * scrolls underneath and fades into the background before it reaches the bar.
  */
 export function Dock() {
+  const { theme } = useAppTheme();
   const insets = useSafeAreaInsets();
   const reducedMotion = useReducedMotion();
   const x = useSharedValue(offsetOf(0));
@@ -90,8 +91,8 @@ export function Dock() {
         <Svg width="100%" height="100%">
           <Defs>
             <LinearGradient id="dock-fade" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={THEME.background} stopOpacity={0} />
-              <Stop offset="0.62" stopColor={THEME.background} stopOpacity={1} />
+              <Stop offset="0" stopColor={theme.background} stopOpacity={0} />
+              <Stop offset="0.62" stopColor={theme.background} stopOpacity={1} />
             </LinearGradient>
           </Defs>
           <Rect width="100%" height="100%" fill="url(#dock-fade)" />
