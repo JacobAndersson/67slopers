@@ -2,8 +2,8 @@
 
 [Open the design system in Penpot](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=3da52804-324a-803a-8008-ba7ae8423fdc&page-id=83493a27-42b5-5511-8850-15e221286642&board-id=31197271-4bb8-5705-b5f3-2faebcb8410d).
 
-The library mirrors the implemented app, reviewed on **9 October 2026**. It adds 15 reference
-boards, **29 component families** (155 main components, including variants), **19 variant sets**,
+The library mirrors the implemented app, reviewed on **9 October 2026**. It started with 15 reference
+boards, and now includes a paired light/dark color board. It has **29 component families** (155 main components, including variants), **19 variant sets**,
 **87 native Penpot tokens**, and **15 shared typography styles**. The original 76 app boards,
 24 shared colors, 10 reference type styles and three older buttons are preserved.
 
@@ -29,9 +29,11 @@ boards, **29 component families** (155 main components, including variants), **1
    should inherit future changes; detach only when deliberately exploring a different pattern.
 5. Export reviewed changes into `design/penpot/` and capture matching review images.
 
-The **Tokens** tab contains the active **67slopers / App** token theme. It is a design-tool
-collection for the app's single appearance, not an additional app theme. Component corner
-radii are bound to tokens. Colors use shared Assets styles; typography uses shared text styles.
+The **Tokens** tab currently contains **67slopers / App**, a light-only design-tool token
+set. The existing shared Assets colors, components, and app reference boards are light
+references, not dark-ready variants. [The paired appearance board](#light-and-dark-appearance)
+on 00.1 documents the new dark roles. Component corner radii are bound to tokens. Colors
+use shared Assets styles; typography uses shared text styles.
 Button, badge and toggle masters have flex layouts. Complex patterns use editable nested
 frames and constraints; they are reference compositions, not fully responsive application code.
 Variant swapping can retain an instance's overridden dimensions; adjust its size when changing
@@ -61,6 +63,16 @@ The library documents existing behavior. Keyboard focus and invalid field stylin
 web states; static samples do not simulate native focus, timing, dragging, text scaling or
 camera permission. Full screen and flow references stay on pages 02–06.
 
+## Light and dark appearance
+
+[Open the paired color board in Penpot](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=3da52804-324a-803a-8008-ba7ae8423fdc&page-id=83493a27-42b5-5511-8850-15e221286642&board-id=10868f95-4475-5802-b630-a7150e842fe8). Its editable surfaces show the light and dark semantic pairs with the implemented hex values. [Review image](../exports/design-system/appearance-light-dark.png).
+
+- Follow the device by default; **Auto / Light / Dark** is a local Settings choice. Do not change hierarchy, typography, spacing, or information order between modes.
+- Build from roles (`background` + `foreground`, `card` + `cardForeground`, `primary` + `primaryForeground`, `secondary`, `accent`, `muted`, `destructive` and their paired foregrounds), not literal hex inversions. Use `border`, `input`, and `ring` for their own jobs. Reserve chart colors for data and phase colors; preserve the MoonBoard LED start/move/finish meanings.
+- The timer's prep, hang and recovery surfaces stay distinct, but phase words and large digits must still explain the state without color. Test across-room contrast in both modes. Keep QR ink/background contrast high enough to scan.
+- Review cards, dock, forms, focus, disabled and destructive controls, heat calendar, timer, board overlays and QR in both appearances. The existing component masters and screen boards remain **light references**; the paired board documents dark roles, not finished dark variants of every screen.
+- `src/global.css` and `src/lib/theme.ts` are the source of truth. For implementation, see [`docs/appearance.md`](../../docs/appearance.md). When dark component variants are designed, create explicit Penpot light/dark token themes and review both before replacing the existing light Assets colors.
+
 ## Foundations
 
 - **Palette:** Pulse / amber in [`src/global.css`](../../src/global.css) and
@@ -78,15 +90,16 @@ camera permission. Full screen and flow references stay on pages 02–06.
   Weak / Normal / Strong use Battery Low / Thumbs Up / Barbell. Aria and MoonBoard ideas remain
   explorations. Board art comes from the actual bundled assets. The exported icons retain the
   [package license](Phosphor-LICENSE.txt).
-- **Product rules:** one appearance, local data, no account, clear recovery, truthful session
-  values, and no feel grades on Home. See [`docs/principles.md`](../../docs/principles.md).
+- **Product rules:** local data, no account, device-following light/dark appearance with a
+  local override, clear recovery, truthful session values, and no feel grades on Home.
+  See [`docs/principles.md`](../../docs/principles.md).
 
 ## Versioned artifacts
 
-- [`library.json`](library.json): pages, board IDs, dimensions and component/variant records.
-- [`tokens.json`](tokens.json): native Penpot JSON token export, including phase aliases.
-- [`../exports/design-system/`](../exports/design-system/): 15 SVG/PNG boards, three overview
-  sheets and live Penpot review captures.
+- [`library.json`](library.json): original library pages, board IDs, dimensions and component/variant records; the paired appearance board was added directly in Penpot.
+- [`tokens.json`](tokens.json): current **light-only** Penpot JSON token export, including phase aliases.
+- [`../exports/design-system/`](../exports/design-system/): 15 original SVG/PNG boards, the
+  paired appearance PNG, three overview sheets and live Penpot review captures.
 - [`../penpot/67slopers.penpot`](../penpot/67slopers.penpot): the complete editable file, including
   the original app recreation and the new library.
 - [`Geist-Mono.zip`](Geist-Mono.zip): five font files and their license. Penpot exports do not

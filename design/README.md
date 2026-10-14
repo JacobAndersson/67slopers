@@ -40,13 +40,15 @@ boards recreated from the app on 8 October 2026, plus the MoonBoard exploration:
 4. **04 Timer & recovery** — preparation, hangs, rests, pause, settings, Gen Z playback, completion, and interruption.
 5. **05 Sharing & edge states** — QR sharing, camera permission, import, unavailable content, and deletion.
 6. **06 Storyboards** — six journeys and notes explaining the reference.
-7. **07 MoonBoard & dock** — the MoonBoard draft and the dock navigation: 42 boards, separate
+7. **07 MoonBoard & dock** — the MoonBoard draft and the dock navigation: 43 boards, separate
    from the current app. See [the exploration notes](explorations/moonboard/README.md).
 
 The **design system** is on three additional pages at the top of the file: **00.1 Foundations**,
 **00.2 UI components**, and **00.3 Training patterns**. It adds 15 reference boards, 29 component
 families (155 main components including variants), 87 native tokens, and 15 typography styles.
-The complete file now has **90 reference boards and 42 exploration boards across 10 pages**.
+The complete file has **91 reference boards and 43 exploration boards across 11 pages** (including dock icon studies).
+
+The design system now includes a [paired light/dark color guidance board](foundations/README.md#light-and-dark-appearance). Existing app and component boards remain light references.
 
 [Open the design system](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=3da52804-324a-803a-8008-ba7ae8423fdc&page-id=83493a27-42b5-5511-8850-15e221286642&board-id=31197271-4bb8-5705-b5f3-2faebcb8410d).
 Use **Assets → 67slopers → UI / Training** to reuse components, or **Tokens** to inspect the

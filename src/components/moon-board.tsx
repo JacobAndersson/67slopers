@@ -55,7 +55,7 @@ function Glow({
   return <AnimatedCircle cx={cx} cy={cy} r={r} fill={color} animatedProps={animatedProps} />;
 }
 
-/** A stable, slightly different blob for each grid position, so the wall reads as holds. */
+/** Schematic placeholders, not the physical grip shapes. Exact artwork needs licensed assets. */
 function blob(col: number, row: number) {
   const seed = (col * 73 + row * 151 + col * row * 31) % 97;
   return {
@@ -219,6 +219,17 @@ export const MoonBoard = memo(function MoonBoard({
                 stroke={color}
                 strokeWidth={Math.max(1, cell * 0.06)}
               />
+            ) : null}
+            {labels && cell >= 18 ? (
+              <SvgText
+                x={cx(at.col)}
+                y={cy(at.row) + 3.5}
+                fontSize={Math.min(11, cell * 0.38)}
+                fontFamily="GeistMono_700Bold"
+                fill={theme.background}
+                textAnchor="middle">
+                {hold}
+              </SvgText>
             ) : null}
           </G>
         );

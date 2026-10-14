@@ -26,7 +26,7 @@ def clock(seconds):
 
 
 def read_palette():
-    source = (ROOT / 'src/lib/theme.ts').read_text()
+    source = (ROOT / 'src/lib/theme.ts').read_text().split('export const LIGHT_THEME = {', 1)[1].split('} as const;', 1)[0]
     colors = {}
     for name,h,s,l in re.findall(r"(\w+): 'hsl\(([\d.]+) ([\d.]+)% ([\d.]+)%\)'", source):
         rgb = colorsys.hls_to_rgb(float(h)/360,float(l)/100,float(s)/100)

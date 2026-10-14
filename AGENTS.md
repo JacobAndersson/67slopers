@@ -169,9 +169,10 @@ from failing on the design workspace's Docker-owned folders.
   playback controls. Import each icon directly, e.g. `phosphor-react-native/src/icons/Play`,
   to keep the full catalog out of the bundle. Adapt icons in newly added Reusables components
   to this wrapper. Keep the editable Penpot icon references in sync.
-- The palette ("Stella" from tweakcn) is defined twice on purpose: CSS variables in `src/global.css`
-  and a TS mirror in `src/lib/theme.ts` (`THEME`, `NAV_THEME`). Change both together. Use `THEME`
-  only where a class name cannot be used (native tab bar, navigation theme, animations).
+- The light and dark Pulse / amber palettes are defined twice on purpose: CSS variables in
+  `src/global.css` and TS mirrors `LIGHT_THEME` / `DARK_THEME` in `src/lib/theme.ts`. Change both
+  together. Use semantic classes by default; `useAppTheme()` supplies inline colors for SVG,
+  navigation, and animations. Penpot appearance guidance is in `design/foundations/README.md`.
 - Light and dark appearances share semantic tokens. Follow the device by default, with a local
   Settings override. Prefer semantic color classes over `dark:` variants or hard-coded colors.
 - The typeface is Geist Mono, loaded per weight in `src/lib/fonts.ts` and applied through the

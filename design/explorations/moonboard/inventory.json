@@ -283,7 +283,7 @@
     "width": 390,
     "height": 844,
     "note": "Swipe left or right for the next problem in the list. Without lights, Light up opens the connect flow.",
-    "shapes": 84
+    "shapes": 79
   },
   {
     "key": "mb-lit",
@@ -294,7 +294,7 @@
     "width": 390,
     "height": 844,
     "note": "Screen stays awake while lit. Swiping relights the wall only when Light as I browse is on, so browsing never changes what someone is climbing.",
-    "shapes": 90
+    "shapes": 94
   },
   {
     "key": "mb-lost",
@@ -305,7 +305,7 @@
     "width": 390,
     "height": 844,
     "note": "Losing the lights never blocks logging. The app retries quietly for 30 s.",
-    "shapes": 85
+    "shapes": 90
   },
   {
     "key": "mb-log-send",
@@ -316,7 +316,7 @@
     "width": 390,
     "height": 844,
     "note": "Three taps at most. Tries are prefilled from the counter; everything else is optional.",
-    "shapes": 121
+    "shapes": 125
   },
   {
     "key": "mb-sent",
@@ -327,7 +327,18 @@
     "width": 390,
     "height": 960,
     "note": "Your own history on the problem, then straight on to the next one.",
-    "shapes": 103
+    "shapes": 107
+  },
+  {
+    "key": "mb-detail-scrolled",
+    "name": "D4b Climb / problem after scrolling",
+    "pageId": "f135c210-f44f-4df4-a087-1e4ae0026f09",
+    "boardId": "04262002-04f1-516a-9c88-e8d3e0ea8bc8",
+    "route": "/climb/problem/[id]",
+    "width": 390,
+    "height": 844,
+    "note": "Same problem after a vertical scroll: stats and local log move into view under the pinned actions.",
+    "shapes": 41
   },
   {
     "key": "mb-create",
@@ -338,7 +349,7 @@
     "width": 390,
     "height": 844,
     "note": "Pick a role, tap holds. With lights on, the wall mirrors every tap. Capped at 30 holds: the box cuts off longer messages.",
-    "shapes": 73
+    "shapes": 79
   },
   {
     "key": "mb-save",
@@ -426,7 +437,7 @@
     "width": 390,
     "height": 844,
     "note": "From the list icon on any problem. A problem can sit in several circuits.",
-    "shapes": 101
+    "shapes": 105
   },
   {
     "key": "mb-circuit-edit",
@@ -448,7 +459,7 @@
     "width": 390,
     "height": 844,
     "note": "Sent it or Skip moves straight to the next problem and lights it: starting a circuit is the consent to change the wall. No timer, no rests.",
-    "shapes": 90
+    "shapes": 100
   },
   {
     "key": "mb-circuit-done",

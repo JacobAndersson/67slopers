@@ -88,9 +88,9 @@ def cell_of(hold):
 
 
 def blob(col, row):
-    """Deterministic organic hold shape for one grid position."""
-    seed = hashlib.md5(f'{col}/{row}'.encode()).digest()
-    return .17+seed[0]/255*.11, .13+seed[1]/255*.09, seed[2]/255*150-75
+    """Same deterministic schematic hold used by src/components/moon-board.tsx."""
+    seed = (col*73+row*151+col*row*31) % 97
+    return .17+((seed*7) % 11)/100, .13+((seed*13) % 9)/100, (seed*29) % 150-75
 
 
 class MB(Board):
@@ -353,7 +353,8 @@ class MB(Board):
                 parts.append(f'M{cx-dx:.2f} {cy-dy:.2f}A{rx*cell:.2f} {ry*cell:.2f} {angle:.1f} 1 0 {cx+dx:.2f} {cy+dy:.2f}A{rx*cell:.2f} {ry*cell:.2f} {angle:.1f} 1 0 {cx-dx:.2f} {cy-dy:.2f}Z')
             return ''.join(parts)
         every = [(c, r) for r in range(1, rows+1) for c in range(11)]
-        self.vec(shapes([p for p in every if p not in chosen]), x, y, w, h, 'muted' if quiet else 'border', name=name+' / holds')
+        self.vec(shapes(every), x, y, w, h, 'muted' if quiet else 'border', name=name+' / holds')
+        if chosen: self.vec(shapes(chosen), x, y, w, h, 'foreground', name=name+' / problem holds')
         for (c, r), role in chosen.items():
             cx, cy = x+gl+(c+.5)*cell, y+gt+(rows-r+.5)*cell
             if lit: self.dot(cx, cy, cell*.66, HOLD[role], opacity=.2, name=f'LED glow / {role}')
@@ -361,7 +362,8 @@ class MB(Board):
             ring['fills'][0]['fillOpacity'] = .3 if lit else .12
             self.svg[-1] = self.svg[-1].replace('fill-opacity="1"', f'fill-opacity="{.3 if lit else .12}"')
             if role == 'finish': self.dot(cx, cy, cell*.6, None, HOLD[role], max(1, cell*.06), name='Finish / outer ring')
-        if chosen: self.vec(shapes(chosen), x, y, w, h, 'foreground', name=name+' / problem holds')
+            if labels and cell >= 18:
+                self.t(f'{"ABCDEFGHIJK"[c]}{r}', cx-cell*.45, cy-5, cell*.9, min(11,cell*.38), 700, 'background', 'center', lh=11)
         return h
 
     def thumb(self, x, y, prob, w=44, rows=18):
@@ -936,35 +938,51 @@ def no_results():
     b.dock('climb', lights=True)
 
 
-def detail_body(b, prob=DEMO, lit=False, y=96, pager='12 of 151'):
-    h = b.wall(64, y, 262, prob, lit=lit)
-    b.legend(y+h+10)
-    y += h+38
+def detail_body(b, prob=DEMO, lit=False, y=104, pager='12 of 151'):
     b.t(NAMES[prob['name']], 24, y, 250, 20, 700); b.grade(prob['grade'], 296, y-4, size=24)
     b.ic('seal', 24, y+32, 16, 'chart3', 'fill'); b.t(f'Benchmark · set by {prob["setter"]}', 46, y+32, 250, 12, 500, 'mutedForeground', lh=16)
-    return y+62
+    wall_y = y+66
+    h = b.wall(28, wall_y, 334, prob, lit=lit)
+    b.legend(wall_y+h+12)
+    return wall_y+h+52
 
 
 def detail_nav(b, lit=False, back='list', saved=False):
     b.nav(back=back, right=[('list_plus', 'add-circuit'), ('heart', None, 'fill' if saved else 'regular', 'destructive' if saved else 'foreground')])
-    if lit: b.chip('Lit on MoonBoard A', 82, 50, dot=OK, target='lights-sheet', size=13)
-    else: b.t('12 of 151', 70, 58, W-140, 14, 500, 'mutedForeground', 'center')
+    b.t('Lit on the wall' if lit else '12 of 151', 70, 54, W-140, 18, 600, 'foreground', 'center')
 
 
 def stats_row(b, y, prob=DEMO):
-    for i, (value, label) in enumerate([(sends(prob['sends']), 'sends'), (str(prob['stars']), 'stars'), (str(prob['tries']), 'avg tries'), ('Fair', 'for grade')]):
-        x = 24+i*87
-        b.box(x, y, 81, 56, 'card', 'border', 12, 'Stat / '+label); b.t(value, x, y+7, 81, 16, 600, 'foreground', 'center'); b.t(label, x, y+31, 81, 12, 500, 'mutedForeground', 'center', lh=16)
+    for i, (value, label) in enumerate([(sends(prob['sends']), 'sends'), (str(prob['stars']), 'stars'), (str(prob['tries']), 'avg tries')]):
+        x = 24+i*117
+        b.box(x, y, 108, 56, 'card', 'border', 12, 'Stat / '+label); b.t(value, x, y+7, 108, 16, 600, 'foreground', 'center'); b.t(label, x, y+31, 108, 12, 500, 'mutedForeground', 'center', lh=16)
 
 
 def detail():
     b = MB('detail', 'D4 Climb / problem', 3, 3, route='/climb/[id]', note='Swipe left or right for the next problem in the list. Without lights, Light up opens the connect flow.')
     detail_nav(b)
     y = detail_body(b)
-    stats_row(b, y)
+    # Statistics live below the first viewport; the pinned actions remain visible.
     fy = b.footer_bar()
     b.btn('Log send', 24, fy+12, 124, 56, 'outline', target='log-send'); b.btn('Light up', 160, fy+12, 206, 56, icon='bulb', target='lit', size=18); b.gesture()
 
+
+
+def detail_scrolled():
+    b = MB('detail-scrolled', 'D4b Climb / problem after scrolling', 8, 3,
+           route='/climb/problem/[id]', note='Same problem after a vertical scroll: stats and local log move into view under the pinned actions.')
+    detail_nav(b)
+    b.legend(108)
+    stats_row(b, 156)
+    b.t('Your log', 24, 286, 250, 20, 600)
+    b.ic('ok', 24, 336, 20, OK, 'fill')
+    b.t('Sent on try 3 · felt fair', 56, 336, 226, 14, 500)
+    b.t('Today', 288, 336, 78, 12, 500, 'mutedForeground', 'right')
+    b.box(24, 382, 342, 1, 'border', r=0, name='Log / divider')
+    fy = b.footer_bar()
+    b.btn('Log send', 24, fy+12, 124, 56, 'outline', target='log-send')
+    b.btn('Light up', 160, fy+12, 206, 56, icon='bulb', target='lit', size=18)
+    b.gesture()
 
 def lit_footer(b, tries=3):
     fy = b.footer_bar(176)
@@ -986,9 +1004,9 @@ def lit():
 def lost():
     b = MB('lost', 'D6 Climb / lights dropped', 5, 3, route='/climb/[id]', note='Losing the lights never blocks logging. The app retries quietly for 30 s.')
     detail_nav(b)
-    detail_body(b)
-    b.box(24, 92, 342, 52, 'accent', 'border', 14, 'Banner / lights lost', shadow=(6, 16, .12))
-    b.ic('bluetooth_off', 38, 107, 22); b.t('Lights dropped. Reconnecting', 68, 108, 240, 14, 500); b.tl('Retry', 308, 108, 46, 14, 600, 'foreground', 'right', 'scan')
+    b.box(24, 96, 342, 52, 'accent', 'border', 14, 'Banner / lights lost')
+    b.ic('bluetooth_off', 38, 110, 22); b.t('Lights dropped. Reconnecting', 68, 112, 286, 14, 500)
+    detail_body(b, y=168)
     lit_footer(b)
 
 
@@ -1307,7 +1325,7 @@ def build():
     connect_problem('blocked', 'C8 Connect / permission blocked', 7, 'lock', 'Bluetooth is blocked', 'Allow Bluetooth for 67slopers in Settings to use the lights. Everything else works without it.', 'Open Settings', 'Shown after a denied system prompt. Never nags again on its own.')
     connect_problem('none', 'C9 Connect / no board found', 8, 'search', 'No board found', 'Searched for 15 seconds without a reply.', 'Search again', 'Timeout state with the three checks that fix most cases.', ['The LED kit has power: its control box light is on.', 'No other phone has the board open in another app.', 'You are within a few metres of the board.'])
     connection_sheet()
-    climb_list(); filters_sheet(); no_results(); detail(); lit(); lost(); log_send(); sent()
+    climb_list(); filters_sheet(); no_results(); detail(); lit(); lost(); log_send(); sent(); detail_scrolled()
     create(); save_problem(); mine(); share(); session(); boards()
     circuits(); circuit(); add_to_circuit(); circuit_edit(); circuit_run(); circuit_done()
 

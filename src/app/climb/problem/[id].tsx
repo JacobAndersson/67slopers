@@ -9,13 +9,14 @@ import { ListPlusIcon } from 'phosphor-react-native/src/icons/ListPlus';
 import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { SealCheckIcon } from 'phosphor-react-native/src/icons/SealCheck';
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -24,7 +25,7 @@ import { ButtonLabel } from '@/components/button-label';
 import { Appear } from '@/components/appear';
 import { CircuitSheet } from '@/components/circuit-sheet';
 import { LogSendSheet } from '@/components/log-send-sheet';
-import { HoldLegend, MoonBoard, boardWidthFor } from '@/components/moon-board';
+import { HoldLegend, MoonBoard } from '@/components/moon-board';
 import { formatSends } from '@/components/problem-row';
 import { Screen } from '@/components/screen';
 import { StatPills } from '@/components/stat-pills';
@@ -39,7 +40,6 @@ import { filterProblems } from '@/lib/moonboard/filter';
 import { gradeAlt, gradeLabel } from '@/lib/moonboard/grades';
 import { light, lightsOff, useLights } from '@/lib/moonboard/lights';
 import { entriesFor, entryLabel, makeEntry, statusLabel } from '@/lib/moonboard/logbook';
-import { SPRING_SETTLE } from '@/lib/motion';
 import type { Feet } from '@/lib/moonboard/types';
 import { useClimb, useClimbSession } from '@/lib/store/climb';
 
@@ -82,8 +82,11 @@ export default function ProblemScreen() {
   const [adding, setAdding] = useState(false);
   // Deleting the problem or one log entry takes a second tap; `armed` says which is waiting.
   const { armed, fire } = useArmed<string>();
+  const reducedMotion = useReducedMotion();
   const dragX = useSharedValue(0);
-  const boardStyle = useAnimatedStyle(() => ({ transform: [{ translateX: dragX.get() }] }));
+  useLayoutEffect(() => {
+    dragX.set(0);
+  }, [dragX, id]);
 
   const problem = board?.find(id);
   const list = useMemo(
@@ -96,6 +99,11 @@ export default function ProblemScreen() {
   const index = list.findIndex((p) => p.id === id);
   const history = useMemo(() => entriesFor(log, id), [log, id]);
   const connected = status === 'connected';
+  const carouselWidth = Math.min(width - 48, 720);
+  const boardWidth = Math.min(carouselWidth - 8, 680);
+  const boardStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: -carouselWidth + dragX.get() }],
+  }));
 
   // The phone is on the floor while the problem is lit: the screen must not sleep.
   useEffect(() => {
@@ -122,27 +130,45 @@ export default function ProblemScreen() {
     if (index < 0 || !next) return;
     // Browsing only changes the wall when the climber asked for that.
     if (connected && browse) light(next, next.id);
-    router.replace(`/climb/problem/${next.id}`);
+    // Updating the dynamic segment keeps this screen mounted and avoids a native stack push.
+    router.setParams({ id: next.id });
   };
   const hasPrevious = index > 0;
   const hasNext = index >= 0 && index < list.length - 1;
-  // The board follows the finger; at either end of the list it resists instead of stopping.
+  // The neighbouring walls are mounted before the finger moves, so the wall follows immediately.
+  const neighbours = [
+    hasPrevious ? list[index - 1] : null,
+    problem,
+    hasNext ? list[index + 1] : null,
+  ];
+  // A vertical movement still belongs to Screen's scroll view.
   const swipe = Gesture.Pan()
     .activeOffsetX([-12, 12])
     .failOffsetY([-16, 16])
     .onChange((event) => {
       const free = event.translationX < 0 ? hasNext : hasPrevious;
-      dragX.set(free ? event.translationX : event.translationX / 4);
+      if (!reducedMotion) dragX.set(free ? event.translationX : event.translationX / 4);
     })
     .onEnd((event) => {
       const far =
         Math.abs(event.translationX) > SWIPE_DISTANCE || Math.abs(event.velocityX) > SWIPE_SPEED;
       const step = event.translationX < 0 ? 1 : -1;
-      if (far && (step > 0 ? hasNext : hasPrevious)) runOnJS(go)(step);
-      dragX.set(withSpring(0, SPRING_SETTLE));
+      if (far && (step > 0 ? hasNext : hasPrevious)) {
+        if (reducedMotion) {
+          dragX.set(0);
+          runOnJS(go)(step);
+        } else {
+          dragX.set(
+            withSpring(-step * carouselWidth, { duration: 400, dampingRatio: 1 }, (finished) => {
+              if (finished) runOnJS(go)(step);
+            })
+          );
+        }
+      } else {
+        dragX.set(withSpring(0, { duration: 400, dampingRatio: 0.8, velocity: event.velocityX }));
+      }
     });
   const state = statusLabel(board.status.get(problem.id));
-  const boardWidth = boardWidthFor(width);
 
   const footer = lit ? (
     <View className="gap-3">
@@ -210,13 +236,6 @@ export default function ProblemScreen() {
             </View>
           </Appear>
         ) : null}
-        <GestureDetector gesture={swipe}>
-          <Animated.View className="gap-3" style={boardStyle}>
-            <MoonBoard width={boardWidth} rows={board.rows} holds={problem} lit={lit} />
-            <HoldLegend />
-          </Animated.View>
-        </GestureDetector>
-
         <View className="flex-row items-start justify-between gap-3">
           <View className="flex-1 gap-1.5">
             <Text className="text-xl font-bold">{problem.name}</Text>
@@ -238,6 +257,26 @@ export default function ProblemScreen() {
             </Text>
           </View>
         </View>
+
+        <GestureDetector gesture={swipe}>
+          <View className="self-center overflow-hidden" style={{ width: carouselWidth }}>
+            <Animated.View className="flex-row" style={boardStyle}>
+              {neighbours.map((item, position) => (
+                <View key={position} className="items-center" style={{ width: carouselWidth }}>
+                  {item ? (
+                    <MoonBoard
+                      width={boardWidth}
+                      rows={board.rows}
+                      holds={item}
+                      lit={item.id === problem.id && lit}
+                    />
+                  ) : null}
+                </View>
+              ))}
+            </Animated.View>
+          </View>
+        </GestureDetector>
+        <HoldLegend />
 
         {state ? (
           // Keyed by what it says, so a fresh send lands with a small beat.

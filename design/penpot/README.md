@@ -9,7 +9,7 @@ Keep editable design exports (`.penpot`) in this directory. The live workspace i
 
 ## Current app reference
 
-`67slopers.penpot` contains the 75-board app recreation, 15 design-system boards and the 42-board MoonBoard exploration, with local
+`67slopers.penpot` contains the 75-board app recreation, 16 design-system boards (including paired light/dark color guidance) and the 43-board MoonBoard exploration, with local
 images, shared colors, typography, native tokens and reusable component variants. Use this file for portable design review/import;
 use the live Penpot file for collaborative editing. Duplicate boards for new explorations.
 Custom fonts belong to the Penpot team and are not embedded in the export. On another team,

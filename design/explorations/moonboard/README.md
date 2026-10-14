@@ -3,11 +3,13 @@
 Status: designed and implemented on 9 October 2026 (see the Climb tab and `src/lib/moonboard/`).
 The boards below are the design reference; where the app differs, the list at the end says so.
 
-The draft lives on the Penpot page **07 MoonBoard & dock**: 42 boards, all editable.
+The draft lives on the Penpot page **07 MoonBoard & dock**: 43 boards, all editable.
 [Open it in Penpot](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=3da52804-324a-803a-8008-ba7ae8423fdc&page-id=f135c210-f44f-4df4-a087-1e4ae0026f09).
 Review images are in [`../../exports/moonboard/`](../../exports/moonboard/) (`review-A.png` to
 `review-F.png` are the contact sheets), and [inventory.json](inventory.json) maps every board to
-its proposed route and Penpot ID.
+its proposed route and Penpot ID. [Problem detail](../../exports/moonboard/mb-detail.png),
+[lit board](../../exports/moonboard/mb-lit.png), and [scrolled details](../../exports/moonboard/mb-detail-scrolled.png)
+show the current app hierarchy; the live [D4–D8 boards](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=3da52804-324a-803a-8008-ba7ae8423fdc&page-id=f135c210-f44f-4df4-a087-1e4ae0026f09&board-id=d803bf4d-537b-5e0f-8a39-462b1268c48f) are editable.
 
 ## The idea
 
@@ -66,16 +68,23 @@ Main actions are linked, so the flows can be clicked through in Penpot's View mo
 - **No account.** There is no Moon login, so sends do not sync with the official logbook.
 - **Instant startup.** Home reads only the last problem's name and grade. Board data and Bluetooth
   load when Climb opens.
-- **One appearance.** Same palette and Geist Mono. Three colours are new and used only for
-  start, hold and finish (`67slopers/MoonBoard` in the Penpot assets). They follow the LED
-  convention and are always paired with a legend; the finish hold also has a second ring.
+- **Light and dark.** Same Geist Mono and semantic palette roles in both appearances. Three
+  colors identify start, hold and finish (`67slopers/MoonBoard` in the Penpot assets). They follow
+  the LED convention and are paired with a legend and selected hold coordinates; finish also
+  has a second ring. Existing MoonBoard Penpot screen boards show the light appearance.
 
 ## Open questions
 
 - **Problem data.** Which list may the app ship, and under what terms? The sample rows are real
   Masters 2019 40° benchmarks from the public guidebook at <https://moonboard.simonchase.com/>.
-- **Hold artwork.** The boards are schematic: every grid position gets a generic hold. Real hold
-  shapes per set need drawing or licensing.
+- **Hold artwork.** The boards are schematic: every grid position gets a generic hold. The app
+  now enlarges the wall and labels selected coordinates, but this is not an accurate picture
+  of any physical grip. Exact shapes need original photographed/traced artwork with a verified
+  position map for 2016, 2017, 2019 and Mini 2020, or written redistribution permission from
+  Moon Climbing for each layout and hold-set image. Boardsesh holds apparently came from the
+  MoonBoard app ([import commit](https://github.com/boardsesh/boardsesh/commit/5e2ecac2e1f8));
+  that repository's license does **not** grant rights to Moon Climbing's artwork. Do not
+  copy those files into the app without permission.
 - **Newer control boxes.** The protocol below is proven on the V1 box only. V4 and V5 boxes are
   assumed to speak it; test on one.
 - **Lights off.** No clear command is documented. An empty problem should blank the wall.
@@ -112,13 +121,17 @@ node design/penpot/render_moonboard.mjs
 ```
 
 `--publish` updates this generator's own shapes on page 07 and re-exports the `.penpot` file. It
-overwrites manual edits to generated shapes, so once the boards are being edited by hand, export
-from Penpot instead of re-running it. Hand-made shapes and the other pages are never touched.
+overwrites manual edits to generated shapes. To update just the six app-matched problem boards
+without touching other page-07 boards, run `python3 design/penpot/publish_problem_design.py`.
+Review the live Penpot renders before versioning the export. Hand-made shapes and other pages
+are never touched by the targeted publisher.
 
 ## Where the app differs from the boards
 
-- The problem list keeps the star rating on untouched rows and has no stat tile for how the
-  grade feels; own log entries record that instead.
+- The problem list keeps the star rating on untouched rows. The problem detail boards now match
+  the app: title and grade above the larger, coordinate-labeled wall; three stat pills and the
+  local log are below the first viewport (`D4b` shows the scrolled state). There is no stat tile
+  for how the grade feels; own log entries record that instead.
 - "Climb these again" on a board session saves the session's problems as a circuit and starts
   it, so the evening can be repeated in order.
 - Lights are remembered once, not per board: switching boards keeps the same LED kit.
