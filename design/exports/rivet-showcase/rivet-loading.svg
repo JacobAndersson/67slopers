@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -16 80 92" width="80" height="92" fill="#302522" role="img" aria-labelledby="title">
+  <title id="title">Rivet loading</title>
+  <style>
+    rect { animation: pitch-wave 1200ms ease-in-out infinite; }
+    rect:nth-of-type(2) { animation-delay: 120ms; }
+    rect:nth-of-type(3) { animation-delay: 240ms; }
+    @keyframes pitch-wave {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-12px); }
+    }
+    @media (prefers-reduced-motion: reduce) { rect { animation: none; } }
+  </style>
+  <rect x="0" y="22" width="16" height="46" rx="8"/>
+  <rect x="24" y="11" width="16" height="46" rx="8"/>
+  <rect x="48" y="0" width="16" height="46" rx="8"/>
+</svg>
