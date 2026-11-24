@@ -14,15 +14,7 @@ module.exports = {
           "600": "#141A2E",
           "700": "#0B0F1C"
         },
-        "glow": {
-          "100": "#FEF0EB",
-          "200": "#FCD9CD",
-          "300": "#F9B9A4",
-          "400": "#F28C6E",
-          "500": "#E2664A",
-          "600": "#B94A33",
-          "700": "#7E3324"
-        },
+        "glow": "#F28C6E",
         "glacier": {
           "100": "#F0F7F9",
           "200": "#DDECF1",
@@ -63,6 +55,50 @@ module.exports = {
         "pill": "9999px",
         "card": "28px",
         "input": "12px"
+      },
+      "fontSize": {
+        "timer": [
+          "200px",
+          {
+            "letterSpacing": "-0.03em",
+            "fontWeight": "900"
+          }
+        ],
+        "large-title": [
+          "34px",
+          {
+            "letterSpacing": "-0.01em",
+            "fontWeight": "900"
+          }
+        ],
+        "title": [
+          "22px",
+          {
+            "letterSpacing": "0em",
+            "fontWeight": "800"
+          }
+        ],
+        "body": [
+          "17px",
+          {
+            "letterSpacing": "0em",
+            "fontWeight": "600"
+          }
+        ],
+        "caption": [
+          "13px",
+          {
+            "letterSpacing": "0em",
+            "fontWeight": "700"
+          }
+        ],
+        "label": [
+          "12px",
+          {
+            "letterSpacing": "0.14em",
+            "fontWeight": "800"
+          }
+        ]
       }
     }
   }

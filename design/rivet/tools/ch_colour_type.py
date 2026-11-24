@@ -113,7 +113,7 @@ def build(bk):
         b.text(t, x, 730, w=232, size=17, font=F, weight=800, color=ON_DARK, align='center')
         b.text(INFO[k][0], x, 758, w=232, size=14, font=F, weight=600, color=ON_DARK_MUTED, align='center')
 
-    bk.opener('04', 'type', 'Typography', 'One rounded family, from a watch face\nto the side of a building.', None, bg=C['snow'])
+    bk.opener('04', 'type', 'Typography', 'One rounded family, from a watch face\nto the side of a building.', 'cloud-sea')
     # 19 Typeface --------------------------------------------------------------
     b = bk.spread(19, 'typeface', 'Typeface', '04 Typography  ·  Typeface')
     b.text('Aa', M - 10, 130, size=520, font=F, weight=900, color=C['night'], lh=1, ls=-14)
@@ -132,7 +132,7 @@ def build(bk):
     bk.h2(b, 'One family, clear steps', M, 150, size=64)
     bk.label(b, 'Print & web', M, 240, color=C['glow'])
     scale = [('Display', 900, 120, 'Climb Harder', '−2.5%  ·  1.0'), ('Headline', 800, 64, 'Two years in. Stuck.', '−1.5%  ·  1.1'),
-             ('Title', 800, 36, 'Max hangs, 20 mm edge', '−1%  ·  1.2'), ('Body', 500, 21, 'Three sets of six hangs. Rest three minutes between sets.', '0  ·  1.5'),
+             ('Title', 800, 36, 'Max hangs, 20 mm edge', '−1%  ·  1.2'), ('Body', 500, 21, 'Six hangs of ten seconds. Recover three minutes between each.', '0  ·  1.5'),
              ('Label', 800, 14, 'SET 2 OF 5  ·  NEXT UP', '+14%  ·  caps'), ('Timer', 900, 96, '2:41', '−3%  ·  tabular')]
     y = 290
     for nm, w, s, sample, spec in scale:
@@ -150,7 +150,7 @@ def build(bk):
     bk.h2(b, 'Sizes for a phone under a board', M, 150, size=64)
     bk.body(b, 'App sizes are in points and follow Dynamic Type and Android font scaling. Numbers use tabular figures (tnum) so a countdown never jitters. Session screens use 17 pt and up; 12 and 13 pt are for history and settings only.', M, 240, w=1000)
     app = [('Timer', 900, 200, 'tnum, −3%', '7'), ('Large title', 900, 34, '−1%', 'Max hangs'), ('Title', 800, 22, '0', 'This week'),
-           ('Body', 600, 17, '0', 'Three sets of six hangs.'), ('Caption', 700, 13, '0', 'Fri · 5 of 5 sets'), ('Label', 800, 12, '+14%, caps', 'TODAY')]
+           ('Body', 600, 17, '0', 'Six hangs of ten seconds.'), ('Caption', 700, 13, '0', 'Fri · 5 of 5 sets'), ('Label', 800, 12, '+14%, caps', 'TODAY')]
     for i, (nm, w, sz, sp, ex) in enumerate(app):
         y = 380 + i * 110
         if i == 0:
@@ -169,12 +169,12 @@ def build(bk):
     b.text('How forty climbers\ngot unstuck', M + 56, 250, w=720, size=60, font=F, weight=900, color=C['night'], lh=1.02, ls=-1.4)
     bk.body(b, 'We asked climbers at every level the same question: what finally worked? Almost nobody said “trying harder”. They said structure, strength work, a bit more rest, and finding the fun again.', M + 56, 440, w=700, size=22)
     b.text('“I stopped trying to\nflash everything and\nstarted training\nlike it mattered.”', M + 56, 680, w=700, size=40, font=F, weight=800, color=C['night'], lh=1.15, ls=-0.6)
-    bk.label(b, 'Sara, 6B to 7A in one season', M + 56, 900)
+    bk.label(b, 'Sara, 6B to 7A in one season  ·  illustrative', M + 56, 900)
     b.rect(1000, 160, 800, 900, C['night'], r=28, name='Product')
     bk.label(b, 'Today', 1056, 210, color=ON_DARK_MUTED)
-    b.text('Max hangs', 1056, 250, size=60, font=F, weight=900, color=ON_DARK, ls=-1.4)
-    b.text('20 mm edge  ·  25 min', 1056, 330, size=22, font=F, weight=600, color=ON_DARK_MUTED)
-    for i, (k, v) in enumerate([('Sets', '5'), ('Hang', '10 s'), ('Rest', '3 min')]):
+    b.text('Repeaters', 1056, 250, size=60, font=F, weight=900, color=ON_DARK, ls=-1.4)
+    b.text('20 mm edge  ·  20 min', 1056, 330, size=22, font=F, weight=600, color=ON_DARK_MUTED)
+    for i, (k, v) in enumerate([('Sets', '5'), ('Hang', '7 s'), ('Rest', '3 s')]):
         x = 1056 + i * 240
         b.text(v, x, 430, size=64, font=F, weight=900, color=ON_DARK, ls=-1.5)
         bk.label(b, k, x, 516, color=ON_DARK_MUTED)

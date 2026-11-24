@@ -8,34 +8,39 @@ N = C['night']
 def signatures(bk):
     b = bk.spread(0, 'signatures', 'Signatures', '02 Identity  ·  Signatures')
     bk.h2(b, 'Three things only Rivet does', M, 150, size=64)
-    bk.body(b, 'A logo is not a brand. These three details carry Rivet when the logo is nowhere in sight.', M, 240, w=900)
-    cols = [(M, 'The step', 'Layouts climb. Headline, body and image sit on three baselines, each one unit higher than the last, the way the bars do. Used on posters, covers and hero sections.'),
+    bk.body(b, 'A logo is not a brand. These three carry Rivet when the logo is nowhere in sight.', M, 240, w=900)
+    cols = [(M, 'The step', 'Layouts climb, like the bars. Chapter openers set the caption low-left, the title in the middle and the number high-right, each on a short rule. Any layout with three parts may climb the same way.'),
             (M + 570, 'The lift', 'Everything that arrives rises 8 px and settles on a spring. Loading lifts the three bars in turn; nothing slides in from the side.'),
-            (M + 1140, 'The pill dot', 'The i in Rivet is dotted with a small upright bar. In display type we repeat it once per layout, as the only ornament allowed.')]
+            (M + 1140, 'The colour of the hang', 'Glow appears only while someone hangs. A phone glowing under a board, seen across the gym, is Rivet with no logo at all. That is why Glow is kept for the hang.')]
     for x, t, s in cols:
         b.rect(x, 360, 540, 400, '#FFFFFF', r=28, stroke='#141A2E14', name='Signature / ' + t)
         bk.rule(b, x, 800, 540)
         b.text(t, x, 824, size=34, font=F, weight=900, color=N, ls=-0.6)
         bk.body(b, s, x, 880, w=520, size=18)
-    # the step: three blocks rising
-    for i, (w, h) in enumerate([(130, 70), (130, 70), (130, 70)]):
-        x = M + 50 + i * 160; y = 600 - i * 90
-        b.rect(x, y, w, h, N if i == 2 else ('#141A2E33' if i == 0 else '#141A2E66'), r=12, name='Step block')
-    for i, t in enumerate(['Image', 'Body', 'Headline']):
-        b.text(t, M + 50 + i * 160, 680 - i * 90, size=14, font=F, weight=800, color=MUTED)
+    # the step: a chapter opener in miniature
+    ox, oy = M + 40, 400
+    b.rect(ox, oy, 460, 288, N, r=14, name='Opener')
+    b.rect(ox + 28, oy + 222, 22, 3, ON_DARK, r=1.5, name='Step rule'); b.text('A caption, low', ox + 28, oy + 234, size=12, font=F, weight=600, color=ON_DARK)
+    b.text('Identity', ox + 160, oy + 112, size=40, font=F, weight=900, color=ON_DARK, ls=-1)
+    b.text('02', ox + 340, oy + 36, w=92, size=40, font=F, weight=900, color=ON_DARK, ls=-1.2, align='right', lh=1)
+    b.rect(ox + 410, oy + 26, 22, 3, ON_DARK, r=1.5, name='Step rule')
     # the lift: before/after bars
     pitch(b, M + 570 + 90, 470, 160, N)
     pitch(b, M + 570 + 290, 450, 160, N, lifts=(0, 8, 0))
     b.text('rest', M + 570 + 130, 660, size=14, font=F, weight=800, color=MUTED); b.text('lift', M + 570 + 340, 660, size=14, font=F, weight=800, color=MUTED)
-    # the pill dot
-    wordmark(b, M + 1140 + 70, 460, 110, N)
+    # the colour of the hang: a phone in Glow, under a dark board
+    gx = M + 1140
+    b.rect(gx + 40, 400, 460, 320, '#0B0F1C', r=18, name='Gym at night')
+    b.rect(gx + 110, 430, 320, 40, '#2A2F40', r=8, name='Board')
+    b.rect(gx + 220, 520, 100, 170, C['glow'], r=16, name='Phone / Hang')
+    b.text('7', gx + 220, 560, w=100, size=72, font=F, weight=900, color=N, align='center', lh=1)
 
 def dataviz(bk):
     b = bk.spread(0, 'dataviz', 'Data visualisation', '03 Colour  ·  Data visualisation')
     bk.h2(b, 'Charts that read at a glance', M, 150, size=64)
     bk.body(b, 'Training data is personal and small: a week, a season, a grade. Charts use Night for the climber, Glacier and Dusk for comparison, and never Glow. One idea per chart, labels on the data, no legends.', M, 240, w=1000)
     # categorical
-    bk.label(b, 'Categorical  ·  max four series', M, 400)
+    bk.label(b, 'Categorical palette  ·  max four series', M, 400)
     cats = [('Hangs', N), ('Board', SCALES['dusk'][3]), ('Climbing', SCALES['glacier'][4]), ('Rest', C['stone'])]
     for i, (t, c) in enumerate(cats):
         b.rect(M + i * 150, 440, 130, 60, c, r=12); b.text(t, M + i * 150, 512, size=15, font=F, weight=800, color=N)
@@ -45,14 +50,20 @@ def dataviz(bk):
     # example chart: season load, stacked, square-ended bars
     x0, y0 = 1000, 420
     b.rect(x0, y0 - 20, 800, 560, '#FFFFFF', r=28, stroke='#141A2E14')
-    b.text('Hang time per week', x0 + 32, y0 + 4, size=22, font=F, weight=900, color=N)
+    b.text('Training per week, minutes', x0 + 32, y0 + 4, size=22, font=F, weight=900, color=N)
     weeks = [(12, 8, 20), (14, 6, 22), (16, 10, 18), (10, 4, 26), (18, 12, 20), (20, 10, 24), (22, 14, 18), (14, 6, 28)]
     for i, (hg, bd, cl) in enumerate(weeks):
-        x = x0 + 60 + i * 88; yb = y0 + 450
-        for v, c in ((cl, SCALES['glacier'][4]), (bd, SCALES['dusk'][3]), (hg, N)):
-            h = v * 4.2; yb -= h; b.rect(x, yb, 56, h - 3, c, r=4)
+        x = x0 + 60 + i * 80; yb = y0 + 450
+        tot = (hg + bd + cl) * 4.2
+        with b.frame(x, yb - tot, 56, tot, None, r=28, name='Bar'):   # one pill per week, segments inside
+            for v, c in ((cl, SCALES['glacier'][4]), (bd, SCALES['dusk'][3]), (hg, N)):
+                h = v * 4.2; yb -= h; b.rect(x, yb, 56, h, c); b.rect(x, yb, 56, 3, '#FFFFFF', name='Gap')
         b.text(f'W{i+1}', x, y0 + 462, w=56, size=13, font=F, weight=800, color=MUTED, align='center')
-    b.text('22 min', x0 + 60 + 6 * 88 - 6, y0 + 450 - 54 * 4.2 - 30, size=15, font=F, weight=900, color=N)
+    b.text('54', x0 + 60 + 6 * 80, y0 + 450 - 54 * 4.2 - 26, w=56, size=15, font=F, weight=900, color=N, align='center')
+    # labels on the data, beside the last week: no legend
+    hg, bd, cl = weeks[-1]; xl = x0 + 60 + 7 * 80 + 66; yb = y0 + 450
+    for v, t in ((cl, 'Climbing'), (bd, 'Board'), (hg, 'Hangs')):
+        h = v * 4.2; b.text(t, xl, yb - h / 2 - 10, size=13, font=F, weight=800, color=N); yb -= h
 
 def grids(bk):
     b = bk.spread(0, 'grids', 'Layout grids', '04 Typography  ·  Layout grids')
@@ -83,7 +94,7 @@ def photo_rules(bk):
     b = bk.spread(0, 'photo-dos', 'Photography do and don’t', '05 Imagery  ·  Photography do and don’t')
     bk.h2(b, 'Choosing a photograph', M, 150, size=64)
     dos = [('aiguilles', 'Do: a big place, a small person, or nobody at all.'), ('chalked-fingers', 'Do: real effort, close enough to feel the edge.'), ('font-rest', 'Do: the quiet between attempts.')]
-    donts = [('gym-wall', 'Don’t: busy gyms with nowhere for the eye to rest.'), ('spires-sky', 'Don’t: flat noon light and empty blue skies.'), ('el-cap', 'Don’t: postcard views without tension or scale.')]
+    donts = [('gym-wall', 'Don’t: busy gyms with nowhere for the eye to rest.'), ('spires-sky', 'Don’t: flat noon light and empty blue skies.'), ('el-cap', 'Don’t: the tourist snapshot. Eye level, midday, from the car park.')]
     for row, items in enumerate((dos, donts)):
         for i, (ph_, t) in enumerate(items):
             x, y = M + i * 570, 280 + row * 420

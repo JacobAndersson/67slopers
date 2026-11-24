@@ -5,3 +5,5 @@ fonts/*
 kit/posters/
 # The editable Penpot export grows past 100 MB (Penpot keeps superseded uploads); rebuild with tools/*.py.
 Rivet-brand-book.penpot
+kit/templates/social-*.png
+kit/templates/appstore-*.png

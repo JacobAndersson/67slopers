@@ -10,15 +10,6 @@
     "stone": "#E4E0DA"
   },
   "scale": {
-    "glow": {
-      "100": "#FEF0EB",
-      "200": "#FCD9CD",
-      "300": "#F9B9A4",
-      "400": "#F28C6E",
-      "500": "#E2664A",
-      "600": "#B94A33",
-      "700": "#7E3324"
-    },
     "glacier": {
       "100": "#F0F7F9",
       "200": "#DDECF1",
@@ -60,24 +51,30 @@
     "light": {
       "canvas": "#F8F6F3",
       "surface": "#FFFFFF",
+      "raised": "#E4E0DA",
       "text": "#141A2E",
       "text-muted": "#6B6E73",
+      "line": "#141A2E14",
+      "track": "#E4E0DA",
       "action": "#141A2E",
       "on-action": "#F8F6F3",
       "state-hang": "#F28C6E",
       "state-rest": "#C3DCE5",
-      "line": "#141A2E1F"
+      "state-recover": "#F8F6F3"
     },
     "dark": {
       "canvas": "#0B0F1C",
       "surface": "#141A2E",
+      "raised": "#2E3650",
       "text": "#F8F6F3",
       "text-muted": "#8C92A6",
+      "line": "#FFFFFF1A",
+      "track": "#1F2640",
       "action": "#F8F6F3",
       "on-action": "#141A2E",
       "state-hang": "#F28C6E",
       "state-rest": "#C3DCE5",
-      "line": "#FFFFFF1A"
+      "state-recover": "#141A2E"
     }
   },
   "radius": {
@@ -99,17 +96,52 @@
       700,
       800,
       900
-    ]
+    ],
+    "features": {
+      "timer": "tnum"
+    }
+  },
+  "type": {
+    "timer": {
+      "weight": 900,
+      "size": 200,
+      "tracking-em": -0.03
+    },
+    "large-title": {
+      "weight": 900,
+      "size": 34,
+      "tracking-em": -0.01
+    },
+    "title": {
+      "weight": 800,
+      "size": 22,
+      "tracking-em": 0
+    },
+    "body": {
+      "weight": 600,
+      "size": 17,
+      "tracking-em": 0
+    },
+    "caption": {
+      "weight": 700,
+      "size": 13,
+      "tracking-em": 0
+    },
+    "label": {
+      "weight": 800,
+      "size": 12,
+      "tracking-em": 0.14
+    }
   },
   "motion": {
-    "lift": "8px",
+    "lift": 8,
     "spring": {
       "stiffness": 380,
       "damping": 32
     },
-    "quick": "160ms",
-    "settle": "320ms",
-    "reduced": "120ms crossfade"
+    "quick-ms": 160,
+    "settle-ms": 320,
+    "reduced": "crossfade 120 ms, no lift"
   },
   "glow-rule": "Glow is the colour of the hang. It fills the Hang screen and the app icon, and colours the symbol on Night. Nowhere else."
 }

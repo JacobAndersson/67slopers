@@ -8,8 +8,9 @@ def web_landing(p, paper=False):
     bg = C['paper'] if paper else C['snow']; N = C['night']
     p.rect(0, 0, 1440, 2700, bg, name='Page')
     lockup(p, 64, 34, 26, N)
-    for i, t in enumerate(['Training', 'Method', 'Gear', 'Field notes']):
-        p.text(t, 520 + i * 130, 38, size=17, font=F, weight=700, color=N)
+    nx = 520
+    for t in ['Training', 'Method', 'Gear', 'Field notes']:   # even 48 px gaps, measured
+        p.text(t, nx, 38, size=17, font=F, weight=700, color=N); nx += p.doc.measure(t, F, 700, 17) + 48
     p.rect(1216, 24, 160, 50, N, r=25); p.text('Get the app', 1216, 38, w=160, size=16, font=F, weight=800, color=ON_DARK, align='center')
     bk_label = lambda s, x, y, c=book.GLOW_TEXT: p.text(s, x, y, size=14, font=F, weight=800, color=c, ls=2, upper=True)
     bk_label('Hangboard training, made simple', 64, 180)
@@ -35,7 +36,7 @@ def web_landing(p, paper=False):
     # section 3: dark band
     p.rect(0, 1760, 1440, 640, N)
     p.image(PH / 'red-ridge.jpg', 720, 1760, 720, 640)
-    p.text('TRAIN FOR THE MOUNTAINS', 64, 1860, size=14, font=F, weight=800, color=C['glow'], ls=2)
+    p.text('TRAIN FOR THE MOUNTAINS', 64, 1860, size=14, font=F, weight=800, color=ON_DARK_MUTED, ls=2)
     p.text('The board is\nwhere it starts.', 64, 1896, size=72, font=F, weight=900, color=ON_DARK, lh=1.0, ls=-2)
     p.text('Every hang in a garage is a step toward a bigger wall. Rivet keeps the plan, you keep the dream.', 64, 2090, w=520, size=20, font=F, weight=500, color=ON_DARK_MUTED, lh=1.5)
     p.rect(64, 2210, 200, 60, ON_DARK, r=30); p.text('Start training', 64, 2228, w=200, size=18, font=F, weight=800, color=N, align='center')
@@ -47,7 +48,7 @@ def web_landing(p, paper=False):
 
 def build(bk):
     N = C['night']
-    bk.opener('06', 'digital', 'Digital', 'Big, soft, obvious. Built for a phone\npropped under a board.', None)
+    bk.opener('06', 'digital', 'Digital', 'Big, soft, obvious. Built for a phone\npropped under a board.', 'garage-board')
     # 27 UI components ----------------------------------------------------------
     b = bk.spread(27, 'ui', 'Interface', '06 Digital  ·  Interface components')
     bk.h2(b, 'Interface', M, 150, size=64)
@@ -196,7 +197,7 @@ def build(bk):
         with b.frame(x, y, 520, 520, C['glow'], r=20, name='Post / ' + kind):
             if kind == 'post-photo':
                 b.image(PH / 'font-rest.jpg', x, y, 520, 520); bk.scrim(b, x, y, 520, 520, to=0.75)
-                b.rect(x, y, 520, 120, {'fillOpacity': 1, 'fillColorGradient': {'type': 'linear', 'startX': 0.5, 'startY': 0, 'endX': 0.5, 'endY': 1, 'width': 1, 'stops': [{'color': '#0B0F1C', 'opacity': 0.7, 'offset': 0}, {'color': '#0B0F1C', 'opacity': 0, 'offset': 1}]}})
+                shade(b, x, y, 520, 520, [(0, 0.7), (120 / 520, 0), (1, 0)])
                 lockup(b, x + 36, y + 448, 18, ON_DARK)
                 b.text('Rest Harder.', x + 37, y + 478, size=13, font=F, weight=700, color='#F8F6F3CC')
             elif kind == 'post-quote':

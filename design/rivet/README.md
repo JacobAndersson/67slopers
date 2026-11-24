@@ -6,8 +6,9 @@ A clean-slate brand for Rivet (formerly 67slopers), built in the local Penpot in
 
 - `Rivet-brand-book.pdf`: the book, 74 spreads, exported from Penpot.
 - `Rivet-brand-book.penpot`: the editable Penpot file (local only, not committed: it passes 100 MB; export it with `Doc().p.export(...)` from `tools/pp.py`). Pages: **02 Rivet Brand Book**, **01 Explorations**
-  (marks, rounded type, palettes, photography), **03 Posters** (print-size artboards), **04 Icons**.
-- `kit/`: logo masters, colour tokens, custom icons, Nunito and motion. See `kit/README.md`.
+  (marks, rounded type, palettes, photography), **03 Posters** (5:7 print artboards), **04 Icons**, **05 Templates** (business card, social, story, App Store).
+- `kit/`: logo masters (SVG, PDF, padded PNG), tokens (JSON, CSS, Tailwind, Swift, Kotlin), templates,
+  custom icons, Nunito, CMYK poster PDFs and motion. See `kit/README.md`.
 
 Decisions: name Rivet ("riveted": total focus), the **Pitch** symbol (three equal bars, each a step
 higher), **Nunito** (wordmark drawn from Nunito Black with a bar for the i-dot), the **Alpenglow**
@@ -24,11 +25,12 @@ V=design/.local/venv/bin/python   # venv: fonttools, pillow, numpy, skia-python,
 cd design/rivet/tools
 $V fonts_upload.py                # team fonts (fonts/)
 $V explore.py                     # page 01
-$V posters.py                     # page 03 + design/.local/rivet/posters/*.png
+$V posters.py                     # page 03 + design/.local/rivet/posters/*.png and *.pdf
+$V templates.py                   # page 05 + design/.local/rivet/templates/
 $V mockup.py                      # photo mockups in design/.local/rivet/mock/
 $V build_all.py --render          # page 02 (two passes for contents page numbers) + PNG previews
 $V icons_page.py                  # page 04
-$V kit.py                         # kit/
+$V kit.py                         # kit/ (needs Ghostscript for the CMYK posters)
 $V pdf.py                         # Rivet-brand-book.pdf
 ```
 

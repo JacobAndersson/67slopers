@@ -6,21 +6,21 @@ from brand import pitch_parts, wordmark_path
 R3 = LOCAL / 'r3d'
 N = C['night']
 
+PW, PH_ = 1200, 1680   # posters are 5:7: 50 x 70 cm, 20 mm Snow border
 PRINT_SERIES = [('ridge', 'golden-spires'), ('corner', 'granite-corner'), ('aiguilles', 'aiguilles')]
 
 def print_poster(p, photo, line='Climb Harder.'):
-    """Editorial print: full photo in a thin Snow border, small lockup low-left. 1200 x 1800."""
-    p.rect(0, 0, 1200, 1800, '#FFFFFF')
-    p.image(PH / f'{photo}.jpg', 48, 48, 1104, 1704)
-    p.rect(48, 1300, 1104, 452, {'fillOpacity': 1, 'fillColorGradient': {'type': 'linear', 'startX': 0.5, 'startY': 0, 'endX': 0.5, 'endY': 1, 'width': 1,
-           'stops': [{'color': '#0B0F1C', 'opacity': 0, 'offset': 0}, {'color': '#0B0F1C', 'opacity': 0.55, 'offset': 1}]}})
-    lockup(p, 110, 1596, 34, ON_DARK)
-    p.text(line, 112, 1660, size=20, font=F, weight=700, color='#F8F6F3CC')
+    """Editorial print: full photo in a thin Snow border, small lockup low-left. PW x PH_, 5:7 (50 x 70 cm)."""
+    p.rect(0, 0, PW, PH_, '#FFFFFF')
+    p.image(PH / f'{photo}.jpg', 48, 48, PW - 96, PH_ - 96)
+    shade(p, 48, 48, PW - 96, PH_ - 96, [(0, 0), ((PH_ - 500 - 48) / (PH_ - 96), 0), (1, 0.55)])
+    lockup(p, 110, PH_ - 204, 34, ON_DARK)
+    p.text(line, 112, PH_ - 140, size=20, font=F, weight=700, color='#F8F6F3CC')
 
-POSTER_PHOTO = {'summit': 'alpenglow-spires', 'layback': 'layback-corner', 'allez': 'mist-snow', 'peak': 'pink-peak'}
+POSTER_PHOTO = {'summit': 'alpenglow-spires', 'layback': 'layback-corner', 'mist': 'mist-snow', 'peak': 'pink-peak'}
 
 def poster(p, kind):
-    """1200 x 1800 poster: every poster is a quiet print."""
+    """Poster: every poster is a quiet print."""
     print_poster(p, POSTER_PHOTO[kind])
 
 def series_poster(q, verb, ph_):
@@ -31,10 +31,10 @@ SERIES = [('Hang', 'chalked-fingers'), ('Rest', 'font-rest'), ('Climb', 'layback
 
 def campaign(p, w, h, story=False, b_name=False):
     """Launch campaign, quiet: the photo does the talking; small lockup and line low-left."""
-    if story: p.image(PH / 'layback-corner.jpg', -0.12 * h * 1.5, 0, h * 1.5, h, name='Campaign photo')
+    # tall crops keep the left edge: the lockup lands on the plain wall, never on the rubble
+    if story: p.image(PH / 'layback-corner.jpg', 0, 0, h * 1.5, h, name='Campaign photo')
     else: p.image(PH / 'layback-corner.jpg', 0, 0, w, h, name='Render / campaign' if b_name else 'Campaign photo')
-    p.rect(0, h * 0.6, w, h * 0.4, {'fillOpacity': 1, 'fillColorGradient': {'type': 'linear', 'startX': 0.5, 'startY': 0, 'endX': 0.5, 'endY': 1, 'width': 1,
-           'stops': [{'color': '#0B0F1C', 'opacity': 0, 'offset': 0}, {'color': '#0B0F1C', 'opacity': 0.6, 'offset': 1}]}}, name='Render / scrim' if b_name else 'Scrim')
+    shade(p, 0, 0, w, h, [(0, 0), (0.55, 0), (1, 0.7)], name='Render / scrim' if b_name else 'Scrim')
     u = min(w, h) / 1080
     lockup(p, 90 * u, h - 170 * u, 44 * u, ON_DARK)
     p.text('Climb Harder.', 92 * u, h - 96 * u, size=24 * u, font=F, weight=700, color='#F8F6F3CC')
@@ -53,12 +53,12 @@ def build(bk):
     bk.opener('07', 'print', 'Print', 'Posters worth hanging\neven with the logo taken off.', 'mist-snow')
     # 33 Posters --------------------------------------------------------------
     b = bk.spread(33, 'posters', 'Posters', '07 Print  ·  Posters', bg=C['stone'])
-    for i, kind in enumerate(['summit', 'layback', 'allez', 'peak']):
+    for i, kind in enumerate(['summit', 'layback', 'mist', 'peak']):
         x = M + i * 430
-        with b.frame(x, 170, 400, 600, C['snow'], name='Poster / ' + kind) as fr:
-            poster(Scaled(b, x, 170, 400 / 1200), kind)
+        with b.frame(x, 190, 400, 560, C['snow'], name='Poster / ' + kind) as fr:
+            poster(Scaled(b, x, 190, 400 / 1200), kind)
         shadow(fr, 0, 20, 50, '#0B0F1C', 0.25)
-    notes = [('Beautiful first', 'Worth hanging with the logo taken off. Lockup centred at the foot, the line small beneath.'), ('Borders welcome', 'A Snow border turns a photo into a print: 30 mm on a 50 × 70 cm poster.'),
+    notes = [('Beautiful first', 'Worth hanging with the logo taken off. Lockup small at the lower left, the line beneath.'), ('Borders welcome', 'A Snow border turns a photo into a print: 20 mm on a 50 × 70 cm poster.'),
              ('Same quiet voice', 'Every poster follows one recipe, so a wall of them reads as one series.'), ('Lockup low, small', 'Lockup in Snow at the lower left; the line beneath it at a fifth of the size.')]
     for i, (t, s) in enumerate(notes):
         x = M + i * 430
@@ -68,16 +68,16 @@ def build(bk):
     # Print series (flat) ------------------------------------------------------------
     b = bk.spread(34, 'posters-wall', 'Print series', '07 Print  ·  Print series', bg=C['snow'])
     bk.h2(b, 'Quiet prints', M, 150, size=56)
-    bk.body(b, 'Big, cool light on big rock. A thin Snow border, the lockup small in the corner, nothing else. Shown flat, as they ship.', M, 230, w=1000)
+    bk.body(b, 'Big, low light on big rock: warm highlights, cool shadows. A thin Snow border, the lockup small in the corner, nothing else. Shown flat, as they ship.', M, 230, w=1000)
     for j, (k, ph_) in enumerate(PRINT_SERIES):
         x = M + j * 570
         b.rect(x, 340, 540, 740, '#E7E4DE', name='Panel')
-        with b.frame(x + 70, 380, 400, 600, '#FFFFFF', name='Print / ' + k) as fr:
-            print_poster(Scaled(b, x + 70, 380, 400 / 1200), ph_)
+        with b.frame(x + 70, 400, 400, 560, '#FFFFFF', name='Print / ' + k) as fr:
+            print_poster(Scaled(b, x + 70, 400, 400 / 1200), ph_)
         shadow(fr, 0, 6, 18, '#0B0F1C', 0.18)
 
     # Flagship campaign ---------------------------------------------------------------
-    b = bk.spread(0, 'campaign', 'Launch campaign', None, bg=C['night'], dark=True, folio=False)
+    b = bk.spread(0, 'campaign', 'Launch campaign', None, bg=C['night'], dark=True, folio='num')
     campaign(Scaled(b, 0, 0, 1), W, H, b_name=True)
     bk.label(b, 'Launch campaign  ·  billboard 6 × 3 m, social, app store', 1240, 1124, color=ON_DARK_MUTED)
 
@@ -110,8 +110,8 @@ def build(bk):
     for i_, (verb, ph_) in enumerate(SERIES):
         x = M + i_ * 570
         b.rect(x, 300, 540, 740, '#E7E4DE', name='Panel')
-        with b.frame(x + 70, 340, 400, 600, '#FFFFFF', name='Print / ' + verb) as fr:
-            series_poster(Scaled(b, x + 70, 340, 400 / 1200), verb, ph_)
+        with b.frame(x + 70, 360, 400, 560, '#FFFFFF', name='Print / ' + verb) as fr:
+            series_poster(Scaled(b, x + 70, 360, 400 / 1200), verb, ph_)
         shadow(fr, 0, 6, 18, '#0B0F1C', 0.18)
         bk.label(b, ['Season opener', 'Mid-season', 'Before the trip'][i_], x + 70, 966)
 
@@ -129,7 +129,7 @@ def build(bk):
         b.text(cap_, x + 80, y + 318, size=15, font=F, weight=600, color=ON_DARK_MUTED)
 
     # 35 Stationery ------------------------------------------------------------------
-    b = bk.spread(35, 'stationery', 'Stationery', '07 Print  ·  Business cards', bg=C['paper'])
+    b = bk.spread(35, 'stationery', 'Stationery', '07 Print  ·  Business cards', bg=C['paper'], head_light=True)
     b.image(LOCAL / 'mock' / 'card.jpg', 0, 0, 1400, H, name='Photo / cards')
     b.rect(1400, 0, W - 1400, H, C['paper'], name='Panel')
     bk.label(b, 'Business cards', 1440, 220, color=C['glow'])
@@ -142,23 +142,22 @@ def build(bk):
     b.text('ana@rivet.training', 1466, 1024, size=11, font=F, weight=700, color=N)
 
     # 36 Book --------------------------------------------------------------------------
-    b = bk.spread(36, 'book', 'Training book', '07 Print  ·  Field notes book', bg=C['glacier'])
+    b = bk.spread(36, 'book', 'Training book', '07 Print  ·  Field notes book', bg=C['glacier'], num_light=True)
     b.image(LOCAL / 'mock' / 'book.jpg', 720, 0, W - 720, H, name='Photo / book')
     bk.label(b, 'Field Notes', M, 220, color=N)
     bk.h2(b, 'Unstuck', M, 260, size=72)
     bk.body(b, 'Our first book collects interviews with forty climbers at every level about how they broke a plateau. Not one person’s schedule: the patterns across many.\n\nCovers: a single grand photograph under a Night band. Title in Nunito Black, the symbol in Glow, nothing else.', M, 380, w=480, color=N)
 
 def build_goods(bk):
-    bk.opener('08', 'goods', 'Gear & Goods', 'Made carefully, marked quietly,\nbuilt to last for years.', None, bg=C['paper'])
+    bk.opener('08', 'goods', 'Gear & Goods', 'Made carefully, marked quietly,\nbuilt to last for years.', 'chalk-hands')
     # The range (hero) --------------------------------------------------------------
-    b = bk.spread(0, 'range', 'The Rivet range', None, bg='#EBE4DA', folio=False)
-    bk.label(b, 'The Rivet range', M, 96, color=C['night'])
-    b.text('Print, tee, cap, book.\nNothing you don’t need.', M, 136, w=900, size=52, font=F, weight=900, color=C['night'], lh=1.05, ls=-1.2)
+    b = bk.spread(0, 'range', 'The Rivet range', '08 Gear & Goods  ·  The range', bg='#EBE4DA')
+    b.text('Print, tee, cap, book.\nNothing you don’t need.', M, 140, w=900, size=52, font=F, weight=900, color=C['night'], lh=1.05, ls=-1.2)
     for j, (f, x, y, w, h) in enumerate([('BOARD', M, 320, 900, 740), ('tee-front.jpg', M + 930, 320, 360, 360), ('cap.jpg', M + 1320, 320, 360, 360),
                                           ('book.jpg', M + 930, 700, 360, 360), ('tee-back.jpg', M + 1320, 700, 360, 360)]):
         if f == 'BOARD':
             b.rect(x, y, w, h, '#E7E4DE', r=18)
-            with b.frame(x + 250, y + 50, 400, 600, '#FFFFFF', name='Print') as fr: print_poster(Scaled(b, x + 250, y + 50, 400 / 1200), 'golden-spires')
+            with b.frame(x + 250, y + 90, 400, 560, '#FFFFFF', name='Print') as fr: print_poster(Scaled(b, x + 250, y + 90, 400 / 1200), 'golden-spires')
             continue
         b.image(LOCAL / 'mock' / f, x, y, w, h, r=18, name='Photo mockup')
 
@@ -267,7 +266,7 @@ def build_goods(bk):
     from marks import circle
     # 1 Glow disc
     o = b.path(circle(50, 50, 50), 1200, 220, 2.6, fill='#FFFFFF', name='Sticker / border'); shadow(o, 0, 10, 24, '#000000', 0.4)
-    b.path(circle(50, 50, 45), 1200, 220, 2.6, fill=N); pitch(b, 1200 + 65, 220 + 65, 130, C['glow'], xf=rot(-0.2))
+    b.path(circle(50, 50, 45), 1200, 220, 2.6, fill=N); pitch(b, 1200 + 65, 220 + 65, 130, C['glow'])
     # 2 square sticker: Snow with the symbol
     o = b.rect(1500, 230, 220, 220, '#FFFFFF', r=48); shadow(o, 0, 10, 24, '#000000', 0.4)
     b.rect(1508, 238, 204, 204, C['snow'], r=42); pitch(b, 1540, 270, 140, N)
@@ -305,34 +304,43 @@ def build_closing(bk):
     b.text('Climb Harder.', M + w2 + 80, H - 160, size=70, font=F, weight=900, color=ON_DARK, ls=-1.8, lh=1.0)
     bk.label(b, 'Rivet Brand Guidelines  ·  Edition 01  ·  November 2026', W - M - 600, H - 112, w=600, align='right')
 
+def credit_author(a):
+    """Photographer names as credited, without the Commons boilerplate around them."""
+    import re as _re
+    a = (a or 'Unknown').split(' - ')[0].split('(')[0]
+    a = _re.sub(r' from .*', '', a).strip()
+    if not _re.search(r'[A-Za-z]', a): a = f'Flickr user {a}'
+    while len(a) > 30 and ' ' in a: a = a.rsplit(' ', 1)[0]
+    return a
+
+
 def build_credits(bk):
-    import json
+    import json, re as _re
     b = bk.spread(0, 'credits', 'Assets & credits', 'Assets & credits')
     bk.h2(b, 'Assets & credits', M, 150, size=64)
-    assets = [('Identity', 'Pitch symbol, wordmark, horizontal and stacked lockups in Night, Snow and Glow. SVG, PDF, PNG.'),
+    assets = [('Identity', 'Pitch symbol, wordmark, lockups and signature in Night, Snow and Glow. SVG, PDF and padded PNG.'),
               ('Typeface', 'Nunito 300 to 900, SIL Open Font License. Bundled in the app and the kit.'),
-              ('Colour', 'Alpenglow tokens for light and dark: CSS, Tailwind, Penpot and Swift/Kotlin values.'),
-              ('Motion', 'rivet-loading.svg (1.2 s loop) and rivet-startup.svg (1.05 s, once). Reduced-motion fallbacks included.'),
+              ('Colour', 'Alpenglow tokens for light and dark: JSON, CSS, Tailwind, Swift and Kotlin.'),
+              ('Motion', 'Loading loop (1.2 s) and startup (1.05 s, once) as SVG, with reduced-motion fallbacks.'),
               ('Templates', 'Poster 50 × 70, business card 85 × 55, social 1080 × 1080, App Store 1290 × 2796.'),
-              ('Source', 'This book is generated from design/rivet/tools; 3D renders from design/rivet/render3d.')]
+              ('Source', 'Every page and asset is generated from the brand scripts, so a change is made once.')]
     for i, (t, d_) in enumerate(assets):
-        y = 290 + i * 120; bk.rule(b, M, y, 820)
+        y = 290 + i * 120; bk.rule(b, M, y, 760)
         b.text(t, M, y + 24, size=22, font=F, weight=900, color=N)
-        bk.body(b, d_, M + 220, y + 26, w=600, size=18)
-    import re as _re
+        bk.body(b, d_, M + 200, y + 26, w=560, size=18)
     used = set()
     for f in Path(__file__).parent.glob('*.py'): used |= set(_re.findall(r"'([a-z0-9-]+)(?:\.jpg)?'", f.read_text()))
-    used |= set(_re.findall(r"photos/([a-z0-9-]+)\.jpg", (Path(__file__).parents[1] / 'render3d/scenes.js').read_text()))
-    cr = {k: v for k, v in json.loads((PH / 'credits.json').read_text()).items() if k in used}
-    bk.label(b, 'Placeholder photography  ·  Wikimedia Commons & Flickr', 1000, 290, color=C['glow'])
-    items = list(cr.items())
+    items = [(k, v) for k, v in json.loads((PH / 'credits.json').read_text()).items() if k in used]
+    X0, CW, RH = 960, 290, 50
+    rows = (len(items) + 2) // 3
+    bk.label(b, 'Placeholder photography  ·  Wikimedia Commons & Flickr', X0, 290)
     for i, (k, v) in enumerate(items):
-        col, row = i % 2, i // 2
-        x, y = 1000 + col * 410, 330 + row * 50
-        b.text(k.replace('-', ' ').capitalize(), x, y, size=16, font=F, weight=800, color=N)
-        b.text(f"{(v.get('author') or '')[:30]}  ·  {v['licence']}", x, y + 21, w=390, size=14, font=F, weight=600, color=MUTED)
-    cr = items
-    bk.body(b, 'All to be replaced by the commissioned shoot (see the photography brief).', 1000, 330 + ((len(cr) + 1) // 2) * 50 + 10, w=800, size=16, color=MUTED)
+        col, row = i // rows, i % rows
+        x, y = X0 + col * CW, 330 + row * RH
+        b.text(k.replace('-', ' ').capitalize(), x, y, size=15, font=F, weight=800, color=N)
+        lic = v['licence'].replace('Public domain', 'PD')
+        b.text(f"{credit_author(v.get('author'))}  ·  {lic}", x, y + 20, w=CW - 16, size=12, font=F, weight=600, color=MUTED)
+    bk.body(b, 'All placeholders, replaced by the commissioned shoot (see the photography brief).', X0, 330 + rows * RH + 6, w=840, size=16, color=MUTED)
 
 def build_all(bk):
     build(bk); build_goods(bk); build_credits(bk); build_closing(bk)

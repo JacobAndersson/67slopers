@@ -74,7 +74,7 @@ def build(bk):
     b.text('Climb Harder.', M, 960, size=48, font=F, weight=900, color=ON_DARK, ls=-1)
 
     # Riveted (editorial) -------------------------------------------------------------
-    b = bk.spread(0, 'riveted', 'Riveted', None, bg=C['night'], dark=True, folio=False)
+    b = bk.spread(0, 'riveted', 'Riveted', None, bg=C['night'], dark=True, folio='num')
     b.image(PH / 'chalked-fingers.jpg', 0, 0, W, H, name='Render / fingers')
     b.rect(0, 0, W, H, '#0B0F1C8C', name='Render / shade')
     b.text('7', 1180, 120, w=640, size=760, font=F, weight=900, color=ON_DARK, ls=-30, lh=1, align='right')
@@ -136,7 +136,7 @@ def build(bk):
     b = bk.spread(0, 'voice-practice', 'Voice in practice', '01 Brand  ·  Voice in practice')
     bk.h2(b, 'Say this, not that', M, 150, size=64)
     rows = [('Starting', 'Hang.', 'GET READY TO CRUSH IT!!! 💪'),
-            ('Resting', 'Rest. Next set in 2:41.', 'Recovery period initiated. Please wait.'),
+            ('Resting', 'Recover. Next set in 2:41.', 'Recovery period initiated. Please wait.'),
             ('Stopping early', 'Session saved · 3 of 5 sets.\nYou’ll get them next time.', 'Workout incomplete. You failed to finish 2 sets.'),
             ('A good week', 'Four weeks in a row.', 'You’re on fire!! Don’t break your streak!'),
             ('Selling', 'Built by climbers. No ads, ever.', 'Unlock PRO to remove ads and get gains faster.')]

@@ -17,6 +17,13 @@ ON_DARK_MUTED = '#C9CCD6'
 CHAPTERS = {}  # spread order -> (key, title)
 
 
+def shade(b, x, y, w, h, stops, name='Shade'):
+    """Vertical Night fade over a whole image. stops: (offset, opacity). A gradient rect must cover
+    the image edge to edge: one that ends mid-picture leaves a hairline seam in PDF renderers."""
+    return b.rect(x, y, w, h, {'fillOpacity': 1, 'fillColorGradient': {'type': 'linear', 'startX': 0.5, 'startY': 0, 'endX': 0.5, 'endY': 1, 'width': 1,
+                  'stops': [{'color': '#0B0F1C', 'opacity': o, 'offset': f} for f, o in stops]}}, name=name)
+
+
 GLOW_TEXT = '#141A2E'   # eyebrows and small accents are Night: Glow never sets text
 PAGES = {}               # chapter number -> first page, filled by a dry first pass
 
@@ -25,17 +32,20 @@ class Book:
     def __init__(self, page='02 Rivet Brand Book'):
         self.d = Doc(); self.pg = self.d.page(page); self.spreads = []; self.n = 0; self.starts = {}
 
-    def spread(self, idx, key, name, chapter, bg=None, dark=False, folio=True, num_light=False):
+    def spread(self, idx, key, name, chapter, bg=None, dark=False, folio=True, num_light=False, head_light=False):
         idx = self.n; self.n += 1       # pages are numbered in build order
         x, y = (idx % 6) * (W + 120), (idx // 6) * (H + 160)
         b = Board(self.d, self.pg, 'book/' + key, f'{idx:02d} · {name}', x, y, W, H, bg or C['snow'])
         b.dark = dark; b.idx = idx
         coloured = (bg or C['snow']).upper() not in (C['snow'].upper(), C['paper'].upper(), C['night'].upper(), '#FFFFFF')
         fg = ON_DARK if dark else C['night']; mu = ON_DARK_MUTED if dark else ('#141A2EB3' if coloured else MUTED)
-        if folio:
-            if chapter: b.text(chapter, M, 72, size=14, font=F, weight=800, color=mu, ls=2, upper=True, name='Chapter')
-            pitch(b, M, H - 72 - 18, 22, fg, name='Folio / Pitch')
-            b.text('Rivet Brand Guidelines', M + 34, H - 89, size=14, font=F, weight=700, color=mu, name='Folio / Title')
+        if folio == 'num':   # full-bleed photo spreads keep only the page number, in Snow
+            b.text(f'{idx:02d}', W - M - 40, H - 89, w=40, size=14, font=F, weight=800, color=ON_DARK, align='right', name='Folio / Page')
+        elif folio:
+            hl = ON_DARK if head_light else None   # left-hand folio sits on a photo
+            if chapter: b.text(chapter, M, 72, size=14, font=F, weight=800, color=hl or mu, ls=2, upper=True, name='Chapter')
+            pitch(b, M, H - 72 - 18, 22, hl or fg, name='Folio / Pitch')
+            b.text('Rivet Brand Guidelines', M + 34, H - 89, size=14, font=F, weight=700, color=hl or mu, name='Folio / Title')
             b.text(f'{idx:02d}', W - M - 40, H - 89, w=40, size=14, font=F, weight=800, color=ON_DARK if num_light else mu, align='right', name='Folio / Page')
         self.spreads.append(b)
         return b
@@ -71,7 +81,7 @@ class Book:
         src = photo if str(photo).endswith('.png') else PH / f'{photo}.jpg'
         b.image(src, 0, 0, W, H, name='Render / opener photo')
         if str(src).endswith('.jpg'): b.rect(0, 0, W, H, '#0B0F1C40', name='Shade')
-        if str(src).endswith('.jpg'): b.rect(0, 0, W, 560, {'fillOpacity': 1, 'fillColorGradient': {'type': 'linear', 'startX': 0.5, 'startY': 0, 'endX': 0.5, 'endY': 1, 'width': 1, 'stops': [{'color': '#0B0F1C', 'opacity': 0.7, 'offset': 0}, {'color': '#0B0F1C', 'opacity': 0, 'offset': 1}]}}, name='Top shade')
+        if str(src).endswith('.jpg'): shade(b, 0, 0, W, H, [(0, 0.7), (560 / H, 0), (1, 0)], name='Top shade')
         self.scrim(b, 0, 0, W, H, to=0.75, start=0.4)
         # the step: caption low-left, title mid, number high-right, rising like the bars
         self.body(b, line, M, H - 250, w=640, size=28, color=ON_DARK, weight=600, lh=1.35)
@@ -90,9 +100,10 @@ class Book:
 
     def publish(self, render_dir=None, keys=None, scale=0.5):
         boards = [b for b in self.spreads if keys is None or b.key.split('/', 1)[1] in keys]
-        for b in boards:  # full-bleed renders sit beneath everything else on the spread
+        for b in boards:  # full-bleed renders sit beneath everything; folios sit above everything
             under = [o for o in b.objects[1:] if o['name'].startswith('Render /') and o['parentId'] == b.id]
-            b.objects = [b.objects[0]] + under + [o for o in b.objects[1:] if o not in under]
+            over = [o for o in b.objects[1:] if o['name'].startswith(('Folio /', 'Chapter')) and o['parentId'] == b.id]
+            b.objects = [b.objects[0]] + under + [o for o in b.objects[1:] if o not in under and o not in over] + over
         self.d.publish(boards)
         if render_dir:
             Path(render_dir).mkdir(parents=True, exist_ok=True)

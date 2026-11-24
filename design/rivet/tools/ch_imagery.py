@@ -15,7 +15,7 @@ def build(bk):
     b.image(PH / 'red-crack.jpg', 1100, 0, 820, H, name='Render / photo')
     bk.label(b, 'Photography', M, 220, color=C['glow'])
     bk.display(b, 'Just you\nand the rock.', M, 260, size=104)
-    pr = [('Scale', 'The place is bigger than the person. Leave room for the mountain.'),
+    pr = [('Far or close', 'Either the place dwarfs the person, or we are close enough to feel the edge. Nothing in between.'),
           ('Exposure', 'Shoot from above or far away. Feel the air under the climber.'),
           ('First and last light', 'Warm, low sun; alpenglow; long shadows. Never flat noon.'),
           ('Real effort', 'No posing, no studio, no brand-new gear. Chalk, tape, worn rock.')]
@@ -53,7 +53,7 @@ def build(bk):
         b.text(n, x, y + 146, size=18, font=F, weight=800, color=book.GLOW_TEXT)
         b.text(t, x + 50, y + 142, size=28, font=F, weight=900, color=C['night'])
         bk.body(b, d_, x, y + 192, w=500, size=18)
-    bk.body(b, 'Deliver: RAW and graded JPEG, 6000 px long edge, model releases for every face. Grade warm highlights, cool shadows. No drones over crags where they are banned. Reference frames above are placeholders.', M, 1050, w=1500, size=17, color=MUTED)
+    bk.body(b, 'Deliver: RAW and graded JPEG, 6000 px long edge, model releases for every face. Grade warm highlights, cool shadows. No drones over crags where they are banned. Reference frames above are placeholders.', M, 1000, w=1500, size=17, color=MUTED)
 
     # 24 Graphic language -----------------------------------------------------
     b = bk.spread(24, 'graphics', 'Graphic language', '05 Imagery  ·  Graphic language')
@@ -70,13 +70,15 @@ def build(bk):
     SCALES_G = [SCALES['glacier'][4]] * 6 + [N_ := C['night']]
     for i, v in enumerate(vals):
         x = M + 600 + i * 66; h = 50 + v * 75
-        b.rect(x, 760 - h, 44, h, SCALES_G[i], r=2, name='Week')
+        b.rect(x, 760 - h, 44, h, SCALES_G[i], r=22, name='Week')
         b.text(f'W{i+1}', x, 770, w=44, size=13, font=F, weight=800, color=MUTED, align='center')
-    segs = [('h', 70), ('r', 30), ('h', 70), ('r', 30), ('h', 70), ('R', 150), ('h', 70), ('r', 30)]
+    segs = [('h', 60, 'Hang'), ('r', 40, 'Rest'), ('h', 60, ''), ('r', 40, ''), ('h', 60, ''), ('R', 140, 'Recover')]
     xx = M + 1140 + 36
-    for k, w in segs:
-        b.rect(xx, 560, w * 0.9, 40, C['night'] if k == 'h' else C['glacier'], r=20, name='Segment'); xx += w * 0.9 + 6
-    b.text('Hang', M + 1140 + 36, 630, size=14, font=F, weight=800, color=MUTED); b.text('Rest', M + 1140 + 160, 630, size=14, font=F, weight=800, color=MUTED)
+    for k, w, t in segs:
+        w *= 1.09
+        b.rect(xx, 560, w, 40, {'h': C['night'], 'r': C['glacier'], 'R': C['snow']}[k], r=20, stroke='#141A2E33' if k == 'R' else None, name='Segment')
+        if t: b.text(t, xx, 616, size=14, font=F, weight=800, color=MUTED)
+        xx += w + 6
     bk.body(b, 'Bars are plain and rounded; time runs left to right. The Pitch symbol is never a pattern, a chart or an ornament. We don’t use illustration: we photograph, and we diagram.', M, 1040, w=1300, size=17, color=MUTED)
     bk.label(b, 'Corners', M, 850, color=C['glow'])
     for i, (r, t) in enumerate([(999, 'Pill  ·  half the height'), (28, '28 px  ·  cards, tiles'), (34, '24% of width  ·  app icon'), (12, '12 px  ·  inputs')]):
@@ -114,11 +116,12 @@ def build(bk):
         b.text(k, M, y + 20, size=19, font=F, weight=800, color=ON_DARK)
         b.text(v, M + 260, y + 20, w=340, size=17, font=F, weight=600, color=ON_DARK_MUTED, align='right')
     bk.label(b, 'Loading  ·  bars lift in turn, 1.2 s loop', 860, 220)
-    frames = [(0, 0, 0), (8, 0, 0), (3, 8, 0), (0, 3, 8), (0, 0, 3), (0, 0, 0)]
+    frames = [(0, 0, 0), (10, 0, 0), (-2, 10, 0), (0, -2, 10), (0, 0, -2), (0, 0, 0)]
     for i, lf in enumerate(frames):
         x = 860 + i * 160
         b.rect(x, 260, 144, 160, '#FFFFFF0D', r=20)
-        pitch(b, x + 32, 300, 80, ON_DARK, lifts=lf)
+        pitch(b, x + 22, 290, 100, '#FFFFFF40', stroke=1.5, name='Rest position')
+        pitch(b, x + 22, 290, 100, ON_DARK, lifts=lf)
         b.text(f'{i * 240} ms', x, 432, w=144, size=13, font=F, weight=700, color=ON_DARK_MUTED, align='center')
     bk.label(b, 'Startup  ·  bars rise from the baseline, the name follows', 860, 520)
     for i in range(5):

@@ -37,8 +37,8 @@ def home(q, T=LIGHT):
     q.text('Good\nmorning, Ana', 24, 74, size=38, font=F, weight=900, color=N, lh=1.02, ls=-1)
     q.rect(24, 178, 342, 210, T['surface'], r=28, stroke=T['line'], name='Today card')
     q.text('TODAY', 48, 202, size=12, font=F, weight=800, color=T['muted'], ls=1.6)
-    q.text('Max hangs', 48, 222, size=30, font=F, weight=900, color=N, ls=-0.6)
-    q.text('20 mm edge  ·  5 sets  ·  25 min', 48, 262, size=15, font=F, weight=700, color=T['muted'])
+    q.text('Repeaters', 48, 222, size=30, font=F, weight=900, color=N, ls=-0.6)
+    q.text('20 mm edge  ·  5 sets  ·  20 min', 48, 262, size=15, font=F, weight=700, color=T['muted'])
     pill(q, 48, 314, 140, 50, 'Start', T['ink'], T['inverse'])
     pill(q, 200, 314, 140, 50, 'Change', None, N, stroke=N)
     q.text('This week', 24, 420, size=20, font=F, weight=900, color=N)
@@ -85,7 +85,7 @@ def done(q, T=LIGHT):
     q.text('3/5', 24, 90, size=40, font=F, weight=900, color=N, ls=-1)
     q.text('Session saved', 24, 236, size=40, font=F, weight=900, color=N, ls=-1)
     q.text('3 of 5 sets.\nYou’ll get them next time.', 24, 290, w=340, size=22, font=F, weight=700, color=T['muted'] if T is DARK else '#2A2F40', lh=1.3)
-    for i, (k, v) in enumerate([('Time', '18 min'), ('Hang time', '3:30'), ('Best rep', '10 s')]):
+    for i, (k, v) in enumerate([('Time', '12 min'), ('Hang time', '2:06'), ('Reps', '18 of 30')]):
         y = 410 + i * 66
         q.rect(24, y + 58, 342, 1, T['line'])
         q.text(k, 24, y + 18, size=17, font=F, weight=700, color=T['muted']); q.text(v, 220, y + 14, w=146, size=22, font=F, weight=900, color=N, align='right')

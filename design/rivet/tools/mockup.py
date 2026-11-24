@@ -85,7 +85,7 @@ def mock_tee_back():
     x0, y0 = W * 0.30, H * 0.22
     quad = [(x0, y0), (x0 + tw, y0 + 4), (x0 + tw, y0 + th + 4), (x0, y0 + th)]
     layer = place(base, txt, quad)
-    sym = raster(svg_symbol(C['glow']), 300); ss = W * 0.08
+    sym = raster(svg_symbol(C['snow']), 300); ss = W * 0.08   # Glow only on Night, so Snow on black cloth
     q2 = [(x0, y0 + th + H * 0.03), (x0 + ss, y0 + th + H * 0.03), (x0 + ss, y0 + th + H * 0.03 + ss * 1.05), (x0, y0 + th + H * 0.03 + ss * 1.05)]
     l2 = place(base, sym, q2); layer = Image.alpha_composite(layer, l2)
     out = print_on(base, layer, 'ink', displace=5, strength=0.94)
@@ -166,7 +166,7 @@ def mock_frame(poster='summit'):
     out.save(OUT / f'frame-{poster}.jpg', quality=92); return out
 
 def mock_frames():
-    for p in ['summit', 'layback', 'allez', 'series-hang', 'series-rest', 'series-climb']: mock_frame(p)
+    for p in ['summit', 'layback', 'mist', 'series-hang', 'series-rest', 'series-climb']: mock_frame(p)
 
 def mock_board():
     base = Image.open(PH / 'blank-board.jpg').convert('RGB')

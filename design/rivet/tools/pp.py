@@ -198,9 +198,8 @@ class Doc:
             self.p.update(changes[i:i + 400])
         print(f'published {len(boards)} boards, {len(changes)} shapes', flush=True)
 
-    def render(self, b, out, scale=1):
-        self.p.workspace['fileId'] = self.p.workspace['fileId']
-        self.p.render(b.page, b.id, Path(out), scale)
+    def render(self, b, out, scale=1, kind='png'):
+        self.p.render(b.page, b.id, Path(out), scale, kind)
 
 
 class Scaled:
