@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><title>Rivet motion</title>
+<style>body{margin:0;font-family:system-ui;background:#F8F6F3;color:#141A2E;display:grid;gap:32px;padding:48px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+figure{margin:0;background:#fff;border-radius:28px;padding:32px;display:grid;place-items:center;gap:16px} img{max-width:100%}
+button{border:0;border-radius:99px;background:#141A2E;color:#fff;padding:12px 22px;font-weight:800}</style>
+<figure><img src="rivet-loading.svg" width="160"><figcaption>Loading · 1.2 s loop</figcaption></figure>
+<figure><img id="s" src="rivet-startup.svg" width="480"><figcaption>Startup · plays once, 1.05 s</figcaption><button onclick="s.src='rivet-startup.svg?'+Date.now()">Replay</button></figure>

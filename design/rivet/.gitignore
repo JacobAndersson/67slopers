@@ -1,0 +1,7 @@
+# Only Nunito is the brand face; the other families were the type exploration (fetch again with tools/getfonts.py).
+fonts/*
+!fonts/Nunito-*.ttf
+# Poster PNGs embed placeholder photography (Wikimedia Commons / Flickr); rebuild with tools/posters.py + tools/kit.py.
+kit/posters/
+# The editable Penpot export grows past 100 MB (Penpot keeps superseded uploads); rebuild with tools/*.py.
+Rivet-brand-book.penpot

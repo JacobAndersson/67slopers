@@ -1,0 +1,115 @@
+{
+  "color": {
+    "snow": "#F8F6F3",
+    "paper": "#F2ECE3",
+    "night": "#141A2E",
+    "glow": "#F28C6E",
+    "glacier": "#C3DCE5",
+    "dusk": "#8F88CC",
+    "granite": "#6B6E73",
+    "stone": "#E4E0DA"
+  },
+  "scale": {
+    "glow": {
+      "100": "#FEF0EB",
+      "200": "#FCD9CD",
+      "300": "#F9B9A4",
+      "400": "#F28C6E",
+      "500": "#E2664A",
+      "600": "#B94A33",
+      "700": "#7E3324"
+    },
+    "glacier": {
+      "100": "#F0F7F9",
+      "200": "#DDECF1",
+      "300": "#C3DCE5",
+      "400": "#9CC3D1",
+      "500": "#6C9FB2",
+      "600": "#467B8F",
+      "700": "#2B5161"
+    },
+    "dusk": {
+      "100": "#F1F0FA",
+      "200": "#DEDBF3",
+      "300": "#BDB7E6",
+      "400": "#8F88CC",
+      "500": "#6E66B2",
+      "600": "#524A8E",
+      "700": "#363062"
+    },
+    "night": {
+      "100": "#E7E8EC",
+      "200": "#C5C8D2",
+      "300": "#8C92A6",
+      "400": "#555D78",
+      "500": "#2E3650",
+      "600": "#141A2E",
+      "700": "#0B0F1C"
+    },
+    "granite": {
+      "100": "#F0F0EF",
+      "200": "#D9DADB",
+      "300": "#BABCBF",
+      "400": "#9C9EA2",
+      "500": "#6B6E73",
+      "600": "#45484D",
+      "700": "#26282B"
+    }
+  },
+  "role": {
+    "light": {
+      "canvas": "#F8F6F3",
+      "surface": "#FFFFFF",
+      "text": "#141A2E",
+      "text-muted": "#6B6E73",
+      "action": "#141A2E",
+      "on-action": "#F8F6F3",
+      "state-hang": "#F28C6E",
+      "state-rest": "#C3DCE5",
+      "line": "#141A2E1F"
+    },
+    "dark": {
+      "canvas": "#0B0F1C",
+      "surface": "#141A2E",
+      "text": "#F8F6F3",
+      "text-muted": "#8C92A6",
+      "action": "#F8F6F3",
+      "on-action": "#141A2E",
+      "state-hang": "#F28C6E",
+      "state-rest": "#C3DCE5",
+      "line": "#FFFFFF1A"
+    }
+  },
+  "radius": {
+    "pill": 9999,
+    "card": 28,
+    "input": 12,
+    "app-icon": "24%"
+  },
+  "space": {
+    "unit": 4
+  },
+  "font": {
+    "family": "Nunito",
+    "weights": [
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ]
+  },
+  "motion": {
+    "lift": "8px",
+    "spring": {
+      "stiffness": 380,
+      "damping": 32
+    },
+    "quick": "160ms",
+    "settle": "320ms",
+    "reduced": "120ms crossfade"
+  },
+  "glow-rule": "Glow is the colour of the hang. It fills the Hang screen and the app icon, and colours the symbol on Night. Nowhere else."
+}

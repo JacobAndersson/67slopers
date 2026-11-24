@@ -33,6 +33,11 @@ class Penpot:
         except urllib.error.HTTPError as error:
             raise RuntimeError(f"{method}: {error.code} {error.read().decode()[:12000]}") from None
 
+    def local(self, uri):
+        """Download links use Penpot's public address (which may be a VPN name); fetch them locally."""
+        import re
+        return re.sub(r'^https?://[^/]+', self.base, uri)
+
     def rpc(self, method, args):
         return self.request(method, json.dumps(args).encode(), "application/json")
 
@@ -68,7 +73,7 @@ class Penpot:
         req = urllib.request.Request(self.base + "/api/export", data=json.dumps(body).encode(), headers={
             "Content-Type": "application/transit+json", "Accept": "application/transit+json"})
         result = self.opener.open(req, timeout=180).read().decode()
-        path.write_bytes(self.opener.open(re.search(r'"~#uri":"([^"]+)"', result)[1], timeout=180).read())
+        path.write_bytes(self.opener.open(self.local(re.search(r'"~#uri":"([^"]+)"', result)[1]), timeout=180).read())
 
     def export(self, path):
         import io
@@ -83,7 +88,7 @@ class Penpot:
         match = re.search(r'"~#uri":"([^"]+)"', result)
         if not match:
             raise RuntimeError(result)
-        payload = self.opener.open(match[1], timeout=180).read()
+        payload = self.opener.open(self.local(match[1]), timeout=180).read()
         with zipfile.ZipFile(io.BytesIO(payload)) as archive:
             assert archive.testzip() is None
         path.write_bytes(payload)

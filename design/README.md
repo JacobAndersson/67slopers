@@ -6,17 +6,10 @@ editable Penpot exports, and review images. Product constraints remain in
 
 ## Rivet brand book
 
-Open the [final 24-spread brand standards in local Penpot](http://localhost:9002/#/workspace?team-id=aa011e17-f3d4-81b8-8008-ba796c27889b&file-id=199bd372-a8ee-8099-8008-fd3ff66ed415&page-id=bc10269b-4ad2-59eb-9baf-4f0f45e18f9b&board-id=21b13785-88e5-51b3-8ff8-5e0d3d40f653).
-The first page is the final edition. Earlier interviews, alternatives and application studies remain on the later pages.
-Download the [searchable final PDF](exports/rivet-final/Rivet-brand-standards.pdf) or the [complete offline brand kit](exports/rivet-final/Rivet-brand-kit.zip). The kit includes the editable Penpot file, fonts and licences, exact SVG identity and motion assets, print examples and a three-page responsive web specimen. Open `web/index.html` inside the extracted Rivet folder.
-The [editable Penpot export](penpot/67slopers-brand-book.penpot) is also available separately.
-
-Use the outlined [Pitch symbol](exports/rivet-identity/pitch.svg), [National Park wordmark](exports/rivet-identity/rivet-wordmark.svg) and [combined signature](exports/rivet-identity/rivet-signature.svg) as artwork masters.
-The [mountain poster](exports/rivet-poster-national-park.png) and [corner-crack poster](exports/rivet-series-1.png) show the preferred photographic treatment.
-The [print and gear spread](exports/rivet-brand-materials.png) is a materials study awaiting founder review.
-
-The [interactive brand showcase](exports/rivet-showcase/index.html) includes desktop and phone layouts, materials, button comparisons, and motion. Open the HTML file locally. The approved primary action uses a Chalk label on an Ink pill.
-The standalone [startup signature](exports/rivet-showcase/rivet-startup.svg) plays once on opening. The [loading mark](exports/rivet-showcase/rivet-loading.svg) lifts the three Pitch strokes from left to right. The 1.2-second loop includes a short rest in the original silhouette. Both honour reduced motion.
+The current brand book is in [`rivet/`](rivet/README.md): the
+[PDF](rivet/Rivet-brand-book.pdf), the build scripts that recreate the editable Penpot file, and the
+[asset kit](rivet/kit/README.md) (logo masters, tokens, icons, fonts, motion). It was rebuilt from a
+clean slate and supersedes the earlier brand exports listed under `exports/rivet-*`.
 
 ## Open Penpot
 

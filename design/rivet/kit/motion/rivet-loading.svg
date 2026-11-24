@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -14 100 114" width="100" height="114" role="img" aria-label="Loading">
+<style>
+.b{fill:#141A2E;animation:lift 1.2s cubic-bezier(.3,.7,.2,1) infinite}
+.b2{animation-delay:.12s} .b3{animation-delay:.24s}
+@keyframes lift{0%,60%,100%{transform:translateY(0)}20%{transform:translateY(-8px)}38%{transform:translateY(1.5px)}}
+@media (prefers-reduced-motion:reduce){.b{animation:fade 1.6s ease-in-out infinite}@keyframes fade{50%{opacity:.45}}}
+</style>
+<rect class="b b1" x="9" y="35" width="22" height="58" rx="11"/><rect class="b b2" x="39" y="21" width="22" height="58" rx="11"/><rect class="b b3" x="69" y="7" width="22" height="58" rx="11"/></svg>

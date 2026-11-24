@@ -3,7 +3,7 @@
 name: slopers67-design
 
 x-common: &common
-  PENPOT_PUBLIC_URI: http://localhost:9002
+  PENPOT_PUBLIC_URI: ${PENPOT_PUBLIC_URI:-http://localhost:9002}
   PENPOT_FLAGS: disable-email-verification disable-secure-session-cookies enable-prepl-server enable-mcp enable-admin-console disable-telemetry
   PENPOT_SECRET_KEY: ${PENPOT_SECRET_KEY:?Run python3 design/penpot/manage.py up first}
 
