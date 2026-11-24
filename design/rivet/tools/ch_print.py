@@ -343,4 +343,4 @@ def build_credits(bk):
     bk.body(b, 'All placeholders, replaced by the commissioned shoot (see the photography brief).', X0, 330 + rows * RH + 6, w=840, size=16, color=MUTED)
 
 def build_all(bk):
-    build(bk); build_goods(bk); build_credits(bk); build_closing(bk)
+    build(bk); build_closing(bk)   # goods and credits are kept in this file, out of the book

@@ -34,7 +34,7 @@ def build(bk):
     for n, x, y, w, h in grid: b.image(PH / f'{n}.jpg', x, y, w, h, r=20)
     bk.label(b, 'Colour grade', 1040, 830, color=C['glow'])
     bk.body(b, 'Warm highlights, deep cool shadows, a little lifted black. Let reds and pinks in the rock sing. Never add filters or fake light leaks.', 1040, 866, w=760, size=18)
-    bk.label(b, 'Placeholders  ·  Wikimedia Commons and Flickr, credited at the back', 1040, 990)
+    bk.label(b, 'Placeholders  ·  Wikimedia Commons and Flickr, free licences', 1040, 990)
 
     import ch_systems; ch_systems.photo_rules(bk)
     # Photography brief --------------------------------------------------------

@@ -5,7 +5,7 @@ DOMAIN = 'rivet.training'
 CONTENTS = [('01', 'Brand', 'Idea, manifesto, name, audience, principles, voice, messaging'), ('02', 'Identity', 'Symbol, wordmark, lockups, usage'),
             ('03', 'Colour', 'Alpenglow palette, scales, pairings, states'), ('04', 'Typography', 'Nunito, scales for print and app'),
             ('05', 'Imagery', 'Photography, brief, graphics, icons, motion, sound'), ('06', 'Digital', 'Interface, app, dark mode, web, store, social'),
-            ('07', 'Print', 'Posters, stationery, book'), ('08', 'Gear & Goods', 'Hangboard, crimp block, apparel, signage')]
+            ('07', 'Print', 'Posters, campaign, film, stationery, book')]
 
 def build(bk):
     # Cover -------------------------------------------------------------------
@@ -19,7 +19,7 @@ def build(bk):
     # Contents ----------------------------------------------------------------
     b = bk.spread(0, 'contents', 'Contents', 'Contents')
     bk.display(b, 'Inside', M, 150, size=112)
-    bk.body(b, 'Everything that makes Rivet look, sound and feel like Rivet, from the reason it exists to the engraving on a crimp block.', M, 290, w=520)
+    bk.body(b, 'Everything that makes Rivet look, sound and feel like Rivet, from the reason it exists to the poster on your wall.', M, 290, w=520)
     for i, (n, t, sub) in enumerate(CONTENTS):
         col, row = i // 4, i % 4
         x, y = 840 + col * 500, 160 + row * 210
