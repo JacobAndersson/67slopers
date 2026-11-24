@@ -78,17 +78,39 @@ def mock_tee_front():
     out = print_on(base, place(base, art, quad), 'ink', displace=3)
     out.save(OUT / 'tee-front.jpg', quality=92); return out
 
+TEE_OUTLINE = [(258, 188), (300, 186), (360, 196), (440, 198), (500, 215), (548, 290), (575, 350), (600, 420), (606, 452), (560, 470), (500, 492),
+               (505, 560), (515, 700), (520, 900), (470, 905), (330, 915), (180, 945), (170, 800), (165, 700), (162, 515), (100, 500), (70, 470),
+               (75, 410), (100, 330), (120, 290), (200, 215)]   # traced on the 662 px wide preview
+
+def dye(base, outline, color, scale):
+    """Dye a white garment photo: keep its folds and light, change the cloth colour."""
+    from PIL import ImageDraw
+    W, H = base.size; b = np.asarray(base).astype(np.float32) / 255; lum = b @ np.array([0.299, 0.587, 0.114])
+    m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).polygon([(x * scale, y * scale) for x, y in outline], fill=255)
+    poly = np.asarray(m.filter(ImageFilter.GaussianBlur(2))).astype(np.float32)[..., None] / 255
+    band = np.asarray(m.filter(ImageFilter.MaxFilter(81))).astype(np.float32)[..., None] / 255 * (1 - poly)
+    far = np.where(np.asarray(m.filter(ImageFilter.MaxFilter(81)))[..., None] > 0, np.nan, b[..., :1] * 0 + lum[..., None])
+    wall = np.nanmedian(far)                                       # the white wall behind the tee
+    b = b * (1 - band) + np.minimum(b, wall) * band                # bright cloth edges outside the outline go back to wall
+    mask = poly
+    shade = np.clip(lum / np.median(lum[mask[..., 0] > 0.5]), 0.3, 1.3)[..., None] ** 2.2
+    c = np.array([int(color[i:i + 2], 16) for i in (1, 3, 5)], np.float32) / 255
+    cloth = np.clip(c * shade * 1.15 + (shade - 1).clip(0) * 0.08, 0, 1)
+    return Image.fromarray(((b * (1 - mask) + cloth * mask) * 255).astype(np.uint8))
+
 def mock_tee_back():
-    base = Image.open(PH / 'blank-tee-black.jpg').convert('RGB'); W, H = base.size
+    """The back of a Night tee: the clean white-tee photo, dyed Night, then printed."""
+    base = Image.open(PH / 'blank-tee-white.jpg').convert('RGB'); W, H = base.size
+    base = dye(base, TEE_OUTLINE, C['night'], W / 662)
     txt = raster(svg_text(['Climb', 'Harder.'], C['snow']), 900)
-    tw = W * 0.42; th = tw * txt.size[1] / txt.size[0]
-    x0, y0 = W * 0.30, H * 0.22
+    tw = W * 0.40; th = tw * txt.size[1] / txt.size[0]
+    x0, y0 = W * 0.30, H * 0.27
     quad = [(x0, y0), (x0 + tw, y0 + 4), (x0 + tw, y0 + th + 4), (x0, y0 + th)]
     layer = place(base, txt, quad)
-    sym = raster(svg_symbol(C['snow']), 300); ss = W * 0.08   # Glow only on Night, so Snow on black cloth
+    sym = raster(svg_symbol(C['glow']), 300); ss = W * 0.07   # Glow on Night cloth: allowed
     q2 = [(x0, y0 + th + H * 0.03), (x0 + ss, y0 + th + H * 0.03), (x0 + ss, y0 + th + H * 0.03 + ss * 1.05), (x0, y0 + th + H * 0.03 + ss * 1.05)]
-    l2 = place(base, sym, q2); layer = Image.alpha_composite(layer, l2)
-    out = print_on(base, layer, 'ink', displace=5, strength=0.94)
+    layer = Image.alpha_composite(layer, place(base, sym, q2))
+    out = print_on(base, layer, 'ink', displace=3, strength=0.94)
     out.save(OUT / 'tee-back.jpg', quality=92); return out
 
 def mock_cap():
@@ -146,15 +168,23 @@ def drop_shadow(base, quad, blur=18, off=(10, 14), opacity=0.45):
     return Image.composite(sh, base, m)
 
 def mock_book():
-    base = Image.open(PH / 'blank-pad.jpg').convert('RGB')
-    quad = [(478, 102), (994, 203), (818, 996), (232, 864)]
-    out = paper_on(base, place(base, cover_art(), quad))
+    """Field Notes on a white studio sweep: the cover replaces the sample's, the spine is cleaned to plain Night."""
+    from PIL import ImageDraw
+    base = Image.open(PH / 'blank-hardcover.jpg').convert('RGB')
+    b = np.asarray(base).astype(np.float32)
+    spine = Image.new('L', base.size, 0); ImageDraw.Draw(spine).polygon([(120, 190), (214, 196), (530, 626), (514, 668), (470, 668), (120, 270)], fill=255)
+    mean = b.mean(axis=2)
+    dark = Image.fromarray(((mean < 60) * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(15)).filter(ImageFilter.MinFilter(15))   # the spine, holes closed
+    sm = (np.asarray(spine) > 0) & (np.asarray(dark) > 0)   # spine lettering -> plain cloth, studio white untouched
+    b[sm] = np.array([14, 15, 20], np.float32); base = Image.fromarray(b.astype(np.uint8))
+    quad = [(208, 199), (472, 93), (909, 372), (528, 621)]
+    out = paper_on(base, place(base, cover_art(), quad), flat=True)
     out.save(OUT / 'book.jpg', quality=92); return out
 
 def mock_card():
-    base = Image.open(PH / 'blank-table.jpg').convert('RGB')
-    quad = [(470, 195), (1535, 150), (1585, 860), (440, 900)]
-    base = drop_shadow(base, quad, blur=22, off=(14, 18), opacity=0.5)
+    """Night fronts on a stack of Snow backs, on a plain wood table."""
+    base = Image.open(PH / 'blank-cards-wood.jpg').convert('RGB'); base = base.crop((0, 0, base.width, 670))   # no watermark
+    quad = [(365, 153), (688, 370), (603, 553), (243, 333)]
     out = paper_on(base, place(base, card_front(), quad), flat=True)
     out.save(OUT / 'card.jpg', quality=92); return out
 

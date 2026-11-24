@@ -142,7 +142,7 @@ def build(bk):
     b.text('ana@rivet.training', 1466, 1024, size=11, font=F, weight=700, color=N)
 
     # 36 Book --------------------------------------------------------------------------
-    b = bk.spread(36, 'book', 'Training book', '07 Print  ·  Field notes book', bg=C['glacier'], num_light=True)
+    b = bk.spread(36, 'book', 'Training book', '07 Print  ·  Field notes book', bg=C['glacier'])
     b.image(LOCAL / 'mock' / 'book.jpg', 720, 0, W - 720, H, name='Photo / book')
     bk.label(b, 'Field Notes', M, 220, color=N)
     bk.h2(b, 'Unstuck', M, 260, size=72)
