@@ -1,16 +1,26 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Text } from '@/components/ui/text';
 import { formatShortDate, isSameDay } from '@/lib/dates';
 import { heatGrid, monthLabels, type TrainedSpan } from '@/lib/moonboard/heat';
+import { CSS_EASE_OUT, EASE_OUT, QUICK_MS, REDUCED_FADE, SPRING_SETTLE } from '@/lib/motion';
 import { useAppTheme } from '@/lib/use-theme';
 
 const GAP = 5;
 const LABELS = 22;
 const DAY_LETTERS = ['M', '', 'W', '', 'F', '', 'S'];
+/** The ring stands this far outside its day. */
+const RING = 3;
 
 type HeatCalendarProps = {
   spans: TrainedSpan[];
@@ -25,7 +35,8 @@ type HeatCalendarProps = {
 /**
  * Eight weeks as Monday-first columns (design/rivet/app/screens_log.py `heat`): the Glacier scale
  * for minutes trained, an outline for a day without, a ring around the pinned day. Labelled in
- * words, no key. A finger can slide across the grid and the pin follows it.
+ * words, no key. A finger can slide across the grid and the pin follows it: the ring glides from
+ * day to day and the other days dim in step (reduced motion: it fades and jumps).
  */
 export function HeatCalendar({ spans, today, selected, onSelect, disabled }: HeatCalendarProps) {
   const { theme, dark } = useAppTheme();
@@ -44,6 +55,14 @@ export function HeatCalendar({ spans, today, selected, onSelect, disabled }: Hea
   const cell = width ? (width - LABELS - GAP * (grid.length - 1)) / grid.length : 0;
   const pitch = cell + GAP;
   const steps = [theme.heat2, theme.heat2, theme.heat3, theme.heat4, theme.heat5, theme.heat6];
+
+  // Where the pinned day sits, in weeks across and days down.
+  let at: { col: number; row: number } | null = null;
+  for (let col = 0; selected && !at && col < grid.length; col++) {
+    const row = grid[col].findIndex((d) => isSameDay(d.date, selected));
+    if (row >= 0) at = { col, row };
+  }
+  const ring = useRing(at, pitch);
 
   const dayAt = (x: number, y: number) => {
     const found = grid[Math.floor(x / pitch)]?.[Math.floor(y / pitch)];
@@ -136,12 +155,15 @@ export function HeatCalendar({ spans, today, selected, onSelect, disabled }: Hea
                       return (
                         <View key={day.date.getTime()} style={{ width: cell, height: cell }}>
                           {day.future ? null : day.level ? (
-                            <View
+                            <Animated.View
                               style={{
                                 flex: 1,
                                 borderRadius: radius,
                                 backgroundColor: steps[day.level],
                                 opacity: selected && !pinned ? 0.35 : 1,
+                                transitionProperty: 'opacity',
+                                transitionDuration: QUICK_MS,
+                                transitionTimingFunction: CSS_EASE_OUT,
                               }}
                             />
                           ) : (
@@ -155,18 +177,28 @@ export function HeatCalendar({ spans, today, selected, onSelect, disabled }: Hea
                               }}
                             />
                           )}
-                          {pinned ? (
-                            <View
-                              className="absolute border-2 border-text"
-                              style={{ inset: -3, borderRadius: cell * 0.36 }}
-                            />
-                          ) : null}
                         </View>
                       );
                     })}
                   </View>
                 ))
               : null}
+            {cell ? (
+              <Animated.View
+                pointerEvents="none"
+                className="absolute border-2 border-text"
+                style={[
+                  {
+                    left: -RING,
+                    top: -RING,
+                    width: cell + RING * 2,
+                    height: cell + RING * 2,
+                    borderRadius: cell * 0.36,
+                  },
+                  ring,
+                ]}
+              />
+            ) : null}
           </View>
         </GestureDetector>
       </View>
@@ -177,4 +209,43 @@ export function HeatCalendar({ spans, today, selected, onSelect, disabled }: Hea
       </Text>
     </View>
   );
+}
+
+/**
+ * The ring around the pinned day. The first pin fades it in where it lands, settling from a
+ * touch larger; moving the pin glides it there on SPRING_SETTLE; letting go fades it out.
+ */
+function useRing(at: { col: number; row: number } | null, pitch: number) {
+  const reduced = useReducedMotion();
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
+  const shown = useSharedValue(0);
+  const col = at?.col ?? -1;
+  const row = at?.row ?? -1;
+
+  useEffect(() => {
+    if (col < 0) {
+      shown.set(withTiming(0, reduced ? REDUCED_FADE : { duration: QUICK_MS, easing: EASE_OUT }));
+      return;
+    }
+    const tx = col * pitch;
+    const ty = row * pitch;
+    if (shown.get() === 0 || reduced) {
+      x.set(tx);
+      y.set(ty);
+    } else {
+      x.set(withSpring(tx, SPRING_SETTLE));
+      y.set(withSpring(ty, SPRING_SETTLE));
+    }
+    shown.set(withTiming(1, reduced ? REDUCED_FADE : { duration: QUICK_MS, easing: EASE_OUT }));
+  }, [col, row, pitch, reduced, x, y, shown]);
+
+  return useAnimatedStyle(() => ({
+    opacity: shown.get(),
+    transform: [
+      { translateX: x.get() },
+      { translateY: y.get() },
+      { scale: reduced ? 1 : 1.15 - 0.15 * shown.get() },
+    ],
+  }));
 }

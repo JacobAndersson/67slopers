@@ -37,6 +37,12 @@ export const REDUCED_FADE = {
   reduceMotion: ReduceMotion.Never,
 };
 
+/**
+ * Data arriving with a screen (greeting, figures, week, sessions) steps in this far apart. Four
+ * steps and the spring stay under 400 ms, so a screen still feels instant.
+ */
+export const CASCADE_MS = 40;
+
 /** Controls (switch, segmented tile, chip) change state in about this long. */
 export const QUICK_MS = 160;
 

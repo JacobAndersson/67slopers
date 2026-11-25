@@ -114,7 +114,7 @@ export default function WorkoutOverviewScreen() {
 
       <SectionHeader title="The workout" className="mt-8" />
       <Text className="type-sub mt-1.5 text-muted">{overviewLine(workout)}</Text>
-      <WorkoutTimeline pieces={shape} className="mb-5 mt-4" />
+      <WorkoutTimeline pieces={shape} grow className="mb-5 mt-4" />
       <StepListBoardProvider board={board}>
         <StepList steps={steps} depth={0} />
       </StepListBoardProvider>

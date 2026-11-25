@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 import { Card } from '@/components/card';
+import { CountUp } from '@/components/count-up';
 import { Stat } from '@/components/data-bars';
 import { HeatCalendar } from '@/components/heat-calendar';
 import { LogRow } from '@/components/log-row';
@@ -12,6 +14,7 @@ import { Text } from '@/components/ui/text';
 import { plural } from '@/lib/copy';
 import { startOfWeek } from '@/lib/dates';
 import { HEAT_WEEKS, formatMinutes } from '@/lib/moonboard/heat';
+import { CASCADE_MS, fadeOut, liftIn } from '@/lib/motion';
 import { useClimb } from '@/lib/store/climb';
 import { useStore } from '@/lib/store/store';
 import {
@@ -27,6 +30,8 @@ const RECENT = 4;
 /**
  * Everything trained, timer and board together (design: page 07, log-log and its states): three
  * figures, eight weeks as a heat calendar, and under it the pinned day's sessions or the latest.
+ * On its first visit the parts lift in in turn and the figures count up; the tab stays mounted, so
+ * coming back shows it as it was. Pinning a day swaps the list under the calendar with a lift.
  */
 export default function LogScreen() {
   const router = useRouter();
@@ -52,22 +57,45 @@ export default function LogScreen() {
     router.push(item.kind === 'hang' ? `/session/${item.id}` : `/climb/session/${item.id}`);
   const empty = items.length === 0;
 
+  const reduced = useReducedMotion();
+  // The list under the calendar waits its turn on arrival, and answers a pin at once after.
+  const [pinned, setPinned] = useState(false);
+  const pin = (next: Date | null) => {
+    setPinned(true);
+    setDay(next);
+  };
+  const enter = (step: number) => liftIn(pinned ? 0 : step * CASCADE_MS, reduced);
+
   return (
     <Screen tab contentClassName="gap-0">
       <Text className="type-large" role="heading">
         Log
       </Text>
-      <View className="mt-[27px] flex-row">
-        <Stat className="flex-1" label="Streak" value={empty ? '–' : plural(streak, 'week')} />
-        <Stat className="flex-1" label="Sessions" value={empty ? '–' : String(totals.sessions)} />
-        <Stat className="flex-1" label="Time" value={empty ? '–' : formatMinutes(totals.minutes)} />
-      </View>
-      <Card className="mt-9 p-5">
-        <HeatCalendar spans={spans} today={now} selected={day} onSelect={setDay} disabled={empty} />
-      </Card>
+      <Animated.View entering={enter(0)} className="mt-[27px] flex-row">
+        <Stat
+          className="flex-1"
+          label="Streak"
+          value={empty ? '–' : <CountUp value={streak} format={(n) => plural(n, 'week')} />}
+        />
+        <Stat
+          className="flex-1"
+          label="Sessions"
+          value={empty ? '–' : <CountUp value={totals.sessions} />}
+        />
+        <Stat
+          className="flex-1"
+          label="Time"
+          value={empty ? '–' : <CountUp value={totals.minutes} format={formatMinutes} />}
+        />
+      </Animated.View>
+      <Animated.View entering={enter(1)}>
+        <Card className="mt-9 p-5">
+          <HeatCalendar spans={spans} today={now} selected={day} onSelect={pin} disabled={empty} />
+        </Card>
+      </Animated.View>
 
       {day ? (
-        <>
+        <Animated.View key="day" entering={enter(2)} exiting={fadeOut()}>
           <SectionHeader
             className="mt-8"
             title={day.toLocaleDateString(undefined, {
@@ -76,7 +104,7 @@ export default function LogScreen() {
               month: 'short',
             })}
             actionLabel="Clear"
-            onAction={() => setDay(null)}
+            onAction={() => pin(null)}
           />
           {onDay.length > 0 ? (
             <View className="mt-4 gap-2">
@@ -95,13 +123,15 @@ export default function LogScreen() {
           ) : (
             <Text className="type-body mt-4 text-muted">A rest day. Rest is part of the plan.</Text>
           )}
-        </>
+        </Animated.View>
       ) : empty ? (
-        <Text className="type-body mt-8 text-muted">
-          Nothing logged yet.{'\n'}Your sessions show up here.
-        </Text>
+        <Animated.View key="empty" entering={enter(2)}>
+          <Text className="type-body mt-8 text-muted">
+            Nothing logged yet.{'\n'}Your sessions show up here.
+          </Text>
+        </Animated.View>
       ) : (
-        <>
+        <Animated.View key="recent" entering={enter(2)} exiting={fadeOut()}>
           <SectionHeader
             className="mt-8"
             title="Recent"
@@ -113,7 +143,7 @@ export default function LogScreen() {
               <LogRow key={`${item.kind}${item.id}`} item={item} onPress={() => open(item)} />
             ))}
           </View>
-        </>
+        </Animated.View>
       )}
     </Screen>
   );

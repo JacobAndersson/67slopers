@@ -20,6 +20,7 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { DOT } from '@/lib/copy';
 import { formatClock, formatTime } from '@/lib/dates';
+import { CASCADE_MS } from '@/lib/motion';
 import { sessionVerdict, setResults } from '@/lib/session-sets';
 import { useStore } from '@/lib/store/store';
 import { FEELS, FEEL_LABELS, type Session } from '@/lib/store/types';
@@ -198,7 +199,13 @@ function HangsAsDone({ session }: { session: Session }) {
             set.ran ? `${set.actual} of ${set.planned} seconds` : 'not run'
           }`}>
           <Text className="type-caption min-w-16 pr-2 text-muted">Set {i + 1}</Text>
-          <Progress value={set.actual / set.planned} height={12} className="flex-1" />
+          <Progress
+            value={set.actual / set.planned}
+            height={12}
+            grow
+            delayMs={i * CASCADE_MS}
+            className="flex-1"
+          />
           <Text
             className={
               set.ran

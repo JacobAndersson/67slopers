@@ -2,7 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { useCallback, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 import { ActiveRunCard, useActiveRun } from '@/components/active-run-card';
 import { BoardCard } from '@/components/board-card';
@@ -16,7 +16,7 @@ import { Text } from '@/components/ui/text';
 import { WeekBars } from '@/components/week-bars';
 import { greetingLines, sessionLine, sessionTitle, weekBars, weekSummary } from '@/lib/copy';
 import { greeting } from '@/lib/greetings';
-import { fadeIn, LAYOUT_SETTLE } from '@/lib/motion';
+import { CASCADE_MS, fadeIn, LAYOUT_SETTLE, liftIn } from '@/lib/motion';
 import { lastSessionForWorkout, sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useClimb } from '@/lib/store/climb';
 import { useStore } from '@/lib/store/store';
@@ -29,6 +29,8 @@ const PREVIEW = 3;
  * both ways to train at the same weight, whichever was used last on top: the last workout one
  * tap from running, the last problem one tap from lit. Below them this week and the three
  * latest sessions of either kind. An unfinished run comes first and stands in for the workout.
+ * The parts lift in CASCADE_MS apart when Home mounts (under the splash hand-off at launch), and
+ * the week's bars grow; Home stays mounted, so coming back to it replays nothing.
  */
 export default function HomeScreen() {
   const router = useRouter();
@@ -37,6 +39,8 @@ export default function HomeScreen() {
   const log = useClimb((s) => s.log);
   const setup = useClimb((s) => s.setup);
   const [run, setRun] = useActiveRun();
+  const reduced = useReducedMotion();
+  const enter = (step: number) => liftIn(step * CASCADE_MS, reduced);
 
   // Home stays mounted under everything else: coming back to it in the evening must not
   // still say good morning.
@@ -85,7 +89,7 @@ export default function HomeScreen() {
 
   return (
     <Screen tab contentClassName="gap-0">
-      <View className="flex-row items-start justify-between">
+      <Animated.View entering={enter(0)} className="flex-row items-start justify-between">
         <Text
           className="type-large text-[40px] leading-[41px] tracking-[-0.8px]"
           role="heading"
@@ -102,9 +106,9 @@ export default function HomeScreen() {
             />
           )
         }
-      </View>
+      </Animated.View>
 
-      <View className="mt-7 gap-3">
+      <Animated.View entering={enter(1)} className="mt-7 gap-3">
         {run ? <ActiveRunCard run={run} onGone={() => setRun(null)} /> : null}
         {training.climbFirst ? (
           <>
@@ -120,38 +124,42 @@ export default function HomeScreen() {
             {board}
           </>
         )}
-      </View>
+      </Animated.View>
 
       {first ? null : (
         <>
-          <SectionHeader title="This week" className="mt-9">
-            <Text className="type-sub text-muted">{training.summary}</Text>
-          </SectionHeader>
-          <WeekBars days={training.week} className="mt-8" />
+          <Animated.View entering={enter(2)}>
+            <SectionHeader title="This week" className="mt-9">
+              <Text className="type-sub text-muted">{training.summary}</Text>
+            </SectionHeader>
+          </Animated.View>
+          <WeekBars days={training.week} delayMs={2 * CASCADE_MS} className="mt-8" />
 
-          <SectionHeader
-            title="Recent"
-            className="mt-6"
-            actionLabel={training.items.length > PREVIEW ? 'View all' : undefined}
-            onAction={() => router.push('/sessions')}
-          />
-          <View className="mt-4 gap-2">
-            {training.items.slice(0, PREVIEW).map((item) => (
-              <ListRow
-                key={`${item.kind}${item.id}`}
-                icon={item.kind === 'climb' ? BoardSprayIcon : HangboardIcon}
-                board={item.kind === 'climb'}
-                title={sessionTitle(item)}
-                sub={sessionLine(item)}
-                chevron
-                onPress={() =>
-                  router.push(
-                    item.kind === 'hang' ? `/session/${item.id}` : `/climb/session/${item.id}`
-                  )
-                }
-              />
-            ))}
-          </View>
+          <Animated.View entering={enter(3)}>
+            <SectionHeader
+              title="Recent"
+              className="mt-6"
+              actionLabel={training.items.length > PREVIEW ? 'View all' : undefined}
+              onAction={() => router.push('/sessions')}
+            />
+            <View className="mt-4 gap-2">
+              {training.items.slice(0, PREVIEW).map((item) => (
+                <ListRow
+                  key={`${item.kind}${item.id}`}
+                  icon={item.kind === 'climb' ? BoardSprayIcon : HangboardIcon}
+                  board={item.kind === 'climb'}
+                  title={sessionTitle(item)}
+                  sub={sessionLine(item)}
+                  chevron
+                  onPress={() =>
+                    router.push(
+                      item.kind === 'hang' ? `/session/${item.id}` : `/climb/session/${item.id}`
+                    )
+                  }
+                />
+              ))}
+            </View>
+          </Animated.View>
         </>
       )}
     </Screen>
