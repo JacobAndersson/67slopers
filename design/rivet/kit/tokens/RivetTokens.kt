@@ -29,9 +29,11 @@ object RivetLight {
     val track = Color(0xFFE4E0DA)
     val action = Color(0xFF141A2E)
     val onAction = Color(0xFFF8F6F3)
+    val stateGetReady = Color(0xFFE4E0DA)
     val stateHang = Color(0xFFF28C6E)
     val stateRest = Color(0xFFC3DCE5)
-    val stateRecover = Color(0xFFF8F6F3)
+    val stateRecover = Color(0xFFDDECF1)
+    val stateDone = Color(0xFF141A2E)
 }
 
 object RivetDark {
@@ -44,9 +46,11 @@ object RivetDark {
     val track = Color(0xFF1F2640)
     val action = Color(0xFFF8F6F3)
     val onAction = Color(0xFF141A2E)
+    val stateGetReady = Color(0xFFE4E0DA)
     val stateHang = Color(0xFFF28C6E)
     val stateRest = Color(0xFFC3DCE5)
-    val stateRecover = Color(0xFF141A2E)
+    val stateRecover = Color(0xFFDDECF1)
+    val stateDone = Color(0xFF141A2E)
 }
 
 object RivetType {

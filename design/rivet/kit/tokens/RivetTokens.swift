@@ -24,9 +24,11 @@ public enum RivetLight {
     public static let track = rgba(0.8941, 0.8784, 0.8549, 1.0000)
     public static let action = rgba(0.0784, 0.1020, 0.1804, 1.0000)
     public static let onAction = rgba(0.9725, 0.9647, 0.9529, 1.0000)
+    public static let stateGetReady = rgba(0.8941, 0.8784, 0.8549, 1.0000)
     public static let stateHang = rgba(0.9490, 0.5490, 0.4314, 1.0000)
     public static let stateRest = rgba(0.7647, 0.8627, 0.8980, 1.0000)
-    public static let stateRecover = rgba(0.9725, 0.9647, 0.9529, 1.0000)
+    public static let stateRecover = rgba(0.8667, 0.9255, 0.9451, 1.0000)
+    public static let stateDone = rgba(0.0784, 0.1020, 0.1804, 1.0000)
 }
 
 public enum RivetDark {
@@ -39,9 +41,11 @@ public enum RivetDark {
     public static let track = rgba(0.1216, 0.1490, 0.2510, 1.0000)
     public static let action = rgba(0.9725, 0.9647, 0.9529, 1.0000)
     public static let onAction = rgba(0.0784, 0.1020, 0.1804, 1.0000)
+    public static let stateGetReady = rgba(0.8941, 0.8784, 0.8549, 1.0000)
     public static let stateHang = rgba(0.9490, 0.5490, 0.4314, 1.0000)
     public static let stateRest = rgba(0.7647, 0.8627, 0.8980, 1.0000)
-    public static let stateRecover = rgba(0.0784, 0.1020, 0.1804, 1.0000)
+    public static let stateRecover = rgba(0.8667, 0.9255, 0.9451, 1.0000)
+    public static let stateDone = rgba(0.0784, 0.1020, 0.1804, 1.0000)
 }
 
 public enum RivetType {

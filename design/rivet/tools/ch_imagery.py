@@ -76,7 +76,7 @@ def build(bk):
     xx = M + 1140 + 36
     for k, w, t in segs:
         w *= 1.09
-        b.rect(xx, 560, w, 40, {'h': C['night'], 'r': C['glacier'], 'R': C['snow']}[k], r=20, stroke='#141A2E33' if k == 'R' else None, name='Segment')
+        b.rect(xx, 560, w, 40, {'h': C['night'], 'r': C['glacier'], 'R': SCALES['glacier'][1]}[k], r=20, name='Segment')
         if t: b.text(t, xx, 616, size=14, font=F, weight=800, color=MUTED)
         xx += w + 6
     bk.body(b, 'Bars are plain and rounded; time runs left to right. The Pitch symbol is never a pattern, a chart or an ornament. We don’t use illustration: we photograph, and we diagram.', M, 1040, w=1300, size=17, color=MUTED)

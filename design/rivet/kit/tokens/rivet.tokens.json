@@ -58,9 +58,11 @@
       "track": "#E4E0DA",
       "action": "#141A2E",
       "on-action": "#F8F6F3",
+      "state-get-ready": "#E4E0DA",
       "state-hang": "#F28C6E",
       "state-rest": "#C3DCE5",
-      "state-recover": "#F8F6F3"
+      "state-recover": "#DDECF1",
+      "state-done": "#141A2E"
     },
     "dark": {
       "canvas": "#0B0F1C",
@@ -72,9 +74,11 @@
       "track": "#1F2640",
       "action": "#F8F6F3",
       "on-action": "#141A2E",
+      "state-get-ready": "#E4E0DA",
       "state-hang": "#F28C6E",
       "state-rest": "#C3DCE5",
-      "state-recover": "#141A2E"
+      "state-recover": "#DDECF1",
+      "state-done": "#141A2E"
     }
   },
   "radius": {

@@ -101,17 +101,19 @@ def build(bk):
     b = bk.spread(18, 'colour-action', 'Colour in action', '03 Colour  ·  Colour carries the session', bg=C['night'], dark=True)
     bk.display(b, 'Colour tells\nyou where\nyou are.', M, 220, size=96)
     bk.body(b, 'In a session, the whole screen becomes the colour of the moment. You can read it from across the room, mid-hang, without your glasses.', M, 600, w=560)
-    states = [('Hang', 'glow', '7', 'Rep 4 of 6'), ('Rest', 'glacier', '3', 'Hang next'), ('Recover', 'snow', '2:41', 'Set 3 next'), ('Done', 'night', '5/5', 'Saved')]
-    for i, (t, k, n, sub) in enumerate(states):
-        x = 820 + i * 252
-        fg = ON_DARK if k == 'night' else C['night']
-        b.rect(x, 200, 232, 500, C[k], r=36, stroke='#FFFFFF33' if k == 'night' else None, name='Phone / ' + t)
-        b.text(t, x + 24, 236, size=28, font=F, weight=900, color=fg)
-        b.text(sub, x + 24, 276, size=17, font=F, weight=800, color=fg)
-        b.text(n, x, 380, w=232, size=96 if len(n) < 3 else 72, font=F, weight=900, color=fg, ls=-2, lh=1, align='center')
-        b.rect(x + 24, 650, 184, 6, fg + '33', r=3); b.rect(x + 24, 650, 184 * [0.6, 0.85, 0.3, 1][i], 6, fg, r=3)
-        b.text(t, x, 730, w=232, size=17, font=F, weight=800, color=ON_DARK, align='center')
-        b.text(INFO[k][0], x, 758, w=232, size=14, font=F, weight=600, color=ON_DARK_MUTED, align='center')
+    states = [('Get ready', C['stone'], '3', 'Hang next', 'Stone'), ('Hang', C['glow'], '7', 'Rep 4 of 6', 'Glow'),
+              ('Rest', C['glacier'], '3', 'Hang next', 'Glacier'), ('Recover', SCALES['glacier'][1], '2:41', 'Set 3 next', 'Glacier 200'),
+              ('Done', C['night'], '5/5', 'Saved', 'Night')]
+    for i, (t, bgc, n, sub, cname) in enumerate(states):
+        x = 760 + i * 210
+        fg = ON_DARK if bgc == C['night'] else C['night']
+        b.rect(x, 200, 192, 500, bgc, r=32, stroke='#FFFFFF33' if bgc == C['night'] else None, name='Phone / ' + t)
+        b.text(t, x + 20, 236, size=26, font=F, weight=900, color=fg)
+        b.text(sub, x + 20, 274, size=16, font=F, weight=800, color=fg)
+        b.text(n, x, 380, w=192, size=96 if len(n) < 3 else 64, font=F, weight=900, color=fg, ls=-2, lh=1, align='center')
+        b.rect(x + 20, 650, 152, 6, fg + '33', r=3); b.rect(x + 20, 650, 152 * [0.7, 0.6, 0.85, 0.3, 1][i], 6, fg, r=3)
+        b.text(t, x, 730, w=192, size=17, font=F, weight=800, color=ON_DARK, align='center')
+        b.text(cname, x, 758, w=192, size=14, font=F, weight=600, color=ON_DARK_MUTED, align='center')
 
     bk.opener('04', 'type', 'Typography', 'One rounded family, from a watch face\nto the side of a building.', 'cloud-sea')
     # 19 Typeface --------------------------------------------------------------
