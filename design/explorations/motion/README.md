@@ -87,3 +87,56 @@ each set). The contact sheets next to them are committed:
   second.
 - `launch-sheet.png`: one cold launch at 10 frames per second, from the launcher through the
   splash hand-off to Home.
+
+## Phase 2b (data)
+
+| Phase    | Commit    | Change                                                                                                                                                                                                                                                                                                                       | Cold start (`am start -W`, median of 5) | Launch on video (median of 10): splash / first React frame / Home settled |
+| -------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------- |
+| Phase 1  | `2b30e30` | Rerun beside Phase 2b, same instance, same hour.                                                                                                                                                                                                                                                                             | not rerun                               | 238 / 858 / 1412 ms (React 778 to 957, Home 1359 to 1498)                 |
+| Phase 2b | `318d9cb` | Reduced-motion fades that run under the system setting; Home and Log lift in 40 ms apart, the week bars rise, Log's figures count up, the heat-calendar ring glides; the press dip on buttons, chips and cards, a dim on rows; the sheet springs back and closes at the finger's speed, and rises from the Modal's `onShow`. | not rerun                               | 246 / 843 / 1426 ms (React 752 to 920, Home 1345 to 1495)                 |
+
+Measured with `capture.sh launch 5`, twice for each APK in the order Phase 1, Phase 2b, Phase 1,
+Phase 2b, at host load under 5, on an emulator booted that hour. The two rounds disagree in sign
+(round 1: Phase 2b 44 ms sooner to the first React frame and 102 ms sooner to Home; round 2: 51 ms
+and 42 ms later), so the pooled medians above are the comparison: both are within noise of
+Phase 1. Both APKs read about 150 ms slower than the Phase 1 row above, which was another boot of
+the emulator at another host load. Compare rows measured together only.
+
+Home settled does not move because Home mounts while the native splash is still up: the cascade
+(three 40 ms steps and a spring of about 250 ms) and the week bars finish under the splash
+hand-off, and the clip shows Home already in place when the Night lifts (`data/launch-sheet.png`).
+The grow-in is seen on Log's first visit and on screens pushed later (a session's set bars, the
+overview's timeline).
+
+The worktree build needs the MoonBoard lists copied into `src/lib/moonboard/data/` (they are
+git-ignored and a clone has empty ones), or Home has no board card and launch is not comparable.
+Force the bundle with `rm -rf android/app/build/generated/assets/react` after copying them:
+Gradle does not see the change. `~/Android/seed/push.sh` sets the animation scales back to 1,
+so turn reduced motion on after seeding, never before.
+
+`data/` holds the clips (git-ignored) and contact sheets:
+
+- `tabs-sheet.png`, `log-arrival-sheet.png`: Hang, then Home (mounted at launch, so nothing
+  replays), then Log's first visit at 25 fps. Its parts lift in and the figures count from 0 to
+  8 weeks, 22 and 6 h 15 in about 320 ms. The figures sit left in their columns and do not shift
+  as their digits change.
+- `revisit-sheet.png`: Log and Home again after both were seen. Both appear complete on their
+  first frame.
+- `calendar-sheet.png`, `calendar-clear-sheet.png`: pinning a day (the ring fades in, the other
+  days dim), moving the pin (the ring glides in about 200 ms, no visible overshoot), Clear (the
+  ring fades out in about 100 ms). The list under the calendar crossfades in 120 ms, with old
+  and new text briefly over each other.
+- `sheet-open-sheet.png`, `sheet-drag-sheet.png`: Delete on a session opens the sheet, which rises
+  over four frames. A slow 80 px drag springs back without overshoot. A flick closes it in about
+  200 ms.
+- `press-sheet.png`: a workout card held 0.6 s dips (its edge moves 13 px on a 940 px card, the
+  0.97 scale), the library IconButton dips (129 to 127 px wide), a SettingRow dims (its title's
+  mean luminance 217 to 228 and back).
+- `reduced/`: Settings › Accessibility › Color and motion › Remove animations, set from adb as
+  `animator_duration_scale`, `transition_animation_scale` and `window_animation_scale` 0.
+  Reanimated reads `transition_animation_scale` once at process start, so the app was cold
+  started after the change. `useReducedMotion()` picked it up: Log's figures show their values
+  at once, the parts fade in 40 ms apart with no rise, the week bars fade, the sheet fades in and
+  out in place and does not follow a drag. Before `318d9cb` the sheet's 120 ms fade had one frame
+  between nothing and the full sheet, because it ran before the Modal's window was drawn; it now
+  has four (`reduced/sheet-open-sheet.png`).
