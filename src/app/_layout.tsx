@@ -7,11 +7,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { colorScheme, cssInterop } from 'nativewind';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { SplashHandoff } from '@/components/rivet-splash';
 import { FONTS } from '@/lib/fonts';
 import { useStore } from '@/lib/store/store';
 import { mark, measure } from '@/lib/perf';
@@ -22,6 +23,9 @@ import { useAppTheme } from '@/lib/use-theme';
 // through to the inner View already.
 if (Platform.OS === 'web') cssInterop(Animated.View, { className: 'style' });
 
+// Emulators often run with animations off; the app already honours reduced motion.
+LogBox.ignoreLogs(['[Reanimated] Reduced motion setting is enabled']);
+
 SplashScreen.preventAutoHideAsync();
 mark('launch');
 
@@ -30,6 +34,7 @@ export default function RootLayout() {
   const hydrated = useStore((s) => s.hydrated);
   const { dark, theme } = useAppTheme();
   const appearance = useStore((s) => s.settings.appearance);
+  const firstLaunch = useStore((s) => s.firstLaunch);
 
   useEffect(() => {
     // Native resets the OS override for Auto. Web needs the resolved class for CSS variables.
@@ -43,7 +48,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (ready) {
-      SplashScreen.hideAsync();
+      // Hide at once: the first frame of <RivetSplash> is the native splash's frame, so the hand-off is
+      // invisible, and the app underneath is already rendered and usable.
+      SplashScreen.hide();
       measure('launch', 'JS start → first screen');
     }
   }, [ready]);
@@ -60,57 +67,33 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider value={navigationTheme(theme, dark)}>
           <StatusBar style={dark ? 'light' : 'dark'} />
-          <Stack
-            screenOptions={{
-              headerStyle: { backgroundColor: theme.background },
-              headerTintColor: theme.foreground,
-              headerTitleStyle: { fontFamily: 'GeistMono_600SemiBold' },
-              headerShadowVisible: false,
-              headerBackButtonDisplayMode: 'minimal',
-              contentStyle: { backgroundColor: theme.background },
-            }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false, title: '67slopers' }} />
-            <Stack.Screen name="sessions" options={{ title: 'Sessions' }} />
-            <Stack.Screen name="presets" options={{ title: 'Classic workouts' }} />
-            <Stack.Screen name="workout/new" options={{ title: 'New workout' }} />
-            <Stack.Screen name="workout/[id]/index" options={{ title: '' }} />
-            <Stack.Screen name="workout/[id]/edit" options={{ title: 'Edit workout' }} />
-            <Stack.Screen name="session/[id]" options={{ title: 'Session' }} />
-            <Stack.Screen name="import" options={{ title: 'Shared workout' }} />
-            <Stack.Screen name="climb/setup" options={{ title: 'Set up board' }} />
-            <Stack.Screen name="climb/connect" options={{ title: 'Connect lights' }} />
-            <Stack.Screen name="climb/lights" options={{ title: 'Board lights' }} />
-            <Stack.Screen name="climb/board" options={{ title: 'MoonBoard' }} />
-            <Stack.Screen name="climb/problem/[id]" options={{ title: '' }} />
-            <Stack.Screen name="climb/new" options={{ title: 'New problem' }} />
-            <Stack.Screen name="climb/import" options={{ title: 'Shared problem' }} />
-            <Stack.Screen name="climb/circuit/[id]/index" options={{ title: 'Circuit' }} />
-            <Stack.Screen name="climb/circuit/[id]/edit" options={{ title: 'Edit circuit' }} />
-            <Stack.Screen name="climb/session/[id]" options={{ title: 'Session' }} />
-            <Stack.Screen
-              name="climb/circuit/[id]/run"
-              options={{
+          <SplashHandoff enabled={Platform.OS !== 'web'} firstRun={firstLaunch}>
+            <Stack
+              screenOptions={{
+                // Every screen draws its own top bar (src/components/top-bar.tsx).
                 headerShown: false,
-                presentation: 'fullScreenModal',
-                gestureEnabled: false,
-                animation: 'slide_from_bottom',
-              }}
-            />
-            {(['workout/[id]/share', 'climb/share/[id]', 'scan'] as const).map((route) => (
+                contentStyle: { backgroundColor: theme.canvas },
+              }}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false, title: 'Rivet' }} />
+              <Stack.Screen name="sessions" options={{ title: 'Sessions' }} />
+              <Stack.Screen name="presets" options={{ title: 'Classic workouts' }} />
+              <Stack.Screen name="workout/new" options={{ title: 'New workout' }} />
+              <Stack.Screen name="workout/[id]/index" options={{ title: '' }} />
+              <Stack.Screen name="workout/[id]/edit" options={{ title: 'Edit workout' }} />
+              <Stack.Screen name="session/[id]" options={{ title: 'Session' }} />
+              <Stack.Screen name="import" options={{ title: 'Shared workout' }} />
+              <Stack.Screen name="climb/setup" options={{ title: 'Set up board' }} />
+              <Stack.Screen name="climb/connect" options={{ title: 'Connect lights' }} />
+              <Stack.Screen name="climb/lights" options={{ title: 'Board lights' }} />
+              <Stack.Screen name="climb/board" options={{ title: 'MoonBoard' }} />
+              <Stack.Screen name="climb/problem/[id]" options={{ title: '' }} />
+              <Stack.Screen name="climb/new" options={{ title: 'New problem' }} />
+              <Stack.Screen name="climb/import" options={{ title: 'Shared problem' }} />
+              <Stack.Screen name="climb/circuit/[id]/index" options={{ title: 'Circuit' }} />
+              <Stack.Screen name="climb/circuit/[id]/edit" options={{ title: 'Edit circuit' }} />
+              <Stack.Screen name="climb/session/[id]" options={{ title: 'Session' }} />
               <Stack.Screen
-                key={route}
-                name={route}
-                options={{
-                  headerShown: false,
-                  presentation: 'fullScreenModal',
-                  animation: 'slide_from_bottom',
-                }}
-              />
-            ))}
-            {(['workout/[id]/run', 'workout/run'] as const).map((route) => (
-              <Stack.Screen
-                key={route}
-                name={route}
+                name="climb/circuit/[id]/run"
                 options={{
                   headerShown: false,
                   presentation: 'fullScreenModal',
@@ -118,8 +101,31 @@ export default function RootLayout() {
                   animation: 'slide_from_bottom',
                 }}
               />
-            ))}
-          </Stack>
+              {(['workout/[id]/share', 'climb/share/[id]', 'scan'] as const).map((route) => (
+                <Stack.Screen
+                  key={route}
+                  name={route}
+                  options={{
+                    headerShown: false,
+                    presentation: 'fullScreenModal',
+                    animation: 'slide_from_bottom',
+                  }}
+                />
+              ))}
+              {(['workout/[id]/run', 'workout/run'] as const).map((route) => (
+                <Stack.Screen
+                  key={route}
+                  name={route}
+                  options={{
+                    headerShown: false,
+                    presentation: 'fullScreenModal',
+                    gestureEnabled: false,
+                    animation: 'slide_from_bottom',
+                  }}
+                />
+              ))}
+            </Stack>
+          </SplashHandoff>
           <PortalHost />
         </ThemeProvider>
       </GestureHandlerRootView>

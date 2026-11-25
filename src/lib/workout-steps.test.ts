@@ -270,3 +270,20 @@ test('sameTimings compares everything the timer runs, but not the name', () => {
     false
   );
 });
+
+test('stepMoves says which moves a step has', async () => {
+  const { stepMoves, withIds } = await import('./workout-steps');
+  const steps = withIds([
+    { kind: 'prep', seconds: 10 },
+    { kind: 'repeat', times: 2, steps: [{ kind: 'hang', seconds: 7 }] },
+    { kind: 'rest', seconds: 60 },
+  ]);
+  const [prep, repeat, rest] = steps;
+  const inner = repeat.kind === 'repeat' ? repeat.steps[0] : repeat;
+  assert.deepEqual(
+    { ...stepMoves(steps, prep.id), intoBelow: !!stepMoves(steps, prep.id).intoBelow },
+    { up: false, down: true, intoAbove: null, intoBelow: true, out: false }
+  );
+  assert.equal(stepMoves(steps, rest.id).intoAbove?.id, repeat.id);
+  assert.equal(stepMoves(steps, inner.id).out, true);
+});

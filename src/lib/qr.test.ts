@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import jsqrModule from 'jsqr';
 
-import { makeQr, qrPath, QUIET_ZONE, type QrMatrix } from './qr';
+import { logoSpan, makeQr, qrPath, QUIET_ZONE, type QrMatrix } from './qr';
 import { PRESETS } from './store/presets';
 import { encodeWorkout } from './workout-codec';
 
@@ -55,4 +55,23 @@ test('the SVG path covers exactly the dark modules', () => {
   const dark = qr.modules.reduce((n, m) => n + m, 0);
   const area = [...qrPath(qr).matchAll(/h(\d+)/g)].reduce((n, m) => n + Number(m[1]), 0);
   assert.equal(area, dark);
+});
+
+test('codes still scan with the app icon covering the middle', () => {
+  const codes = [
+    ...PRESETS.map((p) => encodeWorkout(p)),
+    encodeWorkout({ name: 'Tuesday fingers', steps: [{ kind: 'hang', seconds: 13 }] }),
+    '0123456789'.repeat(8),
+  ];
+  for (const code of codes) {
+    const qr = makeQr(code);
+    const span = logoSpan(qr);
+    const start = (qr.size - span) / 2;
+    const covered = { ...qr, modules: Uint8Array.from(qr.modules) };
+    for (let row = start; row < start + span; row++) {
+      for (let col = start; col < start + span; col++) covered.modules[row * qr.size + col] = 0;
+    }
+    const { data, side } = render(covered);
+    assert.equal(jsQR(data, side, side)?.data, code, `${code} (${qr.ecc}, span ${span})`);
+  }
 });

@@ -14,28 +14,29 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-import { DeadHangIcon, MoonBoardIcon } from '@/components/training-icons';
+import { BoardSprayIcon, HangboardIcon } from '@/components/training-icons';
 import { Icon } from '@/components/ui/icon';
 import { useLights } from '@/lib/moonboard/lights';
 import { SPRING_SETTLE } from '@/lib/motion';
 import { useAppTheme } from '@/lib/use-theme';
 
-const ITEM = 48;
-const GAP = 4;
-const PAD = 6;
-const SEPARATOR = 17;
+const WIDTH = 300;
+const HEIGHT = 64;
+const PAD = 8;
+const SLOT = (WIDTH - PAD * 2) / 5;
+const TILE = { width: SLOT - 4, height: HEIGHT - 16 };
 
 export const DOCK_TABS = [
   { name: 'home', href: '/', label: 'Home', icon: HouseIcon },
-  { name: 'hang', href: '/hang', label: 'Hang', icon: DeadHangIcon },
-  { name: 'climb', href: '/climb', label: 'Climb', icon: MoonBoardIcon },
+  { name: 'hang', href: '/hang', label: 'Hang', icon: HangboardIcon },
+  { name: 'climb', href: '/climb', label: 'Climb', icon: BoardSprayIcon },
   { name: 'log', href: '/log', label: 'Log', icon: CalendarBlankIcon },
   { name: 'settings', href: '/settings', label: 'Settings', icon: GearSixIcon },
 ] as const;
 
-/** Settings sits apart, after the separator. */
-const offsetOf = (index: number) =>
-  PAD + index * (ITEM + GAP) + (index === DOCK_TABS.length - 1 ? SEPARATOR + GAP : 0);
+const offsetOf = (index: number) => PAD + index * SLOT + 2;
+
+const dockBottom = (inset: number) => Math.max(inset, 16) + 8;
 
 type DockItemProps = TabTriggerSlotProps & {
   icon: PhosphorIcon;
@@ -55,23 +56,27 @@ function DockItem({ icon, label, badge, onActive, isFocused, ...props }: DockIte
       accessibilityLabel={label}
       accessibilityState={{ selected: !!isFocused }}
       className="items-center justify-center active:opacity-70"
-      style={{ width: ITEM, height: ITEM }}>
+      style={{ width: SLOT, height: HEIGHT }}>
       <Icon
         as={icon}
-        size={24}
+        size={26}
         weight={isFocused ? 'fill' : 'regular'}
-        className={isFocused ? 'text-foreground' : 'text-muted-foreground'}
+        className={isFocused ? 'text-dock-fg' : 'text-dock-dim'}
       />
       {badge ? (
-        <View className="absolute right-2 top-2 size-2.5 rounded-full border-2 border-card bg-hold-start" />
+        <View
+          className="absolute size-[7px] rounded-full bg-dock-fg"
+          style={{ top: 15, left: SLOT / 2 + 9 }}
+        />
       ) : null}
     </Pressable>
   );
 }
 
 /**
- * The floating dock: five places, icons only, a tile that glides to the active one. Content
- * scrolls underneath and fades into the background before it reaches the bar.
+ * The floating Ink dock (design/rivet/app/ui.py `dock`): five places as icons, the active one on
+ * a lighter tile with its Fill icon. The tile glides between places on the Rivet spring. Content
+ * scrolls underneath and fades into the canvas before it reaches the bar.
  */
 export function Dock() {
   const { theme } = useAppTheme();
@@ -80,19 +85,20 @@ export function Dock() {
   const x = useSharedValue(offsetOf(0));
   const lit = useLights((s) => s.status === 'connected');
   const tile = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
-  const bottom = Math.max(insets.bottom, 12) + 8;
+  const bottom = dockBottom(insets.bottom);
 
   return (
     <View pointerEvents="box-none" className="absolute inset-x-0 bottom-0 items-center">
       <View
         pointerEvents="none"
         className="absolute inset-x-0 bottom-0"
-        style={{ height: bottom + 104 }}>
+        style={{ height: bottom + HEIGHT + 48 }}>
         <Svg width="100%" height="100%">
           <Defs>
             <LinearGradient id="dock-fade" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={theme.background} stopOpacity={0} />
-              <Stop offset="0.62" stopColor={theme.background} stopOpacity={1} />
+              <Stop offset="0" stopColor={theme.canvas} stopOpacity={0} />
+              <Stop offset="0.55" stopColor={theme.canvas} stopOpacity={0.94} />
+              <Stop offset="1" stopColor={theme.canvas} stopOpacity={1} />
             </LinearGradient>
           </Defs>
           <Rect width="100%" height="100%" fill="url(#dock-fade)" />
@@ -100,33 +106,36 @@ export function Dock() {
       </View>
       <View
         accessibilityRole="tablist"
-        className="flex-row items-center rounded-[22px] border border-border bg-card shadow-lg shadow-black/20"
-        style={{ marginBottom: bottom, padding: PAD, gap: GAP }}>
+        className="flex-row items-center rounded-full bg-dock"
+        style={{
+          width: WIDTH,
+          height: HEIGHT,
+          paddingHorizontal: PAD,
+          marginBottom: bottom,
+          shadowColor: '#0B0F1C',
+          shadowOpacity: 0.22,
+          shadowRadius: 15,
+          shadowOffset: { width: 0, height: 10 },
+          elevation: 12,
+        }}>
         <Animated.View
           pointerEvents="none"
-          className="absolute rounded-[14px] bg-secondary"
-          style={[{ width: ITEM, height: ITEM, top: PAD, left: 0 }, tile]}
+          className="absolute rounded-full bg-selected-tile"
+          style={[{ ...TILE, top: 8, left: 0 }, tile]}
         />
         {DOCK_TABS.map((tab, index) => (
-          <View key={tab.name} className="flex-row items-center" style={{ gap: GAP }}>
-            {index === DOCK_TABS.length - 1 ? (
-              <View className="items-center" style={{ width: SEPARATOR }}>
-                <View className="h-6 w-px bg-border" />
-              </View>
-            ) : null}
-            <TabTrigger name={tab.name} asChild>
-              <DockItem
-                icon={tab.icon}
-                label={tab.label}
-                badge={tab.name === 'climb' && lit}
-                onActive={() => {
-                  x.value = reducedMotion
-                    ? offsetOf(index)
-                    : withSpring(offsetOf(index), SPRING_SETTLE);
-                }}
-              />
-            </TabTrigger>
-          </View>
+          <TabTrigger key={tab.name} name={tab.name} asChild>
+            <DockItem
+              icon={tab.icon}
+              label={tab.label}
+              badge={tab.name === 'climb' && lit}
+              onActive={() => {
+                x.value = reducedMotion
+                  ? offsetOf(index)
+                  : withSpring(offsetOf(index), SPRING_SETTLE);
+              }}
+            />
+          </TabTrigger>
         ))}
       </View>
     </View>

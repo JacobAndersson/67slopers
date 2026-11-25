@@ -1,32 +1,15 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
+import { MissingWorkout } from '@/components/missing-workout';
 import { Runner } from '@/components/runner';
-import { Button } from '@/components/ui/button';
-import { Text } from '@/components/ui/text';
 import { useStore } from '@/lib/store/store';
 
 /** Runs a saved workout. `?autostart=1` (Start on Home) counts down straight away. */
 export default function RunScreen() {
   const { id, autostart } = useLocalSearchParams<{ id: string; autostart?: string }>();
-  const router = useRouter();
   const workout = useStore((s) => s.workouts.find((w) => w.id === id));
-  const hydrated = useStore((s) => s.hydrated);
 
-  if (!workout) {
-    return (
-      <View className="flex-1 items-center justify-center gap-4 bg-background p-6">
-        <Text variant="muted">
-          {hydrated ? 'This workout no longer exists.' : 'Opening workout…'}
-        </Text>
-        {hydrated ? (
-          <Button variant="outline" onPress={() => router.dismissTo('/')}>
-            <Text>Back to home</Text>
-          </Button>
-        ) : null}
-      </View>
-    );
-  }
+  if (!workout) return <MissingWorkout />;
   // The store object is stable between edits, so the timer memoises on it directly.
   return (
     <Runner

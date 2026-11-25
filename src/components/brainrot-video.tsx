@@ -66,7 +66,7 @@ export default function BrainrotVideo({ clip, playing, onFailure }: Props) {
   }, [playing, active]);
   return (
     <View
-      className="flex-1 overflow-hidden bg-muted"
+      className="flex-1 overflow-hidden bg-raised"
       onLayout={(event) => setSize(event.nativeEvent.layout)}
       pointerEvents="none"
       accessibilityElementsHidden
@@ -91,8 +91,8 @@ export default function BrainrotVideo({ clip, playing, onFailure }: Props) {
         />
       ) : null}
       {failed ? (
-        <View className="absolute bottom-2 self-center rounded-md bg-background/90 px-3 py-1">
-          <Text className="text-xs text-muted-foreground">Video unavailable</Text>
+        <View className="absolute bottom-2 self-center rounded-full bg-canvas/90 px-3 py-1">
+          <Text className="type-caption text-muted">Video unavailable</Text>
         </View>
       ) : null}
     </View>

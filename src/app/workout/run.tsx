@@ -1,10 +1,7 @@
-import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { View } from 'react-native';
 
+import { MissingWorkout } from '@/components/missing-workout';
 import { Runner } from '@/components/runner';
-import { Button } from '@/components/ui/button';
-import { Text } from '@/components/ui/text';
 import { useStore } from '@/lib/store/store';
 
 /**
@@ -13,7 +10,6 @@ import { useStore } from '@/lib/store/store';
  * again" on a session).
  */
 export default function RunDraftScreen() {
-  const router = useRouter();
   const draft = useStore((s) => s.draft);
   const resume = useStore((s) => s.resume);
   const setResume = useStore((s) => s.setResume);
@@ -32,16 +28,7 @@ export default function RunDraftScreen() {
       />
     );
   }
-  if (!draft) {
-    return (
-      <View className="flex-1 items-center justify-center gap-4 bg-background p-6">
-        <Text variant="muted">Nothing to run.</Text>
-        <Button variant="outline" onPress={() => router.dismissTo('/')}>
-          <Text>Back to home</Text>
-        </Button>
-      </View>
-    );
-  }
+  if (!draft) return <MissingWorkout />;
   return (
     <Runner
       timings={draft.timings}

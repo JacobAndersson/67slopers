@@ -1,39 +1,45 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import { ScanIcon } from 'phosphor-react-native/src/icons/Scan';
+import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { useCallback, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
+import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
-import { ActiveRunCard } from '@/components/active-run-card';
+import { ActiveRunCard, useActiveRun } from '@/components/active-run-card';
 import { BoardCard } from '@/components/board-card';
-import { CalendarStats, WeekCalendar } from '@/components/calendar';
+import { ListRow } from '@/components/card';
 import { HangCard } from '@/components/hang-card';
-import { LogRow } from '@/components/log-row';
-import { SlabBrand } from '@/components/slab-brand';
+import { IconButton } from '@/components/icon-button';
 import { Screen } from '@/components/screen';
 import { SectionHeader } from '@/components/section-header';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
+import { BoardSprayIcon, HangboardIcon } from '@/components/training-icons';
 import { Text } from '@/components/ui/text';
+import { WeekBars } from '@/components/week-bars';
+import { greetingLines, sessionLine, sessionTitle, weekBars, weekSummary } from '@/lib/copy';
 import { greeting } from '@/lib/greetings';
+import { REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
 import { lastSessionForWorkout, sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useClimb } from '@/lib/store/climb';
 import { useStore } from '@/lib/store/store';
-import { trainedDays, trainingLog, trainingStreak } from '@/lib/training-log';
+import { trainingLog, trainingStreak } from '@/lib/training-log';
 
 const PREVIEW = 3;
+const SETTLE = LinearTransition.springify()
+  .stiffness(SPRING_SETTLE.stiffness)
+  .damping(SPRING_SETTLE.damping);
 
 /**
- * A few words that follow the clock, then both ways to train at the same weight, whichever was
- * used last on top: the last workout one tap from running, the last problem one tap from lit.
- * Below them the streak, the week and the three latest sessions of either kind. An unfinished
- * run always comes first.
+ * Home (design: page 03, home-home and its states). A few words that follow the clock, then
+ * both ways to train at the same weight, whichever was used last on top: the last workout one
+ * tap from running, the last problem one tap from lit. Below them this week and the three
+ * latest sessions of either kind. An unfinished run comes first and stands in for the workout.
  */
 export default function HomeScreen() {
   const router = useRouter();
   const workouts = useStore((s) => s.workouts);
   const sessions = useStore((s) => s.sessions);
   const log = useClimb((s) => s.log);
-  const scale = useClimb((s) => s.gradeScale);
+  const setup = useClimb((s) => s.setup);
+  const [run, setRun] = useActiveRun();
 
   // Home stays mounted under everything else: coming back to it in the evening must not
   // still say good morning.
@@ -46,69 +52,110 @@ export default function HomeScreen() {
     () => (next ? lastSessionForWorkout(sessions, next.id) : undefined),
     [sessions, next]
   );
-  // Board sessions count towards the streak and mark their days, like timer sessions.
   const training = useMemo(() => {
     const items = trainingLog(sessions, log);
+    const streak = trainingStreak(items);
     return {
       items,
-      streak: trainingStreak(items),
-      days: trainedDays(items),
+      week: weekBars(items),
+      summary: weekSummary(items, streak),
       // Whichever way of training was used last leads.
       climbFirst: items[0]?.kind === 'climb',
     };
   }, [sessions, log]);
+  const first = training.items.length === 0;
+  // On the first run the other seeded classics are named, so Hang is worth a look.
+  const others = sorted.slice(1, 3).map((w) => w.name);
+  const more =
+    others.length === 2
+      ? `Two more classics wait in Hang: ${others[0]} and ${others[1]}.`
+      : others.length === 1
+        ? `One more classic waits in Hang: ${others[0]}.`
+        : null;
+
+  // When the unfinished card goes, the cards under it settle into place instead of jumping.
+  const hang =
+    next && !run ? (
+      <Animated.View key="hang" layout={SETTLE} entering={FadeIn.duration(REDUCED_FADE_MS)}>
+        <HangCard workout={next} last={last} top={!training.climbFirst} first={first} />
+      </Animated.View>
+    ) : null;
+  const board = (
+    <Animated.View key="board" layout={SETTLE}>
+      <BoardCard top={training.climbFirst} />
+    </Animated.View>
+  );
 
   return (
-    <Screen tab>
-      <View className="min-h-11 flex-row items-center justify-between">
-        <SlabBrand />
+    <Screen tab contentClassName="gap-0">
+      <View className="flex-row items-start justify-between">
+        <Text
+          className="type-large text-[40px] leading-[41px] tracking-[-0.8px]"
+          role="heading"
+          accessibilityLabel={hello}>
+          {greetingLines(hello)}
+        </Text>
         {
           // Browsers cannot read QR codes with expo-camera, so scanning is a phone feature.
           Platform.OS === 'web' ? null : (
-            <Button
-              variant="ghost"
-              size="icon"
-              accessibilityLabel="Scan a code"
-              onPress={() => router.push('/scan')}>
-              <Icon as={ScanIcon} className="size-6" />
-            </Button>
+            <IconButton
+              icon={QrCodeIcon}
+              label="Scan a code"
+              onPress={() => router.push('/scan')}
+            />
           )
         }
       </View>
-      <Text className="pt-2 text-3xl font-extrabold" role="heading">
-        {hello}
-      </Text>
-      <ActiveRunCard />
-      <View className={training.climbFirst ? 'flex-col-reverse gap-3' : 'gap-3'}>
-        <HangCard workout={next} last={last} />
-        <BoardCard />
+
+      <View className="mt-7 gap-3">
+        {run ? <ActiveRunCard run={run} onGone={() => setRun(null)} /> : null}
+        {training.climbFirst ? (
+          <>
+            {board}
+            {hang}
+          </>
+        ) : (
+          <>
+            {hang}
+            {first && !setup && more ? (
+              <Text className="type-sub mb-3 mt-1 text-muted">{more}</Text>
+            ) : null}
+            {board}
+          </>
+        )}
       </View>
 
-      <CalendarStats streak={training.streak} sessions={training.items.length} />
-      <WeekCalendar trained={training.days} />
+      {first ? null : (
+        <>
+          <SectionHeader title="This week" className="mt-9">
+            <Text className="type-sub text-muted">{training.summary}</Text>
+          </SectionHeader>
+          <WeekBars days={training.week} className="mt-8" />
 
-      <SectionHeader
-        title="Recent sessions"
-        actionLabel={training.items.length > PREVIEW ? 'View all' : undefined}
-        onAction={() => router.push('/sessions')}
-      />
-      {training.items.length > 0 ? (
-        <View>
-          {training.items.slice(0, PREVIEW).map((item) => (
-            <LogRow
-              key={`${item.kind}${item.id}`}
-              item={item}
-              scale={scale}
-              onPress={() =>
-                router.push(
-                  item.kind === 'hang' ? `/session/${item.id}` : `/climb/session/${item.id}`
-                )
-              }
-            />
-          ))}
-        </View>
-      ) : (
-        <Text variant="muted">No sessions yet.</Text>
+          <SectionHeader
+            title="Recent"
+            className="mt-6"
+            actionLabel={training.items.length > PREVIEW ? 'View all' : undefined}
+            onAction={() => router.push('/sessions')}
+          />
+          <View className="mt-4 gap-2">
+            {training.items.slice(0, PREVIEW).map((item) => (
+              <ListRow
+                key={`${item.kind}${item.id}`}
+                icon={item.kind === 'climb' ? BoardSprayIcon : HangboardIcon}
+                board={item.kind === 'climb'}
+                title={sessionTitle(item)}
+                sub={sessionLine(item)}
+                chevron
+                onPress={() =>
+                  router.push(
+                    item.kind === 'hang' ? `/session/${item.id}` : `/climb/session/${item.id}`
+                  )
+                }
+              />
+            ))}
+          </View>
+        </>
       )}
     </Screen>
   );

@@ -51,9 +51,10 @@ export type Feel = 'weak' | 'normal' | 'strong';
 
 export const FEELS: Feel[] = ['weak', 'normal', 'strong'];
 
+/** How a session felt, in words (design decision): stored as weak / normal / strong. */
 export const FEEL_LABELS: Record<Feel, string> = {
-  weak: 'Weak',
-  normal: 'Normal',
+  weak: 'Off day',
+  normal: 'Solid',
   strong: 'Strong',
 };
 

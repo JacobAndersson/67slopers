@@ -26,6 +26,10 @@ config.resolver.blockList = [
     (dir) =>
       new RegExp(`^${path.resolve(__dirname, dir).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(/.*)?$`)
   ),
+  // Native build output, in the app and in every library: a Gradle build churns these folders
+  // and crashed the file watcher while Metro was running.
+  /[/\\]android[/\\](app[/\\])?build[/\\].*/,
+  /[/\\]android[/\\]\.(gradle|cxx)[/\\].*/,
 ];
 
 module.exports = withNativeWind(config, { input: './src/global.css', inlineRem: 16 });

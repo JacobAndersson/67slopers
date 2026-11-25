@@ -30,3 +30,18 @@ export type BoardManifest = {
   height: number;
   holds: HoldManifest[];
 };
+
+/**
+ * A hangboard as a diagram (scripts/gen-board-diagrams.mjs): every path is in board millimetres,
+ * viewBox 0 0 width height.
+ */
+export type BoardDiagram = {
+  width: number;
+  height: number;
+  /** The board's silhouette. */
+  plate: string;
+  /** The lower tier's step, a hairline across the board. */
+  ledge: { x: number; y: number; w: number } | null;
+  /** One shape per hold; `faint` rails sit on a shaped top and get a whisper of fill. */
+  holds: { id: string; d: string; faint?: boolean }[];
+};

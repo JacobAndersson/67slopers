@@ -2,69 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Semantic light and dark palettes, mirrored in src/lib/theme.ts. */
+/*
+ * Rivet colour roles (design/rivet/kit/tokens, app file design/rivet/app/ui.py), light and dark.
+ * Mirrored in src/lib/theme.ts; change both together. Opaque roles are RGB channels so opacity
+ * modifiers work; line, line2, scrim and selected-tile carry their own alpha.
+ */
 @layer base {
   :root {
-    --background: 60 23.077% 97.451%;
-    --foreground: 100 4.615% 12.745%;
-    --card: 0 0% 100%;
-    --card-foreground: 100 4.615% 12.745%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 100 4.615% 12.745%;
-    --primary: 100 4.615% 12.745%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 42.295 85.915% 86.078%;
-    --secondary-foreground: 100 4.615% 12.745%;
-    --muted: 200 30.612% 90.392%;
-    --muted-foreground: 75 8.163% 19.216%;
-    --accent: 40 71.429% 87.647%;
-    --accent-foreground: 100 4.615% 12.745%;
-    --destructive: 0 58.621% 34.118%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 75 8.696% 81.961%;
-    --input: 81.429 5.785% 47.451%;
-    --ring: 32.692 100% 30.588%;
-    --chart-1: 40.385 92.857% 67.059%;
-    --chart-2: 40 71.429% 87.647%;
-    --chart-3: 32.692 100% 30.588%;
-    --chart-4: 75 8.163% 19.216%;
-    --chart-5: 200 30.612% 90.392%;
-    /* MoonBoard LED roles; they follow the lights on the wall. */
-    --hold-start: 148 55% 40%;
-    --hold-move: 217 69% 52%;
-    --hold-finish: 9 68% 52%;
-    --hold-wood: 34 46% 60%;
-    --radius: 0.75rem;
+    --canvas: 248 246 243;
+    --surface: 255 255 255;
+    --raised: 228 224 218;
+    --text: 20 26 46;
+    --muted: 107 110 115;
+    --muted2: 74 79 92;
+    --track: 228 224 218;
+    --bar: 228 224 218;
+    --action: 20 26 46;
+    --on-action: 248 246 243;
+    --board: 110 102 178;
+    --board-soft: 222 219 243;
+    --dock: 20 26 46;
+    --dock-fg: 248 246 243;
+    --dock-dim: 140 146 166;
+    --disabled-bg: 228 224 218;
+    --disabled-fg: 107 110 115;
+    --segment-tile: 255 255 255;
+    --menu: 255 255 255;
+    --rest-rail: 195 220 229;
+    --recover-rail: 221 236 241;
+    --heat0: 240 247 249;
+    --heat1: 221 236 241;
+    --heat2: 195 220 229;
+    --heat3: 156 195 209;
+    --heat4: 108 159 178;
+    --heat5: 70 123 143;
+    --heat6: 43 81 97;
+    --line: rgba(20, 26, 46, 0.08);
+    --line2: rgba(20, 26, 46, 0.16);
+    --scrim: rgba(20, 26, 46, 0.38);
+    --selected-tile: rgba(255, 255, 255, 0.12);
   }
 
-  .dark {
-    --background: 100 7% 9%;
-    --foreground: 60 15% 93%;
-    --card: 100 6% 14%;
-    --card-foreground: 60 15% 93%;
-    --popover: 100 6% 14%;
-    --popover-foreground: 60 15% 93%;
-    --primary: 40 90% 72%;
-    --primary-foreground: 100 7% 9%;
-    --secondary: 39 24% 24%;
-    --secondary-foreground: 60 15% 93%;
-    --muted: 100 5% 23%;
-    --muted-foreground: 60 11% 73%;
-    --accent: 39 27% 27%;
-    --accent-foreground: 60 15% 93%;
-    --destructive: 0 72% 64%;
-    --destructive-foreground: 100 7% 9%;
-    --border: 100 5% 32%;
-    --input: 100 5% 41%;
-    --ring: 40 90% 72%;
-    --chart-1: 40 46% 26%;
-    --chart-2: 40 47% 40%;
-    --chart-3: 40 90% 72%;
-    --chart-4: 60 15% 83%;
-    --chart-5: 100 5% 38%;
-    --hold-start: 148 58% 55%;
-    --hold-move: 217 79% 70%;
-    --hold-finish: 9 80% 68%;
-    --hold-wood: 34 46% 60%;
+  .dark:root {
+    --canvas: 11 15 28;
+    --surface: 20 26 46;
+    --raised: 46 54 80;
+    --text: 248 246 243;
+    --muted: 140 146 166;
+    --muted2: 169 174 191;
+    --track: 31 38 64;
+    --bar: 58 67 99;
+    --action: 248 246 243;
+    --on-action: 20 26 46;
+    --board: 189 183 230;
+    --board-soft: 54 48 98;
+    --dock: 248 246 243;
+    --dock-fg: 20 26 46;
+    --dock-dim: 85 93 120;
+    --disabled-bg: 31 38 64;
+    --disabled-fg: 140 146 166;
+    --segment-tile: 85 93 120;
+    --menu: 46 54 80;
+    --rest-rail: 156 195 209;
+    --recover-rail: 221 236 241;
+    --heat0: 28 36 64;
+    --heat1: 28 49 64;
+    --heat2: 36 72 90;
+    --heat3: 43 81 97;
+    --heat4: 70 123 143;
+    --heat5: 108 159 178;
+    --heat6: 156 195 209;
+    --line: rgba(255, 255, 255, 0.1);
+    --line2: rgba(255, 255, 255, 0.2);
+    --scrim: rgba(0, 0, 0, 0.6);
+    --selected-tile: rgba(20, 26, 46, 0.1);
   }
 }

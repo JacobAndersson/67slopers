@@ -1,38 +1,73 @@
 import { useRouter } from 'expo-router';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
+import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { Badge } from '@/components/ui/badge';
+import { WorkoutTimeline } from '@/components/data-bars';
+import { IconButton } from '@/components/icon-button';
 import { Text } from '@/components/ui/text';
-import { formatClock } from '@/lib/dates';
-import type { Workout } from '@/lib/store/types';
-import { estimateDuration, summaryLine } from '@/lib/workout-summary';
-import { cn } from '@/lib/utils';
+import { shortDay, workoutMeta } from '@/lib/copy';
+import { mark } from '@/lib/perf';
+import type { Session, Workout } from '@/lib/store/types';
+import { workoutShape } from '@/lib/workout-shape';
 
-/** A saved workout in the home list. Tapping opens its overview, which has Start. */
-export function WorkoutCard({ workout, compact = false }: { workout: Workout; compact?: boolean }) {
+/**
+ * A saved workout in the Hang library (design: home-hang): name, "6 sets · 20:52 · Yesterday",
+ * a round Start that opens the timer counting down, and the workout's shape as bars. Tapping
+ * the card opens its overview. The workout up next carries the solid Start.
+ */
+export function WorkoutCard({
+  workout,
+  last,
+  next,
+}: {
+  workout: Workout;
+  last?: Session;
+  /** The workout used last: its Start is the solid pill. */
+  next?: boolean;
+}) {
   const router = useRouter();
+  const shape = useMemo(() => workoutShape(workout), [workout]);
+  const meta = useMemo(
+    () => workoutMeta(workout, last ? shortDay(last.completedAt) : 'not done yet'),
+    [workout, last]
+  );
   return (
-    <Pressable
-      onPress={() => router.push(`/workout/${workout.id}`)}
-      accessibilityRole="button"
-      className={cn(
-        'gap-3 rounded-lg border border-border bg-card px-4 py-3 active:bg-accent',
-        compact ? 'min-h-36 w-64 shrink-0 justify-between' : 'flex-row items-center'
-      )}>
-      <View className="flex-1 gap-0.5">
-        <View className="flex-row flex-wrap items-center gap-2">
-          <Text className="font-semibold">{workout.name}</Text>
-          {workout.isPreset ? (
-            <Badge variant="secondary">
-              <Text>Preset</Text>
-            </Badge>
-          ) : null}
+    <View className="rounded-card border border-line bg-surface px-6 pb-[26px] pt-5">
+      {/* The card opens the overview; Start sits above it as its own button, not inside it. */}
+      <Pressable
+        onPress={() => router.push(`/workout/${workout.id}`)}
+        accessibilityRole="button"
+        accessibilityLabel={`${workout.name}, ${meta.replace(/ {2}·  /g, ', ')}`}
+        accessibilityHint="Opens the workout"
+        className="absolute inset-0 rounded-card active:bg-raised/40"
+      />
+      <View className="flex-row items-start gap-3" pointerEvents="box-none">
+        <View className="flex-1 pt-0.5" pointerEvents="none">
+          <Text className="type-title" numberOfLines={1}>
+            {workout.name}
+          </Text>
+          <Text className="type-sub mt-1.5 text-muted" numberOfLines={1}>
+            {meta}
+          </Text>
         </View>
-        <Text variant="muted">{summaryLine(workout)}</Text>
+        <IconButton
+          icon={PlayIcon}
+          variant={next ? 'primary' : 'ghost'}
+          label={`Start ${workout.name}`}
+          accessibilityHint="Opens the timer counting down"
+          onPress={() => {
+            mark('start');
+            router.push({
+              pathname: '/workout/[id]/run',
+              params: { id: workout.id, autostart: '1' },
+            });
+          }}
+        />
       </View>
-      <Text variant="small" className="text-muted-foreground">
-        {formatClock(estimateDuration(workout))}
-      </Text>
-    </Pressable>
+      <View pointerEvents="none">
+        <WorkoutTimeline pieces={shape} className="mt-7" />
+      </View>
+    </View>
   );
 }

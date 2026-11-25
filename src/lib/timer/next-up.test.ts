@@ -25,7 +25,7 @@ const intervals = expandWorkout({
   ],
 });
 
-const at = (index: number, boardShown = false) => nextUp(intervals, index, boardShown);
+const at = (index: number) => nextUp(intervals, index);
 
 test('lists the run this file expects', () => {
   assert.deepEqual(
@@ -47,23 +47,40 @@ test('lists the run this file expects', () => {
   );
 });
 
+test('Get ready names the first hang', () => {
+  assert.deepEqual(at(0), { label: 'Next', value: 'Hang 7 s' });
+});
+
 test('says nothing while hang and short rest alternate', () => {
-  assert.equal(at(0), null);
   assert.equal(at(1), null);
   assert.equal(at(2), null);
 });
 
 test('announces the long rest on the last hang of a set, and through the short rest after it', () => {
-  assert.deepEqual(at(3), { label: 'Next', value: 'Rest 3:00' });
-  assert.deepEqual(at(4), { label: 'Next', value: 'Rest 3:00' });
+  assert.deepEqual(at(3), { label: 'Next', value: 'Recover 3:00' });
+  assert.deepEqual(at(4), { label: 'Next', value: 'Recover 3:00' });
 });
 
 test('names the coming set during the long rest', () => {
   assert.deepEqual(at(5), { label: 'Next', value: 'Set 2 of 2' });
 });
 
-test('leaves it to the board when the grip changes', () => {
-  assert.equal(at(5, true), null);
+test('names the hang when the grip changes within a set', () => {
+  const grips = expandWorkout({
+    board: 'beastmaker-1000',
+    steps: [
+      {
+        kind: 'repeat',
+        times: 1,
+        steps: [
+          { kind: 'hang', seconds: 7, holds: ['a'] },
+          { kind: 'rest', seconds: 30 },
+          { kind: 'hang', seconds: 7, holds: ['b'] },
+        ],
+      },
+    ],
+  });
+  assert.deepEqual(nextUp(grips, 1), { label: 'Next', value: 'Hang 7 s' });
 });
 
 test('announces the end from the last hang on', () => {
@@ -85,6 +102,6 @@ test('single hangs with a rest after each are their own pattern', () => {
       },
     ],
   });
-  assert.equal(nextUp(single, 0, false), null);
-  assert.deepEqual(nextUp(single, 1, false), { label: 'Next', value: 'Set 2 of 3' });
+  assert.equal(nextUp(single, 0), null);
+  assert.deepEqual(nextUp(single, 1), { label: 'Next', value: 'Set 2 of 3' });
 });

@@ -1,9 +1,8 @@
-import { Image } from 'expo-image';
 import { Pressable, ScrollView, View } from 'react-native';
 
+import { HangboardDiagram } from '@/components/hangboard-diagram';
 import { Text } from '@/components/ui/text';
 import { BOARD_IDS, getBoard, type BoardId } from '@/lib/boards';
-import { BOARD_IMAGES } from '@/lib/boards/generated/images';
 import { cn } from '@/lib/utils';
 
 type BoardPickerProps = {
@@ -11,23 +10,26 @@ type BoardPickerProps = {
   onChange: (id: BoardId | undefined) => void;
 };
 
-/** Horizontally scrolling board choices. The hang cards show where the holds are. */
+/**
+ * Boards as a sideways row of diagrams (design: builder-board-open), "No board" first. The one
+ * chosen carries an ink outline.
+ */
 export function BoardPicker({ value, onChange }: BoardPickerProps) {
   return (
     <ScrollView
       horizontal
       accessibilityRole="radiogroup"
       accessibilityLabel="Hangboard"
-      className="grow-0"
-      contentContainerClassName="gap-2"
+      className="-mx-6 grow-0"
+      contentContainerClassName="gap-3 px-6"
       showsHorizontalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
-      <Chip label="No board" active={value === undefined} onPress={() => onChange(undefined)} />
+      <Option label="No board" active={value === undefined} onPress={() => onChange(undefined)} />
       {BOARD_IDS.map((id) => (
-        <Chip
+        <Option
           key={id}
+          id={id}
           label={getBoard(id)!.name}
-          thumb={BOARD_IMAGES[id].base}
           active={value === id}
           onPress={() => onChange(id)}
         />
@@ -36,14 +38,14 @@ export function BoardPicker({ value, onChange }: BoardPickerProps) {
   );
 }
 
-function Chip({
+function Option({
+  id,
   label,
-  thumb,
   active,
   onPress,
 }: {
+  id?: BoardId;
   label: string;
-  thumb?: number;
   active: boolean;
   onPress: () => void;
 }) {
@@ -51,20 +53,24 @@ function Chip({
     <Pressable
       onPress={onPress}
       accessibilityRole="radio"
+      accessibilityLabel={label}
       aria-checked={active}
       accessibilityState={{ checked: active }}
-      className={cn(
-        'shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2',
-        active ? 'border-foreground bg-accent' : 'border-border bg-card active:bg-muted'
-      )}>
-      {thumb ? (
-        <Image source={thumb} style={{ width: 128, height: 48 }} contentFit="contain" />
-      ) : (
-        <View className="h-12 w-32 items-center justify-center rounded border border-dashed border-border">
-          <Text variant="muted">—</Text>
-        </View>
-      )}
-      <Text variant="small" className={cn(active ? 'font-semibold' : 'text-muted-foreground')}>
+      className="w-[116px] items-center gap-2 active:opacity-80">
+      <View
+        className={cn(
+          'h-[72px] w-[116px] items-center justify-center rounded-2xl bg-canvas px-3',
+          active ? 'border-2 border-text' : 'border border-line'
+        )}>
+        {id ? (
+          <HangboardDiagram board={id} width={92} strokeWidth={0.6} />
+        ) : (
+          <Text className="type-title text-muted">—</Text>
+        )}
+      </View>
+      <Text
+        className={cn('text-center text-xs font-bold', active ? 'text-text' : 'text-muted')}
+        numberOfLines={2}>
         {label}
       </Text>
     </Pressable>

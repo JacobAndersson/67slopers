@@ -3,12 +3,13 @@ import { test } from 'node:test';
 
 import { ALL_GREETINGS, greeting, PART_STARTS } from './greetings';
 
-test('there is a whole bunch, none twice, each a few words that fit one line', () => {
-  assert.ok(ALL_GREETINGS.length >= 90);
+test('a few per part of the day, none twice, each a few plain words', () => {
+  assert.ok(ALL_GREETINGS.length >= 20);
   assert.equal(new Set(ALL_GREETINGS).size, ALL_GREETINGS.length);
   for (const line of ALL_GREETINGS) {
     assert.ok(line.length <= 26, line);
     assert.ok(line.split(' ').length <= 4, line);
+    assert.doesNotMatch(line, /!|crusher|gains/i, line);
   }
 });
 
@@ -29,11 +30,11 @@ test('the line holds within a part of the day and follows the clock', () => {
 test('the days differ', () => {
   const lines = new Set<string>();
   for (let day = 1; day <= 28; day++) lines.add(greeting(new Date(2026, 9, day, 18, 0)));
-  assert.ok(lines.size >= 8);
+  assert.ok(lines.size >= 3);
 });
 
 test('weekday lines stay out of the small hours', () => {
   for (let day = 1; day <= 28; day++) {
-    assert.doesNotMatch(greeting(new Date(2026, 9, day, 2, 0)), /day|week|Weekend|Halfway/i);
+    assert.doesNotMatch(greeting(new Date(2026, 9, day, 2, 0)), /Sunday|Friday|week/i);
   }
 });

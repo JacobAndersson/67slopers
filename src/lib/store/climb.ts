@@ -49,6 +49,11 @@ type ClimbState = {
   setLights: (patch: Partial<LightsSettings>) => void;
   setGradeScale: (scale: GradeScale) => void;
   addCustom: (input: Omit<CustomProblem, 'id' | 'createdAt'>) => CustomProblem;
+  /** Changes an own problem in place: its holds, name, grade, feet or note. */
+  updateCustom: (
+    id: string,
+    patch: Partial<Omit<CustomProblem, 'id' | 'createdAt' | 'board'>>
+  ) => void;
   deleteCustom: (id: string) => void;
   addEntry: (input: Omit<LogEntry, 'id' | 'at'>) => LogEntry;
   deleteEntry: (id: string) => void;
@@ -130,6 +135,8 @@ export const useClimb = create<ClimbState>()(
         set((s) => ({ custom: [problem, ...s.custom] }));
         return problem;
       },
+      updateCustom: (id, patch) =>
+        set((s) => ({ custom: s.custom.map((p) => (p.id === id ? { ...p, ...patch } : p)) })),
       deleteCustom: (id) =>
         set((s) => ({
           custom: s.custom.filter((p) => p.id !== id),

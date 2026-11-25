@@ -1,8 +1,8 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
-import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { useEffect, useMemo, useState } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -11,30 +11,31 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ButtonLabel } from '@/components/button-label';
+import { useLargeText } from '@/hooks/use-large-text';
 import { Appear } from '@/components/appear';
-import { HoldLegend, MoonBoard, boardWidthFor } from '@/components/moon-board';
-import { ProblemRow } from '@/components/problem-row';
+import { MoonBoard, boardWidthFor } from '@/components/moon-board';
 import { Screen } from '@/components/screen';
 import { StatPills } from '@/components/stat-pills';
+import { TopBar } from '@/components/top-bar';
 import { TriesStepper } from '@/components/tries-stepper';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useBoard } from '@/hooks/use-board';
 import { advance, isDone, runSummary, startRun } from '@/lib/moonboard/circuits';
-import { gradeAlt, gradeLabel } from '@/lib/moonboard/grades';
+import { DOT } from '@/lib/copy';
+import { gradeLabel } from '@/lib/moonboard/grades';
 import { light, lightsOff, useLights } from '@/lib/moonboard/lights';
 import { makeEntry } from '@/lib/moonboard/logbook';
+import { displayName } from '@/lib/moonboard/names';
 import { EASE_OUT } from '@/lib/motion';
 import { useClimb, useClimbSession } from '@/lib/store/climb';
 import { cn } from '@/lib/utils';
 
 /**
- * One problem in the progress bar. The one being climbed is amber; when it is finished the
- * dark fill runs across it from the left.
+ * One problem in the progress bar: done in ink, the one being climbed muted, the rest the bar
+ * colour. When a problem is finished the ink runs across it from the left.
  */
 function Segment({ state }: { state: 'done' | 'current' | 'ahead' }) {
   const reducedMotion = useReducedMotion();
@@ -49,11 +50,11 @@ function Segment({ state }: { state: 'done' | 'current' | 'ahead' }) {
   return (
     <View
       className={cn(
-        'h-1 flex-1 overflow-hidden rounded-full',
-        state === 'current' ? 'bg-chart-1' : 'bg-border'
+        'h-1.5 flex-1 overflow-hidden rounded-full',
+        state === 'current' ? 'bg-muted' : 'bg-bar'
       )}>
       <Animated.View
-        className="h-1 w-full rounded-full bg-foreground"
+        className="h-1.5 w-full rounded-full bg-text"
         style={[{ transformOrigin: 'left' }, style]}
       />
     </View>
@@ -68,8 +69,8 @@ function Segment({ state }: { state: 'done' | 'current' | 'ahead' }) {
 export default function CircuitRunScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const big = useLargeText();
   const board = useBoard();
   const circuit = useClimb((s) => s.circuits.find((c) => c.id === id));
   const run = useClimbSession((s) => s.run);
@@ -105,13 +106,37 @@ export default function CircuitRunScreen() {
     [active, board]
   );
 
-  if (!board || !circuit || !active) {
+  if (!board || !circuit) {
     return (
-      <Screen>
-        <Text variant="muted">This circuit is not running.</Text>
-        <Button variant="outline" className="self-start" onPress={() => router.back()}>
-          <Text>Back</Text>
-        </Button>
+      <Screen header={<TopBar left="close" />}>
+        <Text className="type-hero">This circuit is{'\n'}no longer here.</Text>
+      </Screen>
+    );
+  }
+  if (!active) {
+    // Opened without a run going (a link, or the app was closed): offer to start one.
+    return (
+      <Screen
+        header={<TopBar left="close" title={circuit.name} />}
+        contentClassName="gap-3 pt-10"
+        footer={
+          <Button
+            size="lg"
+            disabled={circuit.problemIds.length === 0}
+            onPress={() => {
+              setRun(startRun(circuit));
+              setStartedAt(Date.now());
+              setTries(1);
+            }}>
+            <Icon as={PlayIcon} weight="fill" size={20} className="text-on-action" />
+            <Text>Start circuit</Text>
+          </Button>
+        }>
+        <Text className="type-hero">Not started yet</Text>
+        <Text className="type-body text-muted">
+          Each problem lights up in turn. Every go is logged as you climb, so stopping early loses
+          nothing.
+        </Text>
       </Screen>
     );
   }
@@ -131,7 +156,7 @@ export default function CircuitRunScreen() {
     setRun(null);
     router.back();
   };
-  const top = { paddingTop: insets.top + 8 };
+  const header = <TopBar left="close" title={circuit.name} onLeft={close} />;
 
   if (isDone(active)) {
     const summary = runSummary(active);
@@ -140,33 +165,41 @@ export default function CircuitRunScreen() {
       ...results.filter((r) => r.sent).map((r) => r.problem.grade ?? -1)
     );
     return (
-      <View className="flex-1 bg-background" style={top}>
-        <Screen
-          footer={
-            <View className="flex-row gap-3">
-              <Button
-                variant="outline"
-                size="lg"
-                onPress={() => {
-                  setRun(startRun({ ...circuit, problemIds: active.problemIds }));
-                  setStartedAt(Date.now());
-                  setTries(1);
-                }}>
-                <ButtonLabel>Again</ButtonLabel>
-              </Button>
-              <Button size="lg" className="flex-1" onPress={close}>
-                <ButtonLabel>Done</ButtonLabel>
-              </Button>
-            </View>
-          }>
-          <View className="size-[88px] items-center justify-center self-center rounded-[28px] bg-secondary">
+      <Screen
+        header={header}
+        contentClassName="gap-0 pt-6"
+        footer={
+          <View className="flex-row gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1"
+              onPress={() => {
+                setRun(startRun({ ...circuit, problemIds: active.problemIds }));
+                setStartedAt(Date.now());
+                setTries(1);
+              }}>
+              <Text>Again</Text>
+            </Button>
+            <Button size="lg" className="flex-1" onPress={close}>
+              <Text>Done</Text>
+            </Button>
+          </View>
+        }>
+        <Appear>
+          <View className="size-24 items-center justify-center self-center rounded-[30px] bg-raised">
             <Icon as={CheckCircleIcon} size={44} />
           </View>
-          <View className="items-center gap-1">
-            <Text className="text-2xl font-bold">Circuit done</Text>
-            <Text variant="muted">{circuit.name} · saved to your log</Text>
-          </View>
+        </Appear>
+        <View className="mt-6 items-center gap-3">
+          <Text className="type-hero" role="heading">
+            Circuit done
+          </Text>
+          <Text className="type-body text-muted">{`${circuit.name}${DOT}saved to your log`}</Text>
+        </View>
+        <View className="mt-7">
           <StatPills
+            compact
             items={[
               { value: `${summary.sent} of ${summary.total}`, label: 'sent' },
               { value: `${minutes} min`, label: 'total' },
@@ -174,103 +207,98 @@ export default function CircuitRunScreen() {
               { value: hardest >= 0 ? gradeLabel(hardest, board.scale) : '–', label: 'hardest' },
             ]}
           />
-          <View>
-            {results.map((result, index) => (
-              <ProblemRow
-                key={`${result.problemId}${index}`}
-                problem={result.problem}
-                rows={board.rows}
-                scale={board.scale}
-                index={index}
-                detail={gradeLabel(result.problem.grade, board.scale)}
-                right={
-                  result.sent
-                    ? result.tries <= 1
-                      ? 'Flash'
-                      : `${result.tries} tries`
-                    : result.tries > 0
-                      ? 'Not sent'
-                      : 'Skipped'
-                }
-              />
-            ))}
-          </View>
-        </Screen>
-      </View>
+        </View>
+        <View className="mt-6">
+          {results.map((result, index) => {
+            const word = result.sent
+              ? result.tries <= 1
+                ? 'Flash'
+                : `${result.tries} tries`
+              : result.tries > 0
+                ? 'Not sent'
+                : 'Skipped';
+            return (
+              <View key={`${result.problemId}${index}`} className="h-14 flex-row items-center">
+                <Text className="type-row w-[30px] text-muted">{index + 1}</Text>
+                <View className="h-full flex-1 flex-row items-center gap-3 border-b border-line">
+                  <Text className="type-row flex-1" numberOfLines={1}>
+                    {displayName(result.problem.name)}
+                  </Text>
+                  <Text className={cn('type-sub', !result.sent && 'text-muted')}>{word}</Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </Screen>
     );
   }
 
   return (
-    <View className="flex-1 bg-background" style={top}>
-      <View className="flex-row items-center gap-2 px-4">
-        <Button variant="ghost" size="icon" accessibilityLabel="End circuit" onPress={close}>
-          <Icon as={XIcon} className="size-6" />
-        </Button>
-        <View className="flex-1 items-center pr-11">
-          <Text className="text-lg font-semibold" numberOfLines={1}>
-            {circuit.name}
-          </Text>
-          <Text className="text-xs text-muted-foreground font-medium">
+    <Screen
+      header={
+        <View>
+          {header}
+          <Text className="type-caption -mt-3.5 text-center text-muted">
             Problem {active.index + 1} of {active.problemIds.length}
           </Text>
-        </View>
-      </View>
-      <View className="w-full max-w-3xl flex-row gap-1.5 self-center px-6 pt-2">
-        {active.problemIds.map((problemId, index) => (
-          <Segment
-            key={`${problemId}${index}`}
-            state={index < active.index ? 'done' : index === active.index ? 'current' : 'ahead'}
-          />
-        ))}
-      </View>
-      <Screen
-        footer={
-          <View className="gap-3">
-            <TriesStepper value={tries} onChange={setTries} />
-            <View className="flex-row gap-3">
-              <Button variant="outline" size="lg" onPress={() => record(false)}>
-                <ButtonLabel>Skip</ButtonLabel>
-              </Button>
-              <Button size="lg" className="flex-1" onPress={() => record(true)}>
-                <Icon as={CheckIcon} className="size-5 text-primary-foreground" />
-                <ButtonLabel>Sent it</ButtonLabel>
-              </Button>
-            </View>
-          </View>
-        }>
-        {problem ? (
-          <>
-            {/* Each new problem fades in, so the wall on screen never just swaps. */}
-            <Appear key={problem.id} rise={0} duration={160}>
-              <MoonBoard
-                width={boardWidthFor(width)}
-                rows={board.rows}
-                holds={problem}
-                lit={connected}
+          <View className="w-full max-w-3xl flex-row gap-1 self-center px-6 pb-1 pt-4">
+            {active.problemIds.map((problemId, index) => (
+              <Segment
+                key={`${problemId}${index}`}
+                state={index < active.index ? 'done' : index === active.index ? 'current' : 'ahead'}
               />
-            </Appear>
-            <HoldLegend />
-            <View className="flex-row items-start justify-between gap-3">
-              <View className="flex-1 gap-1">
-                <Text className="text-xl font-bold">{problem.name}</Text>
-                <Text className="text-xs text-muted-foreground font-medium">
-                  {next
-                    ? `Next: ${next.name} · ${gradeLabel(next.grade, board.scale)}`
-                    : 'Last one'}
-                </Text>
-              </View>
-              <View className="items-end">
-                <Text className="text-2xl font-bold">{gradeLabel(problem.grade, board.scale)}</Text>
-                <Text className="text-xs text-muted-foreground font-medium">
-                  {gradeAlt(problem.grade, board.scale)}
-                </Text>
-              </View>
+            ))}
+          </View>
+        </View>
+      }
+      contentClassName="gap-0 pt-3.5"
+      footer={
+        <View className="gap-3">
+          <TriesStepper value={tries} onChange={setTries} />
+          <View className={big ? 'flex-col-reverse gap-3' : 'flex-row gap-3'}>
+            <Button
+              variant="outline"
+              size="lg"
+              className={big ? undefined : 'flex-1 px-2'}
+              onPress={() => record(false)}>
+              <Text numberOfLines={1}>Not sent, next</Text>
+            </Button>
+            <Button size="lg" className={big ? undefined : 'flex-1'} onPress={() => record(true)}>
+              <Icon as={CheckIcon} size={20} className="text-on-action" />
+              <Text>Sent it</Text>
+            </Button>
+          </View>
+        </View>
+      }>
+      {problem ? (
+        <>
+          {/* Each new problem fades in, so the wall on screen never just swaps. */}
+          <Appear key={problem.id} rise={0} duration={160}>
+            <MoonBoard
+              width={boardWidthFor(width)}
+              rows={board.rows}
+              holds={problem}
+              lit={connected}
+            />
+          </Appear>
+          <View className="mt-3 flex-row items-start justify-between gap-3">
+            <View className="flex-1 gap-1">
+              <Text className="type-title" numberOfLines={2}>
+                {displayName(problem.name)}
+              </Text>
+              <Text className="type-caption text-muted">
+                {next
+                  ? `Next: ${displayName(next.name)}${DOT}${gradeLabel(next.grade, board.scale)}`
+                  : 'Last one'}
+              </Text>
             </View>
-          </>
-        ) : (
-          <Text variant="muted">This problem is no longer here.</Text>
-        )}
-      </Screen>
-    </View>
+            <Text className="type-num">{gradeLabel(problem.grade, board.scale)}</Text>
+          </View>
+        </>
+      ) : (
+        <Text className="type-body text-muted">This problem is no longer here.</Text>
+      )}
+    </Screen>
   );
 }

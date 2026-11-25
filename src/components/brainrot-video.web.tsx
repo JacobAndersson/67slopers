@@ -56,7 +56,7 @@ export default function BrainrotVideo({
     controller.current?.setPlaying(playing && !document.hidden);
   }, [playing]);
   return (
-    <View className="flex-1 overflow-hidden bg-muted" pointerEvents="none" aria-hidden>
+    <View className="flex-1 overflow-hidden bg-raised" pointerEvents="none" aria-hidden>
       <video
         ref={video}
         src={Asset.fromModule(clip.source).uri}
@@ -84,8 +84,8 @@ export default function BrainrotVideo({
         />
       ) : null}
       {failed ? (
-        <View className="absolute bottom-2 self-center rounded-md bg-background/90 px-3 py-1">
-          <Text className="text-xs text-muted-foreground">Video unavailable</Text>
+        <View className="absolute bottom-2 self-center rounded-full bg-canvas/90 px-3 py-1">
+          <Text className="type-caption text-muted">Video unavailable</Text>
         </View>
       ) : null}
     </View>

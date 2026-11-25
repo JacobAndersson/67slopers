@@ -10,6 +10,9 @@ import {
 import { View } from 'react-native';
 import Animated, { useAnimatedRef, type AnimatedRef } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+
+import { useAppTheme } from '@/lib/use-theme';
 
 import { cn } from '@/lib/utils';
 
@@ -26,6 +29,8 @@ type ScreenProps = PropsWithChildren<{
   tab?: boolean;
   /** Pinned above the bottom safe area, for the screen's primary action. */
   footer?: ReactNode;
+  /** Fixed above the content: the screen's top bar. */
+  header?: ReactNode;
   className?: string;
   contentClassName?: string;
 }>;
@@ -44,9 +49,11 @@ export function useScreenScroll(): ScreenScroll | null {
   return useContext(ScreenScrollContext);
 }
 
-const CONTENT = 'w-full max-w-3xl self-center gap-4 px-6 pt-4 pb-6';
+const CONTENT = 'w-full max-w-3xl self-center gap-4 px-6 pt-6 pb-6';
 /** Room a scrolling tab leaves so its last row clears the dock. */
-const DOCK_CLEARANCE = 116;
+const DOCK_CLEARANCE = 132;
+/** A dock-level screen's title sits this far under the safe area (design: y 104 under a 54 pt inset). */
+const TAB_TOP = 50;
 /** The column `CONTENT` describes, for lists that cannot take class names. */
 const COLUMN = { maxWidth: 768, gutter: 24 };
 
@@ -61,7 +68,7 @@ export function useTabContentStyle() {
     maxWidth: COLUMN.maxWidth,
     alignSelf: 'center' as const,
     paddingHorizontal: COLUMN.gutter,
-    paddingTop: insets.top + 12,
+    paddingTop: insets.top + TAB_TOP,
     paddingBottom: DOCK_CLEARANCE + insets.bottom,
   };
 }
@@ -71,6 +78,7 @@ export function Screen({
   scroll = true,
   tab = false,
   footer,
+  header,
   className,
   contentClassName,
   children,
@@ -91,23 +99,26 @@ export function Screen({
   // footer (Home, session view) need the inset on the scroll content itself, or the
   // last rows slide under the gesture bar on edge-to-edge Android. Never pad the
   // scroll view or gesture root: that breaks Sortable.Grid measuring and drag preview.
+  // Only padding that depends on the device goes inline; the fixed 24 pt stays in the classes,
+  // where a screen's own `contentClassName` can override it. (An inline key, even undefined,
+  // would beat the class.)
   const tabStyle = useTabContentStyle();
-  const bottomPad = footer
-    ? undefined
-    : tab
-      ? tabStyle.paddingBottom
-      : Math.max(24, insets.bottom + 12);
-  const topPad = tab ? tabStyle.paddingTop : undefined;
+  const padding = tab
+    ? { paddingTop: tabStyle.paddingTop, paddingBottom: tabStyle.paddingBottom }
+    : footer
+      ? undefined
+      : { paddingBottom: Math.max(24, insets.bottom + 12) };
 
   return (
     <ScreenScrollContext.Provider value={api}>
-      <View className={cn('flex-1 bg-background', className)}>
+      <View className={cn('flex-1 bg-canvas', className)}>
+        {header}
         {scroll ? (
           <Animated.ScrollView
             ref={scrollRef}
             className="flex-1"
             contentContainerClassName={cn(CONTENT, contentClassName)}
-            contentContainerStyle={{ paddingBottom: bottomPad, paddingTop: topPad }}
+            contentContainerStyle={padding}
             keyboardShouldPersistTaps="handled"
             onScroll={(e) => {
               offset.current = e.nativeEvent.contentOffset.y;
@@ -116,20 +127,38 @@ export function Screen({
             {children}
           </Animated.ScrollView>
         ) : (
-          <View
-            className={cn('flex-1', CONTENT, contentClassName)}
-            style={{ paddingBottom: bottomPad, paddingTop: topPad }}>
+          <View className={cn('flex-1', CONTENT, contentClassName)} style={padding}>
             {children}
           </View>
         )}
+        {tab ? <StatusFade height={insets.top + 28} /> : null}
         {footer ? (
           <View
-            className="w-full max-w-3xl self-center border-t border-border bg-background px-6 pt-3"
-            style={{ paddingBottom: insets.bottom + 12 }}>
+            className="w-full max-w-3xl self-center border-t border-line bg-canvas px-6 pt-4"
+            style={{ paddingBottom: Math.max(insets.bottom, 16) + 8 }}>
             {footer}
           </View>
         ) : null}
       </View>
     </ScreenScrollContext.Provider>
+  );
+}
+
+/** Content scrolling up fades into the canvas under the status bar, mirroring the dock's fade. */
+function StatusFade({ height }: { height: number }) {
+  const { theme } = useAppTheme();
+  return (
+    <View pointerEvents="none" className="absolute inset-x-0 top-0" style={{ height }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <LinearGradient id="status-fade" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor={theme.canvas} stopOpacity={1} />
+            <Stop offset="0.6" stopColor={theme.canvas} stopOpacity={0.94} />
+            <Stop offset="1" stopColor={theme.canvas} stopOpacity={0} />
+          </LinearGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#status-fade)" />
+      </Svg>
+    </View>
   );
 }

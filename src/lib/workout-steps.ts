@@ -332,3 +332,32 @@ export function moveIntoRepeat(
   if (!canNest(without, repeatId, step)) return steps;
   return appendTo(without, repeatId, step);
 }
+
+/** Every move the ⋮ menu and screen readers offer for a step, and which are possible now. */
+export type StepMoves = {
+  up: boolean;
+  down: boolean;
+  /** The repeat just above or below it can take it in. */
+  intoAbove: EditableRepeatStep | null;
+  intoBelow: EditableRepeatStep | null;
+  /** It is inside a repeat and can step out of it. */
+  out: boolean;
+};
+
+export function stepMoves(steps: EditableStep[], id: string): StepMoves {
+  const step = findStep(steps, id);
+  const parent = parentOf(steps, id);
+  const siblings = parent ? parent.steps : steps;
+  const index = siblings.findIndex((s) => s.id === id);
+  const above = siblings[index - 1];
+  const below = siblings[index + 1];
+  const into = (s: EditableStep | undefined) =>
+    step && s?.kind === 'repeat' && canNest(steps, s.id, step) ? s : null;
+  return {
+    up: index > 0,
+    down: index >= 0 && index < siblings.length - 1,
+    intoAbove: into(above),
+    intoBelow: into(below),
+    out: !!parent,
+  };
+}

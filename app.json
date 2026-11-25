@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "67slopers",
+    "name": "Rivet",
     "slug": "67slopers",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#F9C65D",
+        "backgroundColor": "#F28C6E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -30,10 +30,10 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FAFAF7",
+          "backgroundColor": "#141A2E",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 150,
-          "dark": { "backgroundColor": "#171A16" }
+          "imageWidth": 96,
+          "dark": { "backgroundColor": "#141A2E", "image": "./assets/images/splash-icon.png" }
         }
       ],
       [
@@ -69,7 +69,8 @@
           "bluetoothAlwaysPermission": "67slopers uses Bluetooth to light problems on your MoonBoard."
         }
       ],
-      "./plugins/with-bundle-inputs"
+      "./plugins/with-bundle-inputs",
+      "./plugins/with-night-window"
     ],
     "experiments": {
       "typedRoutes": true,

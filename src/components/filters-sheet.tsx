@@ -8,6 +8,7 @@ import { SettingRow } from '@/components/setting-row';
 import { Sheet } from '@/components/sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { plural } from '@/lib/copy';
 import { getLayout } from '@/lib/moonboard/boards';
 import { DEFAULT_FILTER, SORTS, gradeHistogram, gradeRange } from '@/lib/moonboard/filter';
 import { gradeRangeLabel, type GradeScale } from '@/lib/moonboard/grades';
@@ -24,7 +25,10 @@ type FiltersSheetProps = {
   count: number;
 };
 
-/** Grade range over the real spread of problems, sort order, and two switches. */
+/**
+ * Filters (design: climb-filters): the grade range over the real spread of problems, the sort
+ * order, and two switches.
+ */
 export function FiltersSheet({ open, onClose, problems, setup, scale, count }: FiltersSheetProps) {
   const filter = useClimbSession((s) => s.filter);
   const setFilter = useClimbSession((s) => s.setFilter);
@@ -44,8 +48,8 @@ export function FiltersSheet({ open, onClose, problems, setup, scale, count }: F
         onPress: () => setFilter({ ...DEFAULT_FILTER, tab: filter.tab, query: filter.query }),
       }}>
       <View className="flex-row items-center justify-between">
-        <Text className="font-medium">Grade</Text>
-        <Text className="font-semibold">{gradeRangeLabel(min, max, scale)}</Text>
+        <Text className="type-body-b">Grade</Text>
+        <Text className="type-sub text-muted">{gradeRangeLabel(min, max, scale)}</Text>
       </View>
       <GradeRange
         histogram={histogram}
@@ -62,15 +66,20 @@ export function FiltersSheet({ open, onClose, problems, setup, scale, count }: F
           })
         }
       />
-      <Text className="font-medium">Sort by</Text>
-      <View className="flex-row flex-wrap gap-2">
-        {SORTS.map((sort) => (
-          <Chip
-            key={sort.id}
-            label={sort.label}
-            selected={filter.sort === sort.id}
-            onPress={() => setFilter({ sort: sort.id })}
-          />
+      <Text className="type-body-b">Sort by</Text>
+      {/* Two rows as drawn: the two by popularity, then the three by grade and name. */}
+      <View className="gap-2">
+        {[SORTS.slice(0, 2), SORTS.slice(2)].map((row, index) => (
+          <View key={index} className="flex-row flex-wrap gap-1.5">
+            {row.map((sort) => (
+              <Chip
+                key={sort.id}
+                label={sort.label}
+                selected={filter.sort === sort.id}
+                onPress={() => setFilter({ sort: sort.id })}
+              />
+            ))}
+          </View>
         ))}
       </View>
       <View>
@@ -79,17 +88,16 @@ export function FiltersSheet({ open, onClose, problems, setup, scale, count }: F
           checked={filter.hideSent}
           onCheckedChange={(hideSent) => setFilter({ hideSent })}
         />
+        <View className="h-px bg-line" />
         <SettingRow
           title="Only my hold sets"
-          description={`${setup.holdSets.length} of ${all} sets`}
+          description={`${setup.holdSets.length} of ${all} hold sets`}
           checked={filter.onlyMyHolds}
           onCheckedChange={(onlyMyHolds) => setFilter({ onlyMyHolds })}
         />
       </View>
       <Button size="lg" onPress={onClose}>
-        <ButtonLabel>
-          Show {count} {count === 1 ? 'problem' : 'problems'}
-        </ButtonLabel>
+        <ButtonLabel>Show {plural(count, 'problem')}</ButtonLabel>
       </Button>
     </Sheet>
   );

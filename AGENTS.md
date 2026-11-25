@@ -1,6 +1,7 @@
-# 67slopers – agent notes
+# Rivet – agent notes
 
-67slopers is a cross-platform hangboard training app (iOS, Android, web) built with Expo SDK 57 and Expo Router.
+Rivet (formerly 67slopers; the repo, package id and `slopers67://` scheme keep the old name) is a
+cross-platform hangboard training app (iOS, Android, web) built with Expo SDK 57 and Expo Router.
 
 ## Expo HAS CHANGED
 
@@ -96,8 +97,8 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   `scripts/brainrot.mjs` prepares the assets. No media is fetched remotely by the app. Screens only render; put behaviour in `src/lib` where
   `npm test` can reach it.
 - A workout is `steps[]`: timed steps (`prep`, `hang`, `rest`, each with seconds and an optional
-  label) and `repeat` groups (`times`, nested `steps`; a trailing rest is skipped on the final
-  round). Repeats nest at most one
+  label) and `repeat` groups (`times`, nested `steps`; every rest runs, the final round's
+  too). Repeats nest at most one
   level deep: the rounds of a top-level repeat are the sets, the rounds of a repeat inside it are
   the reps. The stored model has no ids; the editor adds them through `withIds`/`stripIds` in
   `src/lib/workout-steps.ts`, which also holds every tree edit (`updateStep`, `moveStep`,
@@ -114,13 +115,14 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   regenerates it from the layout), `base.png` is rendered from it and a test fails when the two
   drift, plus one highlight overlay per hold; the generator also
   writes the manifests in `src/lib/boards/generated/` (pure data) and `generated/images.ts`
-  (the `require`s, imported only by `src/components/board-view.tsx`). A workout may carry
+  (the `require`s; nothing in the app imports it now). The app draws boards as Rivet diagrams
+  instead: `node scripts/gen-board-diagrams.mjs` writes `generated/diagrams.ts` (plate and hold
+  paths in mm, a port of `design/rivet/app/boards.py`) and `HangboardDiagram`
+  (`src/components/hangboard-diagram.tsx`) renders it with react-native-svg. A workout may carry
   `board` and each hang `holds`; selection is symmetric, one _grip_ per hang (a mirrored pair or a
-  centre hold, see `grips()` in `src/lib/boards/index.ts`). `BoardView` composes base + overlays
-  with percentage positions and never draws at runtime; the timer keeps every overlay it will
-  need mounted and fades opacity. In the timer the board is `spotlight`: the board fades towards the
-  phase colour and the holds to use keep their full colour inside a hairline, in the band above
-  the digits, which never move. The phase word is in the header with a small rep and set line
+  centre hold, see `grips()` in `src/lib/boards/index.ts`). In the timer the diagram sits in the
+  band above the digits, which never move, and the grip's holds fade in per hang (`animated`).
+  The phase word is in the header with a small rep and set line
   under it; `src/lib/timer/next-up.ts` decides when a Next line shows (only when the pattern
   breaks). The X ends a workout; there is no End button. Keep `src/lib/boards` off the Home path.
 - The builder (`src/components/workout-form.tsx` with `step-list.tsx`) is Garmin-style: step
@@ -133,6 +135,14 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   the old order. Keep the nesting of a row's wrappers constant (see `Rails`): a change remounts
   the row and drops the gesture holding it. Read-only lists (overview, import) keep the plain
   nested boxes. The root layout wraps the app in `GestureHandlerRootView` for it.
+- The Rivet mark in motion lives in `src/lib/logo-motion.ts` (pure, tested: Pitch geometry, timings and
+  worklet keyframes from brand book p.42). `RivetLoader` (`src/components/rivet-loader.tsx`) is the only
+  loading indicator: the three bars lift in turn on a 1.2 s loop, or breathe under reduced motion.
+  `SplashHandoff` (`src/components/rivet-splash.tsx`) mounts with the first real frame and starts on the
+  native splash's exact frame (Night, the Glow symbol 96 pt wide: app.json `imageWidth`, image from
+  `npm run icons`). Every launch the mark lifts away, the Night fades and the screen rises 8 pt, under
+  half a second; the first launch (store `firstLaunch`, not persisted) plays the stacked lockup with the
+  name. It never blocks touches or delays the app, which is already rendered underneath.
 - Controls that switch state show it moving: `Switch`, `CheckBox`, `Segmented` (a sliding tile)
   and `Chip` in `src/components/` animate on `SPRING_SETTLE` or a short fade and honour reduced
   motion. Use them instead of the platform switch or a bare toggle.
@@ -159,29 +169,49 @@ from failing on the design workspace's Docker-owned folders.
 - Source lives in `src/`. Routes are in `src/app/` (Expo Router, file-based, typed routes on).
 - Use the `@/` path alias for `src` and `@/assets/` for `assets`.
 - Shared UI goes in `src/components/`, helpers in `src/lib/`, hooks in `src/hooks/`.
-- Style with NativeWind `className`s using the theme tokens (`bg-background`, `text-foreground`,
-  `text-muted-foreground`, `bg-primary`, `border-border`, `rounded-lg`, ...). No hard-coded colors.
+- The look is the Rivet app design: `design/rivet/app/` (generated Penpot file; `ui.py` holds every
+  component's exact sizes, `screens_*.py` every screen, PNGs in `design/exports/rivet-app/`) and the
+  brand book in `design/rivet/`. Rules that hold everywhere: Glow is the colour of the hang (the
+  Hang timer ground, the app icon) and nothing else; primary actions are solid Ink pills, secondary
+  the same pill as a hairline; destructive actions are never red (a hairline pill with its icon);
+  confirmations are bottom sheets (`ConfirmSheet`); 64 pt targets mid-session, 48 pt elsewhere.
+- Style with NativeWind `className`s using the Rivet roles (`bg-canvas`, `bg-surface`, `bg-raised`,
+  `text-text`, `text-muted`, `border-line`, `border-line-strong`, `bg-action`, `text-on-action`,
+  `bg-track`, `bg-board`, `rounded-card`, ...) and the type scale (`type-large`, `type-title`,
+  `type-body`, `type-body-b`, `type-row`, `type-sub`, `type-caption`, `type-label`, `type-num`,
+  `type-bignum`, `type-hero`, `type-phase`). No hard-coded colours; the brand palette (`bg-glow`,
+  `bg-night`, `glacier-*`, `dusk-*`) is for things that are the same in both modes, such as the
+  session grounds in `SESSION` and the wall's LED colours in `WALL` (`src/lib/theme-tokens.ts`).
+- Shared Rivet components: `Card`/`ListRow`/`IconTile` (`card.tsx`), `IconButton`, `TopBar` (every
+  pushed screen draws its own; native headers are off), `SectionHeader`/`Label`/`LargeTitle`,
+  `Field`/`SearchField`, `Sheet`, `ConfirmSheet`, `SetBars`/`WorkoutTimeline`/`Stat`
+  (`data-bars.tsx`), `WeekBars`, `MissingScreen`, `QrCode`. Words for training data live in
+  `src/lib/copy.ts` so every screen says the same thing the same way.
 - UI primitives come from React Native Reusables (shadcn/ui for React Native). Add them with
   `npx @react-native-reusables/cli@latest add <name>`; they land in `src/components/ui/`. Prefer
   adding a reusables component over hand-rolling one. Always render text with `Text` from
   `@/components/ui/text`, never the bare React Native `Text`.
-- UI icons use Phosphor through `@/components/ui/icon`: Regular by default, Bold for timer
-  playback controls. Import each icon directly, e.g. `phosphor-react-native/src/icons/Play`,
+- UI icons use Phosphor through `@/components/ui/icon`: Regular by default, Fill for the active dock
+  place and for play/pause inside a solid pill, Bold for the timer's ghost round controls. Hang and Climb use the brand's own hangboard and spray
+  board icons (`src/components/training-icons.tsx`, from `design/rivet/kit/icons`). Import each icon directly, e.g. `phosphor-react-native/src/icons/Play`,
   to keep the full catalog out of the bundle. Adapt icons in newly added Reusables components
   to this wrapper. Keep the editable Penpot icon references in sync.
-- The light and dark Pulse / amber palettes are defined twice on purpose: CSS variables in
-  `src/global.css` and TS mirrors `LIGHT_THEME` / `DARK_THEME` in `src/lib/theme.ts`. Change both
-  together. Use semantic classes by default; `useAppTheme()` supplies inline colors for SVG,
-  navigation, and animations. Penpot appearance guidance is in `design/foundations/README.md`.
+- The light and dark Rivet roles are defined twice on purpose: CSS variables in `src/global.css`
+  (`:root` and `.dark:root`, which NativeWind needs on native) and TS mirrors `LIGHT_THEME` /
+  `DARK_THEME` in `src/lib/theme-tokens.ts` (re-exported by `theme.ts`). Change both together;
+  `theme.test.ts` checks they match. Use classes by default; `useAppTheme()` supplies inline colours
+  for SVG, navigation and animations.
 - Light and dark appearances share semantic tokens. Follow the device by default, with a local
   Settings override. Prefer semantic color classes over `dark:` variants or hard-coded colors.
-- The typeface is Geist Mono, loaded per weight in `src/lib/fonts.ts` and applied through the
-  `font-*` weight utilities, which a plugin in `tailwind.config.js` maps to the per-weight family
-  names. Never set `fontFamily`/`fontWeight` by hand; use `font-medium`, `font-semibold`, etc.
-  Weights available: 400, 500, 600, 700, 800. Add a weight in both files if you need another.
+- The typeface is Nunito (`assets/fonts`, from `design/rivet/kit/fonts`), loaded per weight in
+  `src/lib/fonts.ts` and applied through the `type-*` styles and `font-*` weight utilities, which a
+  plugin in `tailwind.config.js` maps to the per-weight family names. Never set
+  `fontFamily`/`fontWeight` by hand. Weights available: 400, 500, 600, 700, 800, 900.
 - App icon, splash image and favicon are generated, never hand-edited: `npm run icons` renders
-  every PNG and the iOS `.icon` layer from the vector design in `scripts/gen-icons.mjs` (a chalked
-  sloper in the palette colours). Change the design there and re-run it.
+  every PNG and the iOS `.icon` layer from the vector design in `scripts/gen-icons.mjs` (the Pitch
+  symbol in Night on Glow, as `design/rivet/kit/logo/rivet-app-icon.svg`; iOS dark: Glow on Night).
+  Change the design there and re-run it. `plugins/with-night-window.js` makes the Android window
+  Night, so nothing black or white shows between the native splash and the first React frame.
 - Platform-specific files use the `.web.tsx` / `.ios.tsx` / `.android.tsx` suffix convention.
 - Navigation between the five places is the dock in `src/components/dock.tsx` on every platform.
   Add a place in `DOCK_TABS` and as a file in `src/app/(tabs)/`.

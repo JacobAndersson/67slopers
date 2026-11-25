@@ -1,37 +1,39 @@
 import { useRouter } from 'expo-router';
 import { BluetoothConnectedIcon } from 'phosphor-react-native/src/icons/BluetoothConnected';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { View } from 'react-native';
 
-import { Screen } from '@/components/screen';
 import { LightSettings } from '@/components/light-settings';
-import { SettingRow } from '@/components/setting-row';
+import { Screen } from '@/components/screen';
+import { LargeTitle } from '@/components/section-header';
+import { TopBar } from '@/components/top-bar';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { disconnect, forget, useLights } from '@/lib/moonboard/lights';
 import { useClimb } from '@/lib/store/climb';
 
-/** The board's lights: what is connected, the three light settings, and the ways out. */
+/** Board lights (design: climb-lights): what is connected, three settings, and the ways out. */
 export default function LightsScreen() {
   const router = useRouter();
   const status = useLights((s) => s.status);
   const device = useLights((s) => s.device);
-  const lights = useClimb((s) => s.lights);
-  const setLights = useClimb((s) => s.setLights);
+  const deviceName = useClimb((s) => s.lights.deviceName);
   const connected = status === 'connected';
-  const name = device?.name ?? lights.deviceName;
+  const name = device?.name ?? deviceName;
 
   return (
-    <Screen contentClassName="gap-6">
-      <View className="flex-row items-center gap-4 rounded-2xl border border-border bg-card p-4">
-        <View className="size-10 items-center justify-center rounded-xl bg-secondary">
-          <Icon as={BluetoothConnectedIcon} size={22} />
+    <Screen header={<TopBar />} contentClassName="gap-0">
+      <LargeTitle title="Board lights" />
+      <View className="mt-6 h-24 flex-row items-center gap-4 rounded-3xl border border-line bg-surface px-5">
+        <View className="size-12 items-center justify-center rounded-2xl bg-raised">
+          <Icon as={BluetoothConnectedIcon} size={24} />
         </View>
-        <View className="flex-1 gap-0.5">
-          <Text className="font-semibold">{name ?? 'No board yet'}</Text>
+        <View className="flex-1 gap-1">
+          <Text className="type-row">{name ?? 'No board yet'}</Text>
           <View className="flex-row items-center gap-1.5">
-            {connected ? <View className="size-2 rounded-full bg-hold-start" /> : null}
-            <Text className="text-xs text-muted-foreground font-medium">
+            {connected ? <View className="size-2 rounded-full bg-text" /> : null}
+            <Text className={connected ? 'type-caption' : 'type-caption text-muted'}>
               {connected
                 ? 'Connected'
                 : status === 'connecting' || status === 'reconnecting'
@@ -42,17 +44,10 @@ export default function LightsScreen() {
         </View>
       </View>
 
-      <LightSettings>
-        <SettingRow
-          title="Connect automatically"
-          description="When Climb opens near the board"
-          checked={lights.autoConnect}
-          onCheckedChange={(autoConnect) => setLights({ autoConnect })}
-        />
-      </LightSettings>
+      <LightSettings className="mt-5" />
 
       {connected ? (
-        <View className="flex-row gap-3">
+        <View className="mt-6 flex-row gap-3">
           <Button
             variant="outline"
             className="flex-1"
@@ -64,18 +59,20 @@ export default function LightsScreen() {
           </Button>
         </View>
       ) : (
-        <Button onPress={() => router.replace('/climb/connect')}>
+        <Button className="mt-6" onPress={() => router.replace('/climb/connect')}>
           <Text>Connect lights</Text>
         </Button>
       )}
       {name ? (
         <Button
           variant="ghost"
+          className="mt-3"
           onPress={async () => {
             await forget();
             router.back();
           }}>
-          <Text className="text-destructive">Forget this board</Text>
+          <Icon as={TrashIcon} size={20} />
+          <Text>Forget this board</Text>
         </Button>
       ) : null}
     </Screen>

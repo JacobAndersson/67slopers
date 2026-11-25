@@ -1,15 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-  formatClock,
-  formatShort,
-  monthGrid,
-  relativeDay,
-  startOfWeek,
-  timeAgo,
-  weekDays,
-} from './dates';
+import { formatClock, formatShort, relativeDay, startOfWeek, timeAgo } from './dates';
 
 test('startOfWeek returns the Monday at local midnight', () => {
   const thursday = new Date(2026, 8, 10, 15, 30); // Thu 10 Sep 2026
@@ -22,15 +14,6 @@ test('startOfWeek returns the Monday at local midnight', () => {
 test('startOfWeek on a Sunday goes back six days', () => {
   const sunday = new Date(2026, 8, 13, 9, 0);
   assert.equal(startOfWeek(sunday).getDate(), 7);
-});
-
-test('weekDays spans Monday to Sunday', () => {
-  const days = weekDays(new Date(2026, 8, 10));
-  assert.equal(days.length, 7);
-  assert.deepEqual(
-    days.map((d) => d.getDate()),
-    [7, 8, 9, 10, 11, 12, 13]
-  );
 });
 
 test('relativeDay', () => {
@@ -46,17 +29,6 @@ test('formatClock and formatShort', () => {
   assert.equal(formatClock(3725), '62:05');
   assert.equal(formatShort(7), '7s');
   assert.equal(formatShort(90), '1:30');
-});
-
-test('monthGrid covers the month in full Monday-first weeks', () => {
-  const rows = monthGrid(new Date(2026, 8, 15)); // September 2026 starts on a Tuesday
-  assert.equal(rows.length, 5);
-  assert.equal(rows[0][0].getDate(), 31); // Mon 31 Aug
-  assert.equal(rows[0][0].getMonth(), 7);
-  assert.equal(rows[0][1].getDate(), 1);
-  assert.equal(rows[4][6].getDate(), 4); // Sun 4 Oct
-  assert.equal(rows[4][6].getMonth(), 9);
-  for (const row of rows) assert.equal(row.length, 7);
 });
 
 test('timeAgo counts minutes and hours, then falls back to the day', () => {

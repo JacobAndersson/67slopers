@@ -1,20 +1,25 @@
+import { useKeepAwake } from 'expo-keep-awake';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { useMemo } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { IconButton } from '@/components/icon-button';
 import { QrCode } from '@/components/qr-code';
-import { SlabBrand } from '@/components/slab-brand';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { formatClock } from '@/lib/dates';
 import { useStore } from '@/lib/store/store';
 import { encodeWorkout } from '@/lib/workout-codec';
-import { summaryLine } from '@/lib/workout-summary';
+import { estimateDuration } from '@/lib/workout-summary';
 
-/** A saved workout as a full-screen QR code, to scan into another 67slopers. */
+/**
+ * A saved workout as a QR code to scan into another Rivet (design: share-share-workout): the
+ * name and length, the code on a white card with the app icon in it, how to scan it. No digits
+ * to copy. The screen stays awake while it is open.
+ */
 export default function ShareWorkoutScreen() {
+  useKeepAwake();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -22,51 +27,54 @@ export default function ShareWorkoutScreen() {
   const workout = useStore((s) => s.workouts.find((w) => w.id === id));
   const hydrated = useStore((s) => s.hydrated);
   const code = useMemo((): { digits: string } | { error: string } => {
-    if (!workout) return { error: 'This workout no longer exists.' };
+    if (!workout) return { error: 'This workout is no longer here.' };
     try {
       return { digits: encodeWorkout(workout) };
-    } catch (e) {
-      const reason = e instanceof Error ? e.message : '';
-      return { error: `Fix this workout in the editor before sharing it. ${reason}` };
+    } catch {
+      return {
+        error: 'This workout can’t be shared yet. Open it in the editor and save it first.',
+      };
     }
   }, [workout]);
-  const size = Math.min(width - 48, height * 0.6, 480);
+  const size = Math.min(width - 104, height * 0.46, 420);
 
   return (
     <View
-      className="flex-1 bg-background"
-      style={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }}>
-      <View className="flex-row items-center justify-between px-4">
-        <SlabBrand />
-        <Button
-          variant="ghost"
-          size="icon"
-          accessibilityLabel="Close"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-          <Icon as={XIcon} className="size-6" />
-        </Button>
+      className="flex-1 bg-canvas px-6"
+      style={{ paddingTop: insets.top + 6, paddingBottom: insets.bottom + 16 }}>
+      <View className="flex-row justify-end">
+        <IconButton
+          icon={XIcon}
+          label="Close"
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        />
       </View>
 
-      <View className="flex-1 items-center justify-center gap-6 px-6">
-        {workout && 'digits' in code ? (
-          <>
-            <View className="items-center gap-1">
-              <Text className="text-center text-2xl font-bold">{workout.name}</Text>
-              <Text variant="muted" className="text-center">
-                {summaryLine(workout)}
-              </Text>
-            </View>
-            <QrCode value={code.digits} size={size} />
-            <Text variant="muted" className="text-center">
-              Scan it with the camera button on the 67slopers home screen.
-            </Text>
-          </>
-        ) : (
-          <Text variant="muted" className="text-center">
-            {hydrated ? ('error' in code ? code.error : '') : 'Opening workout…'}
+      {workout && 'digits' in code ? (
+        <View className="flex-1 items-center pt-10">
+          <Text className="type-large text-center" role="heading" numberOfLines={2}>
+            {workout.name}
           </Text>
-        )}
-      </View>
+          <Text className="type-sub mt-2 text-center text-muted">
+            {formatClock(estimateDuration(workout))}
+          </Text>
+          <View className="mt-8">
+            <QrCode value={code.digits} size={size} label={`QR code of ${workout.name}`} />
+          </View>
+          <Text className="type-sub mt-8 text-center text-muted">
+            Open Rivet on the other phone and tap{'\n'}the scan button on Home.
+          </Text>
+          <Text className="type-caption mt-4 text-center text-muted">
+            The screen stays bright while this is open.
+          </Text>
+        </View>
+      ) : (
+        <View className="flex-1 justify-center">
+          <Text className="type-body text-center text-muted">
+            {hydrated ? ('error' in code ? code.error : '') : ''}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

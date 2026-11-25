@@ -1,11 +1,9 @@
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import type { Icon as PhosphorIcon } from 'phosphor-react-native';
 import { ArrowsDownUpIcon } from 'phosphor-react-native/src/icons/ArrowsDownUp';
 import { ArrowsLeftRightIcon } from 'phosphor-react-native/src/icons/ArrowsLeftRight';
 import { BluetoothIcon } from 'phosphor-react-native/src/icons/Bluetooth';
-import { BluetoothConnectedIcon } from 'phosphor-react-native/src/icons/BluetoothConnected';
 import { BluetoothSlashIcon } from 'phosphor-react-native/src/icons/BluetoothSlash';
-import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { CellSignalHighIcon } from 'phosphor-react-native/src/icons/CellSignalHigh';
 import { CellSignalLowIcon } from 'phosphor-react-native/src/icons/CellSignalLow';
 import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
@@ -14,22 +12,15 @@ import { LockSimpleIcon } from 'phosphor-react-native/src/icons/LockSimple';
 import { MagnifyingGlassIcon } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 import { PowerIcon } from 'phosphor-react-native/src/icons/Power';
 import { useEffect, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Linking, Platform, Pressable, View } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import { Linking, Platform, Pressable, View } from 'react-native';
 
-import { ButtonLabel } from '@/components/button-label';
 import { Appear } from '@/components/appear';
 import { MoonBoard } from '@/components/moon-board';
 import { Screen } from '@/components/screen';
 import { LightSettings } from '@/components/light-settings';
+import { TopBar } from '@/components/top-bar';
 import { Button } from '@/components/ui/button';
+import { RivetLoader } from '@/components/rivet-loader';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { getLayout } from '@/lib/moonboard/boards';
@@ -48,46 +39,87 @@ import { cn } from '@/lib/utils';
 
 type Phase = 'why' | 'search' | 'test' | 'fix' | 'done';
 
-function Tile({ icon, tint = 'bg-secondary' }: { icon: PhosphorIcon; tint?: string }) {
+/** The 96 pt Raised tile that carries a state's icon. */
+function Tile({ icon, children }: { icon?: PhosphorIcon; children?: ReactNode }) {
   return (
-    <View
-      className={cn('size-[88px] items-center justify-center self-center rounded-[28px]', tint)}>
-      <Icon as={icon} size={44} />
+    <View className="size-24 items-center justify-center self-center rounded-[30px] bg-raised">
+      {icon ? <Icon as={icon} size={44} /> : children}
     </View>
   );
 }
 
-/** One ring travelling outwards while the search runs: the app is working, not stuck. */
-function Pulse() {
-  const reducedMotion = useReducedMotion();
-  const progress = useSharedValue(0);
-  useEffect(() => {
-    if (reducedMotion) return;
-    progress.set(withRepeat(withTiming(1, { duration: 1600, easing: Easing.linear }), -1));
-  }, [progress, reducedMotion]);
-  const style = useAnimatedStyle(() => ({
-    opacity: reducedMotion ? 0 : 0.5 * (1 - progress.get()),
-    transform: [{ scale: 0.4 + 0.6 * progress.get() }],
-  }));
-  return (
-    <Animated.View
-      pointerEvents="none"
-      className="absolute size-52 rounded-full border-2 border-ring"
-      style={style}
-    />
-  );
-}
-
+/** A state's title and line, centred under its tile. */
 function Lead({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <View className="items-center gap-2">
-      <Text className="text-center text-2xl font-bold">{title}</Text>
-      {children ? (
-        <Text variant="muted" className="max-w-xs text-center">
-          {children}
-        </Text>
-      ) : null}
+    <View className="items-center gap-3.5">
+      <Text className="type-hero text-center" role="heading">
+        {title}
+      </Text>
+      {children ? <Text className="type-body px-2 text-center text-muted">{children}</Text> : null}
     </View>
+  );
+}
+
+/** Numbered things to check, on a card. */
+function Checklist({ lines, compact }: { lines: string[]; compact?: boolean }) {
+  return (
+    <View
+      className={cn(
+        'rounded-3xl border border-line bg-surface pl-5 pr-3',
+        compact ? 'py-1' : 'py-[18px]'
+      )}>
+      {lines.map((line, index) => (
+        <View
+          key={line}
+          className={cn('flex-row gap-3.5', compact ? 'h-[60px] items-center' : 'py-2')}>
+          <View className="size-7 items-center justify-center rounded-full bg-raised">
+            <Text className="type-caption" allowFontScaling={false}>
+              {index + 1}
+            </Text>
+          </View>
+          <Text className={cn('flex-1', compact ? 'type-body-b' : 'type-sub mt-1')}>{line}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** A choice on a card: a raised icon tile, a title and a line; outlined in Ink when chosen. */
+function OptionCard({
+  icon,
+  title,
+  text,
+  on,
+  onPress,
+  trailing,
+  role,
+}: {
+  icon: PhosphorIcon;
+  title: string;
+  text: string;
+  on?: boolean;
+  onPress: () => void;
+  trailing?: ReactNode;
+  role: 'button' | 'checkbox';
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole={role}
+      accessibilityState={role === 'checkbox' ? { checked: !!on } : undefined}
+      className={cn(
+        'min-h-20 flex-row items-center gap-4 rounded-3xl bg-surface px-4 py-3 active:opacity-80',
+        on ? 'border-2 border-text' : 'm-px border border-line'
+      )}>
+      <View className="size-11 items-center justify-center rounded-[14px] bg-raised">
+        <Icon as={icon} size={22} />
+      </View>
+      <View className="flex-1 gap-0.5">
+        <Text className="type-row">{title}</Text>
+        <Text className="type-caption text-muted">{text}</Text>
+      </View>
+      {trailing}
+    </Pressable>
   );
 }
 
@@ -136,7 +168,7 @@ export default function ConnectScreen() {
       <Text>Climb without lights</Text>
     </Button>
   );
-  const again = (label = 'Search again') => (
+  const again = (
     <View className="gap-2">
       <Button
         size="lg"
@@ -144,7 +176,7 @@ export default function ConnectScreen() {
           setPhase('search');
           search();
         }}>
-        <ButtonLabel>{label}</ButtonLabel>
+        <Text>Search again</Text>
       </Button>
       {without}
     </View>
@@ -152,13 +184,16 @@ export default function ConnectScreen() {
 
   let body: ReactNode;
   let footer: ReactNode;
-  let title = 'Connect lights';
+  let title: string | undefined = 'Connect lights';
+  // Most states sit lower, under a tile; lists and the fix question start near the top.
+  let top = 'pt-16';
 
   if (phase === 'done') {
-    title = '';
+    title = undefined;
+    top = 'pt-8';
     footer = (
       <Button size="lg" onPress={() => router.back()}>
-        <ButtonLabel>Start climbing</ButtonLabel>
+        <Text>Start climbing</Text>
       </Button>
     );
     body = (
@@ -167,14 +202,14 @@ export default function ConnectScreen() {
           <Tile icon={CheckCircleIcon} />
         </Appear>
         <Lead title="Lights connected">
-          {device?.name ?? 'Your board'} reconnects on its own whenever you open Climb near the
-          board.
+          {device?.name ?? 'Your board'} reconnects by itself when you open Climb near the board.
         </Lead>
         <LightSettings />
       </>
     );
   } else if (phase === 'fix') {
     title = 'Fix the lights';
+    top = 'pt-3';
     const options: {
       icon: PhosphorIcon;
       title: string;
@@ -205,75 +240,69 @@ export default function ConnectScreen() {
       {
         icon: PowerIcon,
         title: 'Nothing lights up',
-        text: 'Check the power, then tap to test again.',
+        text: 'Check the power, then test again.',
         onPress: () => setPhase('test'),
       },
     ];
     footer = (
       <Button size="lg" onPress={() => setPhase('test')}>
-        <ButtonLabel>Test again</ButtonLabel>
+        <Text>Test again</Text>
       </Button>
     );
     body = (
       <>
-        <Text className="text-2xl font-bold">What do you see on the wall?</Text>
+        <Text className="type-hero" role="heading">
+          What do you see{'\n'}on the wall?
+        </Text>
         <View className="gap-3">
           {options.map((option) => (
-            <Pressable
+            <OptionCard
               key={option.title}
+              icon={option.icon}
+              title={option.title}
+              text={option.text}
+              on={option.on}
               onPress={option.onPress}
-              accessibilityRole={option.on === undefined ? 'button' : 'checkbox'}
-              accessibilityState={option.on === undefined ? undefined : { checked: option.on }}
-              className={cn(
-                'flex-row items-center gap-4 rounded-2xl bg-card p-4 active:opacity-80',
-                option.on ? 'border-2 border-foreground' : 'm-px border border-border'
-              )}>
-              <View
-                className={cn(
-                  'size-10 items-center justify-center rounded-xl',
-                  option.on ? 'bg-secondary' : 'bg-muted'
-                )}>
-                <Icon as={option.icon} size={22} />
-              </View>
-              <View className="flex-1 gap-0.5">
-                <Text className="font-semibold">{option.title}</Text>
-                <Text className="text-xs text-muted-foreground font-medium">{option.text}</Text>
-              </View>
-            </Pressable>
+              role={option.on === undefined ? 'button' : 'checkbox'}
+              trailing={
+                option.on ? <Icon as={CheckCircleIcon} size={24} weight="fill" /> : undefined
+              }
+            />
           ))}
         </View>
       </>
     );
   } else if (phase === 'test' && status === 'connected') {
     title = 'Check the lights';
+    top = 'pt-3';
     footer = (
-      <View className="gap-2">
+      <View className="gap-3">
         <Button
           size="lg"
           onPress={() => {
             lightsOff();
             setPhase('done');
           }}>
-          <ButtonLabel>Yes, it matches</ButtonLabel>
+          <Text>Yes, it matches</Text>
         </Button>
         <Button variant="outline" size="lg" onPress={() => setPhase('fix')}>
-          <ButtonLabel>No, something is off</ButtonLabel>
+          <Text>No, something is off</Text>
         </Button>
       </View>
     );
     body = (
       <>
-        <MoonBoard width={190} rows={rows} holds={corners} labels={false} lit />
+        <MoonBoard width={202} rows={rows} holds={corners} labels={false} lit radius={20} />
         <Lead title="Four corners lit?">
-          Your wall should match this picture: A1, K1, A{rows} and K{rows} in blue.
+          Your wall should match: A1, K1, A{rows} and K{rows} in blue.
         </Lead>
       </>
     );
   } else if (status === 'off') {
-    footer = again();
+    footer = again;
     body = (
       <>
-        <Tile icon={BluetoothSlashIcon} tint="bg-muted" />
+        <Tile icon={BluetoothSlashIcon} />
         <Lead title="Bluetooth is off">Turn it on, then search again.</Lead>
       </>
     );
@@ -281,17 +310,16 @@ export default function ConnectScreen() {
     footer = (
       <View className="gap-2">
         <Button size="lg" onPress={() => Linking.openSettings()}>
-          <ButtonLabel>Open Settings</ButtonLabel>
+          <Text>Open Settings</Text>
         </Button>
         {without}
       </View>
     );
     body = (
       <>
-        <Tile icon={LockSimpleIcon} tint="bg-muted" />
+        <Tile icon={LockSimpleIcon} />
         <Lead title="Bluetooth is blocked">
-          Allow Bluetooth for 67slopers in Settings to use the lights. Everything else works without
-          it.
+          Allow Bluetooth for Rivet in Settings to use the lights. Everything else works without it.
         </Lead>
       </>
     );
@@ -299,7 +327,7 @@ export default function ConnectScreen() {
     footer = without;
     body = (
       <>
-        <Tile icon={BluetoothSlashIcon} tint="bg-muted" />
+        <Tile icon={BluetoothSlashIcon} />
         <Lead title="No Bluetooth here">
           {Platform.OS === 'web'
             ? 'This browser cannot talk to the board. Chrome and Edge can, or use the app on your phone.'
@@ -308,104 +336,66 @@ export default function ConnectScreen() {
       </>
     );
   } else if (status === 'none' || status === 'failed') {
-    footer = again();
+    footer = again;
     body = (
       <>
-        <Tile icon={MagnifyingGlassIcon} tint="bg-muted" />
+        <Tile icon={MagnifyingGlassIcon} />
         <Lead title={status === 'none' ? 'No board found' : 'Could not connect'}>
           {status === 'none'
             ? 'Searched for 15 seconds without a reply.'
             : 'The board did not answer.'}
         </Lead>
-        <View className="gap-3 rounded-2xl border border-border bg-card p-4">
-          {[
+        <Checklist
+          lines={[
             'The LED kit has power: its control box light is on.',
-            'No other phone has the board open in another app.',
+            'No other phone has the board open.',
             'You are within a few metres of the board.',
-          ].map((tip, index) => (
-            <View key={tip} className="flex-row gap-3">
-              <View className="size-6 items-center justify-center rounded-full bg-secondary">
-                <Text className="text-sm font-semibold" allowFontScaling={false}>
-                  {index + 1}
-                </Text>
-              </View>
-              <Text className="flex-1 text-sm">{tip}</Text>
-            </View>
-          ))}
+          ]}
+        />
+      </>
+    );
+  } else if (phase === 'search' && devices.length > 1) {
+    top = 'pt-3';
+    footer = without;
+    body = (
+      <>
+        <Lead title={`Found ${devices.length} boards`}>Tap the one on your wall.</Lead>
+        <View className="gap-3">
+          {devices.map((found, index) => {
+            const busy = status === 'connecting' && device?.id === found.id;
+            const strong = (found.rssi ?? -60) > -75;
+            return (
+              <OptionCard
+                key={found.id}
+                icon={strong ? CellSignalHighIcon : CellSignalLowIcon}
+                title={found.name}
+                text={
+                  busy
+                    ? 'Connecting…'
+                    : `${strong ? 'Strong signal' : 'Weak signal'}${index === 0 ? '  ·  closest' : ''}`
+                }
+                on={busy}
+                role="button"
+                onPress={() => connect(found)}
+                trailing={busy ? <RivetLoader size={24} color={theme.text} /> : undefined}
+              />
+            );
+          })}
         </View>
       </>
     );
   } else if (phase === 'search') {
     footer = without;
+    const one = devices[0];
     body = (
       <>
-        <View className="h-52 items-center justify-center">
-          <Pulse />
-          {[104, 76, 48].map((radius, index) => (
-            <View
-              key={radius}
-              className="absolute rounded-full border-[1.5px] border-border"
-              style={{ width: radius * 2, height: radius * 2, opacity: [0.35, 0.6, 1][index] }}
-            />
-          ))}
-          <View className="size-[60px] items-center justify-center rounded-full bg-secondary">
-            <Icon as={devices.length ? BluetoothConnectedIcon : BluetoothIcon} size={28} />
-          </View>
-        </View>
-        <Lead
-          title={
-            devices.length === 0
-              ? 'Looking for your board…'
-              : `Found ${devices.length} ${devices.length === 1 ? 'board' : 'boards'}`
-          }>
-          {devices.length === 0
-            ? 'This usually takes a few seconds.'
-            : devices.length === 1
-              ? 'Connecting to it.'
-              : 'Tap the one on your wall.'}
+        {/* The brand's loader, the one sanctioned moving use of the bars: working, not stuck. */}
+        <Tile>
+          <RivetLoader size={60} color={theme.text} />
+        </Tile>
+        <Lead title={one ? `Connecting to ${one.name}` : 'Looking for your board'}>
+          {one ? 'Hold on a moment.' : 'This usually takes a few seconds.'}
         </Lead>
-        <View className="gap-3">
-          {devices.map((found, index) => {
-            const busy = status === 'connecting' && device?.id === found.id;
-            return (
-              <Pressable
-                key={found.id}
-                onPress={() => connect(found)}
-                accessibilityRole="button"
-                className={cn(
-                  'flex-row items-center gap-4 rounded-2xl bg-card p-4 active:opacity-80',
-                  busy ? 'border-2 border-foreground' : 'm-px border border-border'
-                )}>
-                <View
-                  className={cn(
-                    'size-10 items-center justify-center rounded-xl',
-                    busy ? 'bg-secondary' : 'bg-muted'
-                  )}>
-                  <Icon
-                    as={(found.rssi ?? -60) > -75 ? CellSignalHighIcon : CellSignalLowIcon}
-                    size={22}
-                  />
-                </View>
-                <View className="flex-1 gap-0.5">
-                  <Text className="font-semibold">{found.name}</Text>
-                  <Text className="text-xs text-muted-foreground font-medium">
-                    {busy
-                      ? 'Connecting…'
-                      : (found.rssi ?? -60) > -75
-                        ? 'Strong signal'
-                        : 'Weak signal'}
-                    {index === 0 && devices.length > 1 ? ' · closest' : ''}
-                  </Text>
-                </View>
-                {busy ? (
-                  <ActivityIndicator color={theme.foreground} />
-                ) : (
-                  <Icon as={CaretRightIcon} size={18} className="text-muted-foreground" />
-                )}
-              </Pressable>
-            );
-          })}
-        </View>
       </>
     );
   } else {
@@ -416,43 +406,34 @@ export default function ConnectScreen() {
           setPhase('search');
           search();
         }}>
-        <ButtonLabel>Continue</ButtonLabel>
+        <Text>Continue</Text>
       </Button>
     );
     body = (
       <>
         <Tile icon={BluetoothIcon} />
-        <Lead title="Bluetooth, only for lights">
-          67slopers talks to your board and nothing else. No internet, no location history, nothing
-          leaves this phone.
+        <Lead title={'Bluetooth, only\nfor the lights'}>
+          Rivet talks to your board and nothing else. No internet, no location, nothing leaves this
+          phone.
         </Lead>
-        <View className="rounded-2xl border border-border bg-card px-4">
-          {[
+        <Checklist
+          compact
+          lines={[
             'The LED kit is plugged in',
             'You are standing near the board',
             'No other phone is connected',
-          ].map((line, index) => (
-            <View
-              key={line}
-              className={cn(
-                'min-h-12 flex-row items-center gap-3',
-                index > 0 && 'border-t border-border'
-              )}>
-              <Icon as={CheckCircleIcon} size={22} />
-              <Text className="flex-1 text-sm font-medium">{line}</Text>
-            </View>
-          ))}
-        </View>
+          ]}
+        />
       </>
     );
   }
 
   return (
-    <>
-      <Stack.Screen options={{ title }} />
-      <Screen footer={footer} contentClassName="gap-6 pt-8">
-        {body}
-      </Screen>
-    </>
+    <Screen
+      header={<TopBar left="close" title={title} />}
+      footer={footer}
+      contentClassName={cn('gap-8', top)}>
+      {body}
+    </Screen>
   );
 }

@@ -1,5 +1,5 @@
 /** Thrown while decoding a code that uses a format or vocabulary entry this build lacks. */
-export const NEEDS_UPDATE = 'This workout needs a newer version of 67slopers.';
+export const NEEDS_UPDATE = 'This needs a newer version of Rivet.';
 
 export function needsUpdate(): never {
   throw new Error(NEEDS_UPDATE);

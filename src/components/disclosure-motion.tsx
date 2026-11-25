@@ -1,44 +1,29 @@
-import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
 import type { PropsWithChildren } from 'react';
-import Animated, {
-  cubicBezier,
-  Easing,
-  FadeIn,
-  ReduceMotion,
-  useReducedMotion,
-} from 'react-native-reanimated';
+import { Platform } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeOut, useReducedMotion } from 'react-native-reanimated';
 
-import { Icon } from '@/components/ui/icon';
+import { LIFT, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
 
-const DURATION_MS = 150;
-const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
-const CSS_EASE_OUT = cubicBezier(0.23, 1, 0.32, 1);
-/** A short reveal for controls and step cards the user just added or opened. */
-export const REVEAL = FadeIn.duration(DURATION_MS)
-  .easing(EASE_OUT)
-  .reduceMotion(ReduceMotion.System);
+/** What opens rises 8 pt and settles on the Rivet spring (brand book p.42). */
+const LIFT_IN = FadeInDown.springify()
+  .stiffness(SPRING_SETTLE.stiffness)
+  .damping(SPRING_SETTLE.damping)
+  .mass(SPRING_SETTLE.mass)
+  .withInitialValues({ opacity: 0, transform: [{ translateY: LIFT }] });
+/** Under reduced motion every lift becomes a short crossfade. */
+const FADE_IN = FadeIn.duration(REDUCED_FADE_MS);
+const FADE_OUT = FadeOut.duration(REDUCED_FADE_MS);
 
-/** A short reveal for controls opened by the user; closing removes them immediately. */
+/** Controls and step cards the user just added or opened: they lift in, and fade on close. */
 export function EditorReveal({ children, className }: PropsWithChildren<{ className?: string }>) {
-  return (
-    <Animated.View entering={REVEAL} className={className}>
-      {children}
-    </Animated.View>
-  );
-}
-
-/** The indicator follows the disclosure state without moving the surrounding layout. */
-export function DisclosureChevron({ expanded }: { expanded: boolean }) {
   const reduced = useReducedMotion();
   return (
     <Animated.View
-      style={{
-        transform: [{ rotate: expanded ? '180deg' : '0deg' }],
-        transitionProperty: 'transform',
-        transitionDuration: reduced ? 0 : DURATION_MS,
-        transitionTimingFunction: CSS_EASE_OUT,
-      }}>
-      <Icon as={CaretDownIcon} className="size-4 text-muted-foreground" />
+      // Spring layout animations collapse the view in a browser; there it fades in.
+      entering={reduced || Platform.OS === 'web' ? FADE_IN : LIFT_IN}
+      exiting={FADE_OUT}
+      className={className}>
+      {children}
     </Animated.View>
   );
 }

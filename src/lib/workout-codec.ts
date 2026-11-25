@@ -29,7 +29,7 @@ export type DecodedWorkout =
 export type ShareableWorkout = { name?: string; board?: BoardId; steps: Step[] };
 
 export const CODEC_ERRORS = {
-  notACode: 'This QR code is not a 67slopers workout.',
+  notACode: 'That isn’t a Rivet code.',
   needsUpdate: NEEDS_UPDATE,
 } as const;
 

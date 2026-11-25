@@ -17,7 +17,7 @@ export default function EditWorkoutScreen() {
   if (!workout) {
     return (
       <Screen>
-        <Text variant="muted">
+        <Text className="type-body text-muted">
           {hydrated ? 'This workout no longer exists.' : 'Opening workout…'}
         </Text>
         {hydrated ? (

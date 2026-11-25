@@ -10,8 +10,8 @@ export class BrainrotBoundary extends Component<{ children: ReactNode }, { faile
   }
   render() {
     return this.state.failed ? (
-      <View className="flex-1 items-center justify-center bg-muted">
-        <Text variant="muted">Video unavailable</Text>
+      <View className="flex-1 items-center justify-center bg-raised">
+        <Text className="type-caption text-muted">Video unavailable</Text>
       </View>
     ) : (
       this.props.children

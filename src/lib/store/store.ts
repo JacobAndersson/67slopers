@@ -27,6 +27,8 @@ type StoreState = {
   seeded: boolean;
   /** True once persisted state has been read from disk (not persisted itself). */
   hydrated: boolean;
+  /** True on the very first launch (presets were seeded just now); not persisted. Plays the first-run splash. */
+  firstLaunch: boolean;
   /** An unsaved workout about to run (not persisted). */
   draft: Draft | null;
   /** An unfinished run picked up from its checkpoint, about to run (not persisted). */
@@ -63,6 +65,7 @@ export const useStore = create<StoreState>()(
       sessions: [],
       seeded: false,
       hydrated: false,
+      firstLaunch: false,
       draft: null,
       resume: null,
       settings: DEFAULT_SETTINGS,
@@ -129,7 +132,7 @@ export const useStore = create<StoreState>()(
       finishHydration: () => {
         const { seeded, workouts } = get();
         if (!seeded && workouts.length === 0) {
-          set({ workouts: makePresetWorkouts(), seeded: true, hydrated: true });
+          set({ workouts: makePresetWorkouts(), seeded: true, hydrated: true, firstLaunch: true });
         } else {
           set({ seeded: true, hydrated: true });
         }

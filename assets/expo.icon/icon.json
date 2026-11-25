@@ -1,13 +1,31 @@
 {
-  "fill": {
-    "solid": "extended-srgb:0.97647,0.77647,0.36471,1.00000"
-  },
+  "fill-specializations": [
+    {
+      "value": {
+        "solid": "extended-srgb:0.94902,0.54902,0.43137,1.00000"
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "solid": "extended-srgb:0.07843,0.10196,0.18039,1.00000"
+      }
+    }
+  ],
   "groups": [
     {
       "layers": [
         {
-          "image-name": "sloper.svg",
-          "name": "Slab"
+          "image-name": "pitch.svg",
+          "name": "Pitch",
+          "fill-specializations": [
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "extended-srgb:0.94902,0.54902,0.43137,1.00000"
+              }
+            }
+          ]
         }
       ],
       "shadow": {

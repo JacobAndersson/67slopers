@@ -51,11 +51,6 @@ function describe(steps: Step[], depth: number): string[] {
   return parts;
 }
 
-/** Sets completed out of the total, e.g. "4/6 sets". */
-export function setsLine(completed: number, total: number): string {
-  return `${completed}/${total} sets`;
-}
-
 export type HangOutcomes = {
   /** Hangs in the workout as planned. */
   planned: number;
@@ -77,12 +72,4 @@ export function hangOutcomes(snapshot: WorkoutTimings, hangs: HangResult[]): Han
     else outcomes.cutShort++;
   }
   return outcomes;
-}
-
-/** "34/36 hangs · 1 cut short · 1 skipped". */
-export function hangsLine(outcomes: HangOutcomes): string {
-  const parts = [`${outcomes.done}/${outcomes.planned} hangs`];
-  if (outcomes.cutShort) parts.push(`${outcomes.cutShort} cut short`);
-  if (outcomes.skipped) parts.push(`${outcomes.skipped} skipped`);
-  return parts.join(' · ');
 }

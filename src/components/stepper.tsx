@@ -3,7 +3,6 @@ import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { useEffect, useRef, useState } from 'react';
 import { Keyboard, Pressable, TextInput, View } from 'react-native';
 
-import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { useScreenScroll } from '@/components/screen';
 import { Text } from '@/components/ui/text';
@@ -22,16 +21,19 @@ type StepperProps = {
   /** `clock` edits minutes and seconds in two fields; `number` edits one whole number. */
   inputMode?: 'number' | 'clock';
   hint?: string;
+  /** Show the label as a caption above the pill (it is always spoken). */
+  showLabel?: boolean;
 };
 
 const HOLD_DELAY_MS = 300;
 const HOLD_INTERVAL_MS = 80;
 
 const INPUT_CLASS =
-  'h-11 min-w-14 rounded-md border border-border bg-background px-2 text-center text-xl font-semibold text-foreground';
+  'type-num h-12 min-w-16 rounded-input border-[1.5px] border-text bg-surface px-2 text-center text-[26px] text-text';
 
 /**
- * Labelled − / + control with 44 px targets and hold-to-repeat. Tapping the value opens
+ * − value + on one 64 pt pill (design/rivet/app/ui.py `stepper`): both buttons the same weight,
+ * hold to repeat. Tapping the value opens
  * direct entry: one number, or minutes and seconds side by side for clock values.
  */
 export function Stepper({
@@ -44,6 +46,7 @@ export function Stepper({
   format,
   inputMode = 'number',
   hint,
+  showLabel = true,
 }: StepperProps) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latest = useRef({ value, onChange });
@@ -82,9 +85,17 @@ export function Stepper({
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
   };
+  // A hold that has started repeating must not add one more step when the finger lifts.
+  const repeated = useRef(false);
+  const press = (direction: 1 | -1) => {
+    if (repeated.current) repeated.current = false;
+    else bump(direction);
+  };
   const startHold = (direction: 1 | -1) => {
     stop();
+    repeated.current = false;
     const repeat = () => {
+      repeated.current = true;
       bump(direction);
       timer.current = setTimeout(repeat, HOLD_INTERVAL_MS);
     };
@@ -110,25 +121,32 @@ export function Stepper({
     setEditing(false);
   };
 
+  // Android's Back hides the keyboard without blurring the field: take what was typed then.
+  const commitRef = useRef(commit);
+  useEffect(() => {
+    commitRef.current = commit;
+  });
+  useEffect(() => {
+    if (!editing) return;
+    const sub = Keyboard.addListener('keyboardDidHide', () => commitRef.current());
+    return () => sub.remove();
+  }, [editing]);
+
   return (
-    <View ref={rowRef} className="gap-2 py-1">
-      <View className="gap-0.5">
-        <Text className="font-medium">{label}</Text>
-        {hint ? <Text variant="muted">{hint}</Text> : null}
-      </View>
-      <View className="flex-row items-center gap-2">
-        {editing && inputMode === 'clock' ? null : (
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-11 w-11"
+    <View ref={rowRef} className="gap-2">
+      {showLabel ? <Text className="type-caption text-muted">{label}</Text> : null}
+      <View className="h-16 flex-row items-center justify-between rounded-full border border-line-strong bg-surface px-1.5">
+        {editing && inputMode === 'clock' ? (
+          <View className="size-[52px]" />
+        ) : (
+          <RoundButton
+            direction={-1}
+            label={label}
             disabled={editing || value <= min}
-            onPress={() => bump(-1)}
+            onPress={() => press(-1)}
             onPressIn={() => startHold(-1)}
             onPressOut={stop}
-            accessibilityLabel={`Decrease ${label}`}>
-            <Icon as={MinusIcon} className="size-5" />
-          </Button>
+          />
         )}
 
         {editing ? (
@@ -150,7 +168,7 @@ export function Stepper({
                 blurOnSubmit={false}
                 accessibilityLabel={`${label} minutes`}
               />
-              <Text className="text-xl font-semibold">:</Text>
+              <Text className="type-num text-[26px]">:</Text>
               <TextInput
                 ref={secondsRef}
                 className={INPUT_CLASS}
@@ -191,25 +209,58 @@ export function Stepper({
             onPress={beginEdit}
             accessibilityRole="button"
             accessibilityLabel={`Edit ${label}`}
-            className="h-11 min-w-16 items-center justify-center rounded-md border border-dashed border-border px-2 active:bg-accent">
-            <Text className="text-xl font-semibold">{format ? format(value) : String(value)}</Text>
+            accessibilityHint="Type a value"
+            className="h-12 min-w-24 flex-1 items-center justify-center rounded-full active:bg-raised">
+            <Text className="type-num text-[26px] leading-[30px]">
+              {format ? format(value) : String(value)}
+            </Text>
           </Pressable>
         )}
 
-        {editing && inputMode === 'clock' ? null : (
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-11 w-11"
+        {editing && inputMode === 'clock' ? (
+          <View className="size-[52px]" />
+        ) : (
+          <RoundButton
+            direction={1}
+            label={label}
             disabled={editing || value >= max}
-            onPress={() => bump(1)}
+            onPress={() => press(1)}
             onPressIn={() => startHold(1)}
             onPressOut={stop}
-            accessibilityLabel={`Increase ${label}`}>
-            <Icon as={PlusIcon} className="size-5" />
-          </Button>
+          />
         )}
       </View>
+      {hint ? <Text className="type-caption text-muted">{hint}</Text> : null}
     </View>
+  );
+}
+
+/** − or +: a 52 pt hairline circle; both directions carry the same weight. */
+function RoundButton({
+  direction,
+  label,
+  disabled,
+  onPress,
+  onPressIn,
+  onPressOut,
+}: {
+  direction: 1 | -1;
+  label: string;
+  disabled: boolean;
+  onPress: () => void;
+  onPressIn: () => void;
+  onPressOut: () => void;
+}) {
+  return (
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      accessibilityRole="button"
+      accessibilityLabel={`${direction < 0 ? 'Decrease' : 'Increase'} ${label}`}
+      className="size-[52px] items-center justify-center rounded-full border-[1.5px] border-text active:bg-raised disabled:opacity-30">
+      <Icon as={direction < 0 ? MinusIcon : PlusIcon} size={22} weight="bold" />
+    </Pressable>
   );
 }

@@ -1,15 +1,14 @@
 import { startOfDay, startOfWeek } from '../dates';
 
-export const HEAT_WEEKS = 16;
-/** Strength of each level, as the share of the accent colour. */
-export const HEAT_STEPS = [0, 0.24, 0.46, 0.7, 0.94];
-/** Minutes of training in a day that fill the scale. */
-const FULL_DAY_MINUTES = 90;
+/** The Log shows eight weeks: two months, every day big enough to tap. */
+export const HEAT_WEEKS = 8;
+/** The most a day can be: level 5 reads the deepest step of the Glacier scale. */
+export const HEAT_MAX = 5;
 
 export type HeatDay = {
   date: Date;
   minutes: number;
-  /** 0 to 4. */
+  /** 0 to 5. */
   level: number;
   /** After today: not drawn. */
   future: boolean;
@@ -17,10 +16,17 @@ export type HeatDay = {
 
 export type TrainedSpan = { at: string; minutes: number };
 
-/** 0 for nothing, then four steps up to a full day. Any training at all shows. */
+/**
+ * 0 for nothing, then five steps of minutes trained (design/rivet/app/screens_log.py `heat`):
+ * under 10, under 20, under 30, under 45, and more.
+ */
 export function heatLevel(minutes: number): number {
   if (minutes <= 0) return 0;
-  return Math.min(4, 1 + Math.floor((minutes / FULL_DAY_MINUTES) * 4));
+  if (minutes < 10) return 1;
+  if (minutes < 20) return 2;
+  if (minutes < 30) return 3;
+  if (minutes < 45) return 4;
+  return HEAT_MAX;
 }
 
 /**
@@ -59,11 +65,11 @@ export function monthLabels(grid: HeatDay[][]): { week: number; label: string }[
   return labels;
 }
 
-/** "38 h", "1 h 12", "48 min". */
+/** "21 h 40", "1 h 12", "2 h", "48 min". */
 export function formatMinutes(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  if (hours >= 10 || rest === 0) return `${hours} h`;
+  if (rest === 0) return `${hours} h`;
   return `${hours} h ${rest.toString().padStart(2, '0')}`;
 }

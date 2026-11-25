@@ -14,6 +14,8 @@ export type Interval = {
   label?: string;
   /** Hold ids on the workout's board, for hangs that chose them. */
   holds?: string[];
+  /** A rest that closes a round of a top-level repeat: the timer calls it Recover. */
+  recover?: boolean;
 };
 
 /**
@@ -73,6 +75,7 @@ export function expandWorkout(timings: WorkoutTimings): Interval[] {
           repCount: ctx.repCount,
           ...(step.label ? { label: step.label } : {}),
           ...(step.holds?.length ? { holds: step.holds } : {}),
+          ...(step.kind === 'rest' && ctx.depth === 1 ? { recover: true } : {}),
         });
       }
       if (ctx.depth === 0 && step.kind === 'hang') setDone = true;

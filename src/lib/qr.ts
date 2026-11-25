@@ -59,3 +59,15 @@ export function qrPath(qr: QrMatrix, quiet = QUIET_ZONE): string {
   }
   return parts.join('');
 }
+
+/**
+ * How many modules square the app icon may cover in the middle of the code (design: Share, the
+ * icon on a white quiet zone). Only codes with error correction to spare carry it: H gives up a
+ * quarter of the width, Q a fifth, weaker codes none. Always odd, so it sits on the centre module.
+ */
+export function logoSpan(qr: Pick<QrMatrix, 'size' | 'ecc'>): number {
+  const share = qr.ecc === 'H' ? 0.26 : qr.ecc === 'Q' ? 0.2 : 0;
+  if (!share) return 0;
+  const span = Math.floor(qr.size * share);
+  return span % 2 ? span : span - 1;
+}

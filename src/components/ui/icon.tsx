@@ -37,7 +37,7 @@ cssInterop(IconImpl, {
  * color (e.g. inside a Button) unless a `text-*` class overrides it.
  *
  * @example
- * <Icon as={PlayIcon} className="size-6 text-primary-foreground" />
+ * <Icon as={PlayIcon} className="size-6 text-on-action" />
  */
 function Icon({
   as: IconComponent,
@@ -50,7 +50,7 @@ function Icon({
   return (
     <IconImpl
       as={IconComponent}
-      className={cn('text-foreground', textClass, className)}
+      className={cn('text-text', textClass, className)}
       size={size}
       weight={weight}
       {...props}

@@ -1,5 +1,5 @@
-import { memo, useEffect, useMemo } from 'react';
-import { Pressable, View, type GestureResponderEvent } from 'react-native';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { View, type GestureResponderEvent } from 'react-native';
 import Animated, {
   useAnimatedProps,
   useReducedMotion,
@@ -15,20 +15,20 @@ import { EASE_OUT } from '@/lib/motion';
 import { holdName, parseHold } from '@/lib/moonboard/grid';
 import { ROLES, type ProblemHolds, type Role } from '@/lib/moonboard/types';
 import { useAppTheme } from '@/lib/use-theme';
+import { nunito } from '@/lib/fonts';
+import { describeHolds } from '@/lib/moonboard/names';
+import { WALL } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 
-/** How wide the full board is drawn on a screen of this width: room either side, never huge. */
-export const boardWidthFor = (screenWidth: number) => Math.min(screenWidth - 96, 340);
-
-function roleColors(theme: ReturnType<typeof useAppTheme>['theme']): Record<Role, string> {
-  return { start: theme.holdStart, hold: theme.holdMove, finish: theme.holdFinish };
-}
+/** How wide the full board is drawn on a screen of this width: 252 pt on a phone, never huge. */
+export const boardWidthFor = (screenWidth: number) => Math.min(screenWidth - 138, 340);
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-const GLOW = 0.2;
+/** A lit hold's halo: the LED colour at 36 %. */
+const HALO = 0.36;
 
 /** The halo of a lit hold. It fades in when the lights come on, one hold after another. */
-function Glow({
+function Halo({
   cx,
   cy,
   r,
@@ -47,7 +47,7 @@ function Glow({
     opacity.set(
       withDelay(
         reducedMotion ? 0 : order * 20,
-        withTiming(GLOW, { duration: 120, easing: EASE_OUT })
+        withTiming(HALO, { duration: reducedMotion ? 120 : 160, easing: EASE_OUT })
       )
     );
   }, [opacity, order, reducedMotion]);
@@ -55,30 +55,36 @@ function Glow({
   return <AnimatedCircle cx={cx} cy={cy} r={r} fill={color} animatedProps={animatedProps} />;
 }
 
-/** Schematic placeholders, not the physical grip shapes. Exact artwork needs licensed assets. */
-function blob(col: number, row: number) {
-  const seed = (col * 73 + row * 151 + col * row * 31) % 97;
-  return {
-    rx: 0.17 + ((seed * 7) % 11) / 100,
-    ry: 0.13 + ((seed * 13) % 9) / 100,
-    angle: ((seed * 29) % 150) - 75,
-  };
+/**
+ * Which grid positions carry a hold in the drawing. A schematic, not the real hold map (that
+ * needs the licensed layout): about four in five positions, the same on every screen.
+ */
+function occupied(col: number, row: number) {
+  const seed = (col * 73 + row * 151 + col * row * 31 + 7) % 97;
+  return seed < 80;
 }
 
 type MoonBoardProps = {
   width: number;
   rows: number;
   holds?: ProblemHolds;
-  /** The lights are showing these holds: draw their glow. */
+  /** The lights are showing these holds: draw their halos. */
   lit?: boolean;
+  /** Column letters and row numbers round the edge. */
   labels?: boolean;
+  /** Corner radius of the board's card. */
+  radius?: number;
   /** Tapping a position, while setting a problem. */
   onHoldPress?: (hold: string) => void;
+  /** The colour of the role being placed, for the loupe. */
+  loupeColor?: string;
 };
 
 /**
- * The wall as a schematic: a hold at every grid position, the problem ringed in the colours
- * of the lights. Start is green, holds are blue, finish is red with a second ring.
+ * The wall as a diagram (design/rivet/app/boards.py `moonwall`): a white card with the grid's
+ * holds as small Raised dots, the problem ringed in the wall's LED colours. Shape carries the
+ * role as well as colour: start and finish have a centre dot, finish a second ring, a hold is
+ * a plain ring. Lit holds get a soft halo that comes on from the start to the finish.
  */
 export const MoonBoard = memo(function MoonBoard({
   width,
@@ -86,17 +92,26 @@ export const MoonBoard = memo(function MoonBoard({
   holds,
   lit = false,
   labels = true,
+  radius = 24,
   onHoldPress,
+  loupeColor = WALL.hold,
 }: MoonBoardProps) {
   const { theme } = useAppTheme();
-  const roleColor = roleColors(theme);
-  const left = labels ? 22 : 8;
-  const top = labels ? 20 : 8;
-  const pad = labels ? 10 : 8;
-  const cell = (width - left - pad) / COLUMNS.length;
-  const height = top + rows * cell + pad;
-  const cx = (col: number) => left + (col + 0.5) * cell;
-  const cy = (row: number) => top + (rows - row - 0.5) * cell;
+  const [touch, setTouchState] = useState<{ col: number; row: number } | null>(null);
+  // The release can arrive before React has re-rendered with the grant, so the hold under the
+  // finger is also kept in a ref that the handlers read.
+  const touchRef = useRef<{ col: number; row: number } | null>(null);
+  const setTouch = (next: { col: number; row: number } | null) => {
+    touchRef.current = next;
+    setTouchState(next);
+  };
+  const pad = labels ? 22 : 10;
+  const cell = (width - pad - 10) / COLUMNS.length;
+  const height = pad + rows * cell + 10;
+  const ox = pad;
+  const oy = pad - 4;
+  const cx = (col: number) => ox + (col + 0.5) * cell;
+  const cy = (row: number) => oy + (rows - row - 0.5) * cell;
 
   const chosen = useMemo(() => {
     const map = new Map<string, Role>();
@@ -112,48 +127,40 @@ export const MoonBoard = memo(function MoonBoard({
     return new Map(byHeight.map((hold, index) => [hold, index]));
   }, [chosen, rows]);
 
-  // The whole wall is one path that only changes with its size; the problem's holds are drawn
-  // again on top in the dark colour, so a tap rebuilds a handful of shapes and not all of them.
-  const wall = useMemo(() => {
+  // Every hold of the wall is one path that only changes with its size.
+  const dots = useMemo(() => {
+    const r = (cell * 0.3) / 2;
     const d: string[] = [];
-    const byHold = new Map<string, string>();
     for (let row = 0; row < rows; row += 1) {
       for (let col = 0; col < COLUMNS.length; col += 1) {
-        const shape = blob(col, row);
-        const x = left + (col + 0.5) * cell;
-        const y = top + (rows - row - 0.5) * cell;
-        const rx = shape.rx * cell;
-        const ry = shape.ry * cell;
-        const dx = rx * Math.cos((shape.angle * Math.PI) / 180);
-        const dy = rx * Math.sin((shape.angle * Math.PI) / 180);
-        const arc = `A${rx.toFixed(2)} ${ry.toFixed(2)} ${shape.angle} 1 0 `;
-        const one = `M${(x - dx).toFixed(2)} ${(y - dy).toFixed(2)}${arc}${(x + dx).toFixed(2)} ${(y + dy).toFixed(2)}${arc}${(x - dx).toFixed(2)} ${(y - dy).toFixed(2)}Z`;
-        d.push(one);
-        byHold.set(holdName({ col, row }), one);
+        // A hold of the problem is drawn as its ring instead.
+        if (!occupied(col, row) || chosen.has(holdName({ col, row }))) continue;
+        const x = ox + (col + 0.5) * cell;
+        const y = oy + (rows - row - 0.5) * cell;
+        d.push(
+          `M${(x - r).toFixed(2)} ${y.toFixed(2)}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`
+        );
       }
     }
-    return { all: d.join(''), byHold };
-  }, [rows, cell, left, top]);
-  const chosenPath = [...chosen.keys()].map((hold) => wall.byHold.get(hold) ?? '').join('');
+    return d.join('');
+  }, [rows, cell, ox, oy, chosen]);
 
-  const press = onHoldPress
-    ? (event: GestureResponderEvent) => {
-        // A click on web carries offsets instead of the touch location. Both are relative to
-        // this view only because the drawing inside ignores touches (`pointerEvents="none"`).
-        const point = event.nativeEvent as typeof event.nativeEvent & {
-          offsetX?: number;
-          offsetY?: number;
-        };
-        const x = point.locationX ?? point.offsetX ?? -1;
-        const y = point.locationY ?? point.offsetY ?? -1;
-        const col = Math.floor((x - left) / cell);
-        const row = rows - 1 - Math.floor((y - top) / cell);
-        if (col >= 0 && col < COLUMNS.length && row >= 0 && row < rows) {
-          onHoldPress(holdName({ col, row }));
-        }
-      }
-    : undefined;
+  /** The grid position under a touch, or null off the grid. */
+  const at = (event: GestureResponderEvent) => {
+    // A click on web carries offsets instead of the touch location. Both are relative to
+    // this view only because the drawing inside ignores touches (`pointerEvents="none"`).
+    const point = event.nativeEvent as typeof event.nativeEvent & {
+      offsetX?: number;
+      offsetY?: number;
+    };
+    const x = point.locationX ?? point.offsetX ?? -1;
+    const y = point.locationY ?? point.offsetY ?? -1;
+    const col = Math.floor((x - ox) / cell);
+    const row = rows - 1 - Math.floor((y - oy) / cell);
+    return col >= 0 && col < COLUMNS.length && row >= 0 && row < rows ? { col, row } : null;
+  };
 
+  const ring = cell * 0.86;
   const board = (
     <Svg width={width} height={height} pointerEvents="none">
       {labels
@@ -161,10 +168,10 @@ export const MoonBoard = memo(function MoonBoard({
             <SvgText
               key={letter}
               x={cx(col)}
-              y={14}
+              y={16}
               fontSize={10}
-              fontFamily="GeistMono_500Medium"
-              fill={theme.mutedForeground}
+              fontFamily={nunito(700)}
+              fill={theme.muted}
               textAnchor="middle">
               {letter}
             </SvgText>
@@ -174,62 +181,40 @@ export const MoonBoard = memo(function MoonBoard({
         ? Array.from({ length: rows }, (_, row) => (
             <SvgText
               key={row}
-              x={left - 6}
+              x={pad / 2}
               y={cy(row) + 3.5}
               fontSize={10}
-              fontFamily="GeistMono_500Medium"
-              fill={theme.mutedForeground}
-              textAnchor="end">
+              fontFamily={nunito(700)}
+              fill={theme.muted}
+              textAnchor="middle">
               {row + 1}
             </SvgText>
           ))
         : null}
-      <Path d={wall.all} fill={theme.border} />
-      <Path d={chosenPath} fill={theme.foreground} />
+      <Path d={dots} fill={theme.raised} />
       {[...chosen].map(([hold, role]) => {
         const at = parseHold(hold, rows);
         if (!at) return null;
-        const color = roleColor[role];
+        const color = WALL[role];
+        const x = cx(at.col);
+        const y = cy(at.row);
         return (
           <G key={hold}>
             {lit ? (
-              <Glow
-                cx={cx(at.col)}
-                cy={cy(at.row)}
-                r={cell * 0.66}
-                color={color}
-                order={order.get(hold) ?? 0}
-              />
+              <Halo cx={x} cy={y} r={ring * 0.75} color={color} order={order.get(hold) ?? 0} />
             ) : null}
             <Circle
-              cx={cx(at.col)}
-              cy={cy(at.row)}
-              r={cell * 0.43}
+              cx={x}
+              cy={y}
+              r={ring / 2}
               fill={color}
-              fillOpacity={lit ? 0.3 : 0.12}
+              fillOpacity={0.14}
               stroke={color}
-              strokeWidth={Math.max(1.5, cell * 0.11)}
+              strokeWidth={role === 'hold' ? 2 : 2.4}
             />
+            {role !== 'hold' ? <Circle cx={x} cy={y} r={ring * 0.18} fill={color} /> : null}
             {role === 'finish' ? (
-              <Circle
-                cx={cx(at.col)}
-                cy={cy(at.row)}
-                r={cell * 0.6}
-                fill="none"
-                stroke={color}
-                strokeWidth={Math.max(1, cell * 0.06)}
-              />
-            ) : null}
-            {labels && cell >= 18 ? (
-              <SvgText
-                x={cx(at.col)}
-                y={cy(at.row) + 3.5}
-                fontSize={Math.min(11, cell * 0.38)}
-                fontFamily="GeistMono_700Bold"
-                fill={theme.background}
-                textAnchor="middle">
-                {hold}
-              </SvgText>
+              <Circle cx={x} cy={y} r={ring / 2 + 3} fill="none" stroke={color} strokeWidth={1.2} />
             ) : null}
           </G>
         );
@@ -237,83 +222,185 @@ export const MoonBoard = memo(function MoonBoard({
     </Svg>
   );
 
-  const frame = cn(
-    'self-center overflow-hidden border border-border bg-card',
-    width > 150 ? 'rounded-2xl' : 'rounded-lg'
-  );
-  return press ? (
-    <Pressable
-      onPress={press}
-      accessibilityLabel="Board. Tap a hold to add or remove it."
-      className={frame}
-      style={{ width, height }}>
-      {board}
-    </Pressable>
-  ) : (
-    <View className={frame} style={{ width, height }}>
-      {board}
+  const frame = 'self-center overflow-hidden border border-line bg-surface';
+  const style = { width, height, borderRadius: radius };
+  if (!onHoldPress) {
+    return (
+      <View
+        className={frame}
+        style={style}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel={`MoonBoard. ${describeHolds({ start: holds?.start ?? [], hold: holds?.hold ?? [], finish: holds?.finish ?? [] })}`}>
+        {board}
+      </View>
+    );
+  }
+  // Holds are about 24 pt apart, under a finger: while it is down a loupe above it shows the
+  // hold it is on, enlarged and named, and the hold is set when the finger lifts.
+  // Near the top it would leave the screen: it moves beside the finger instead, towards the middle.
+  const loupe = touch
+    ? (() => {
+        const x = cx(touch.col);
+        const y = cy(touch.row);
+        if (y >= 140) return { left: x - 52, top: y - 150, stem: true };
+        return { left: x < width / 2 ? x + 36 : x - 140, top: Math.max(0, y - 52), stem: false };
+      })()
+    : null;
+  return (
+    <View className="self-center" style={{ width, height }}>
+      <View
+        accessible
+        accessibilityLabel={`Board. ${describeHolds({ start: holds?.start ?? [], hold: holds?.hold ?? [], finish: holds?.finish ?? [] })} Tap a hold to add or remove it, or type one below.`}
+        className={frame}
+        style={style}
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+        onResponderGrant={(event) => setTouch(at(event))}
+        onResponderMove={(event) => {
+          const next = at(event);
+          const now = touchRef.current;
+          if (next?.col !== now?.col || next?.row !== now?.row) setTouch(next);
+        }}
+        onResponderRelease={() => {
+          const last = touchRef.current;
+          setTouch(null);
+          if (last) onHoldPress(holdName(last));
+        }}
+        onResponderTerminationRequest={() => false}
+        onResponderTerminate={() => setTouch(null)}>
+        {board}
+      </View>
+      {loupe && touch ? (
+        <View
+          pointerEvents="none"
+          className="absolute items-center"
+          style={{ left: loupe.left, top: loupe.top, width: 104 }}>
+          <View
+            className="size-[104px] items-center justify-center gap-1 rounded-full border-2 border-text bg-surface"
+            style={{
+              shadowColor: '#0B0F1C',
+              shadowOpacity: 0.25,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 10 },
+              elevation: 10,
+            }}>
+            <View
+              className="mt-2 size-11 rounded-full border-[3px]"
+              style={{ borderColor: loupeColor, backgroundColor: `${loupeColor}24` }}
+            />
+            <Text className="type-caption text-xs">{holdName(touch)}</Text>
+          </View>
+          {loupe.stem ? <View className="h-8 w-0.5 bg-text" /> : null}
+        </View>
+      ) : null}
     </View>
   );
 });
 
-/** Every hold of one role as a single path of dots: three nodes per thumbnail, not one per hold. */
-function dots(holds: string[], rows: number, cell: number): string {
-  const r = Math.max(1.9, cell * 0.62);
-  return holds
-    .map((hold) => {
-      const at = parseHold(hold, rows);
-      if (!at) return '';
-      const x = 4 + (at.col + 0.5) * cell;
-      const y = 4 + (rows - at.row - 0.5) * cell;
-      return `M${x - r} ${y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
-    })
-    .join('');
-}
-
-/** The line of a problem as dots, small enough for a list row. */
+/**
+ * The mini MoonBoard, the one problem thumbnail everywhere (design/rivet/app/boards.py
+ * `wall_thumb`): a Raised tile with a faint grid, the problem's holds as ink dots, start and
+ * finish as small rings in the wall's LED colours. `height` sets the size; it is 0.69 as wide.
+ */
 export const ProblemThumb = memo(function ProblemThumb({
   holds,
   rows,
-  width = 44,
+  height = 64,
 }: {
   holds: ProblemHolds;
   rows: number;
-  width?: number;
+  height?: number;
 }) {
   const { theme } = useAppTheme();
-  const roleColor = roleColors(theme);
-  const cell = (width - 8) / COLUMNS.length;
-  const height = rows * cell + 8;
+  const width = height * 0.69;
+  const pad = height * 0.08;
+  const cw = (width - 2 * pad) / COLUMNS.length;
+  const ch = (height - 2 * pad) / rows;
+  const d = Math.max(3.2, Math.min(cw, ch) * 1.05);
+  const ring = d + 1.6;
+  const stroke = Math.max(1.2, height / 40);
+  const at = (hold: string) => {
+    const p = parseHold(hold, rows);
+    return p ? { x: pad + (p.col + 0.5) * cw, y: pad + (rows - p.row - 0.5) * ch } : null;
+  };
+  const grid: string[] = [];
+  for (let c = 1; c < COLUMNS.length; c++) grid.push(`M${pad + c * cw} ${pad}V${height - pad}`);
+  for (let r = 1; r < rows; r++) grid.push(`M${pad} ${pad + r * ch}H${width - pad}`);
   return (
     <View
-      className="overflow-hidden rounded-lg border border-border bg-card"
-      style={{ width, height }}>
+      className="overflow-hidden bg-raised"
+      style={{ width, height, borderRadius: Math.min(10, height * 0.16) }}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants">
       <Svg width={width} height={height}>
-        {ROLES.map((role) => (
-          <Path key={role} d={dots(holds[role], rows, cell)} fill={roleColor[role]} />
-        ))}
+        <Path d={grid.join('')} stroke={theme.text} strokeOpacity={0.08} strokeWidth={0.5} />
+        {holds.hold.map((hold) => {
+          const p = at(hold);
+          return p ? <Circle key={hold} cx={p.x} cy={p.y} r={d / 2} fill={theme.text} /> : null;
+        })}
+        {(['start', 'finish'] as const).flatMap((role) =>
+          holds[role].map((hold) => {
+            const p = at(hold);
+            return p ? (
+              <Circle
+                key={role + hold}
+                cx={p.x}
+                cy={p.y}
+                r={ring / 2}
+                fill="none"
+                stroke={WALL[role]}
+                strokeWidth={stroke}
+              />
+            ) : null;
+          })
+        )}
       </Svg>
     </View>
   );
 });
 
-/** What the three colours mean; colour is never the only signal. */
-export function HoldLegend() {
+/** The swatch of one role, as drawn on the wall: a ring, with a dot for start and finish. */
+/** A role's ring in its LED colour; the legend adds the centre dot start and finish carry on the wall. */
+export function RoleSwatch({
+  role,
+  size = 15,
+  plain,
+}: {
+  role: Role;
+  size?: number;
+  /** Just the ring, as on the role picker. */
+  plain?: boolean;
+}) {
+  const r = size / 2;
   return (
-    <View className="flex-row justify-center gap-4">
+    <Svg width={size + 2} height={size + 2}>
+      <Circle
+        cx={r + 1}
+        cy={r + 1}
+        r={r - 1}
+        fill={WALL[role]}
+        fillOpacity={0.14}
+        stroke={WALL[role]}
+        strokeWidth={2}
+      />
+      {role !== 'hold' && !plain ? (
+        <Circle cx={r + 1} cy={r + 1} r={size / 6} fill={WALL[role]} />
+      ) : null}
+    </Svg>
+  );
+}
+
+export const ROLE_LABELS: Record<Role, string> = { start: 'Start', hold: 'Hold', finish: 'Finish' };
+
+/** What the three colours mean; colour is never the only signal. */
+export function HoldLegend({ className }: { className?: string }) {
+  return (
+    <View className={cn('flex-row flex-wrap justify-center gap-x-5 gap-y-1', className)}>
       {ROLES.map((role) => (
         <View key={role} className="flex-row items-center gap-1.5">
-          <View
-            className={cn(
-              'size-2.5 rounded-full border-2',
-              role === 'start' && 'border-hold-start bg-hold-start/25',
-              role === 'hold' && 'border-hold-move bg-hold-move/25',
-              role === 'finish' && 'border-hold-finish bg-hold-finish/25'
-            )}
-          />
-          <Text className="text-xs text-muted-foreground font-medium">
-            {role === 'start' ? 'Start' : role === 'hold' ? 'Hold' : 'Finish'}
-          </Text>
+          <RoleSwatch role={role} />
+          <Text className="type-caption">{ROLE_LABELS[role]}</Text>
         </View>
       ))}
     </View>

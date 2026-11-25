@@ -1,40 +1,36 @@
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { BooksIcon } from 'phosphor-react-native/src/icons/Books';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { RepeatIcon } from 'phosphor-react-native/src/icons/Repeat';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, Pressable, View, type TextInput } from 'react-native';
 
+import { useLargeText } from '@/hooks/use-large-text';
 import { BoardPicker } from '@/components/board-picker';
-import { BoardView } from '@/components/board-view';
-import { DisclosureChevron, EditorReveal } from '@/components/disclosure-motion';
+import { Card } from '@/components/card';
+import { ConfirmSheet } from '@/components/confirm-sheet';
+import { EditorReveal } from '@/components/disclosure-motion';
+import { Field } from '@/components/field';
 import { Glide, GlideContainer } from '@/components/glide';
+import { HangboardDiagram } from '@/components/hangboard-diagram';
 import { HoldPicker } from '@/components/hold-picker';
 import { Screen } from '@/components/screen';
+import { Label, SectionHeader } from '@/components/section-header';
 import {
   StepEditorProvider,
-  AddStepButton,
   StepList,
   StepListBoardProvider,
   type StepListActions,
 } from '@/components/step-list';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { AddStepSheet, StepMenuSheet } from '@/components/step-sheets';
+import { TopBar } from '@/components/top-bar';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
-import { Textarea } from '@/components/ui/textarea';
 import { getBoard, type BoardId } from '@/lib/boards';
 import { formatClock } from '@/lib/dates';
 import { templateSteps } from '@/lib/store/presets';
@@ -45,9 +41,9 @@ import { moveStepTo } from '@/lib/workout-rows';
 import {
   appendTo,
   clearHolds,
+  duplicateStep,
   findStep,
   holdsInWorkout,
-  duplicateStep,
   moveIntoRepeat,
   moveOutOfRepeat,
   moveStep,
@@ -80,7 +76,12 @@ type WorkoutFormProps = {
   onDelete?: () => void;
 };
 
-/** Garmin-style builder: an ordered list of steps and repeat groups. */
+/**
+ * The builder (design: builder-new, builder-*; page 04): name, description, the board, then the
+ * steps as cards with rails, repeats as a soft rail down their side. Garmin-style: tap a step
+ * to edit it in place, hold and drag to move it, ⋮ for every move as a list. Leaving with
+ * changes asks first.
+ */
 export function WorkoutForm({
   initial,
   template,
@@ -90,20 +91,27 @@ export function WorkoutForm({
   onDelete,
 }: WorkoutFormProps) {
   const router = useRouter();
+  const navigation = useNavigation();
   const preferredBoard = useStore((s) => s.preferredBoard);
   const hydrated = useStore((s) => s.hydrated);
   const defaultsApplied = useRef(hydrated);
   const boardEdited = useRef(false);
+  const nameRef = useRef<TextInput>(null);
   const [name, setName] = useState(initial?.name ?? template?.name ?? '');
+  const [nameError, setNameError] = useState(false);
   const [description, setDescription] = useState(
     initial?.description ?? template?.description ?? ''
   );
-  const [showDescription, setShowDescription] = useState(false);
+  const [showDescription, setShowDescription] = useState(!!initial);
   const [showBoards, setShowBoards] = useState(false);
   const [steps, setSteps] = useState<EditableStep[]>(() =>
     withIds(initial?.steps ?? template?.steps ?? templateSteps())
   );
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [menuId, setMenuId] = useState<string | null>(null);
+  /** Where "Add a step" adds: a repeat's id, `null` for the top level, `false` when closed. */
+  const [addTo, setAddTo] = useState<string | null | false>(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [boardId, setBoardId] = useState<BoardId | undefined>(
     initial ? initial.board : (template?.board ?? preferredBoard)
   );
@@ -111,6 +119,7 @@ export function WorkoutForm({
   const [pendingBoard, setPendingBoard] = useState<BoardId | undefined | null>(null);
   const [pickingId, setPickingId] = useState<string | null>(null);
   const board = getBoard(boardId);
+  const large = useLargeText();
 
   // Direct web links can mount before storage finishes. Apply the saved default once;
   // never replace an edited choice or change an already-open builder after board setup.
@@ -122,10 +131,9 @@ export function WorkoutForm({
 
   const plain = useMemo(() => stripIds(steps), [steps]);
   const usedHolds = useMemo(() => holdsInWorkout(plain), [plain]);
-  const total = estimateDuration({ steps: plain });
+  const total = useMemo(() => estimateDuration({ steps: plain }), [plain]);
   const errors = validateWorkout({ board: boardId, steps: plain });
   const valid = errors.length === 0;
-  const canSave = valid && name.trim().length > 0;
   // Every key is present, even when empty, so saving an edit can also clear a field.
   const values = (): WorkoutFormValues => ({
     name: name.trim(),
@@ -134,11 +142,30 @@ export function WorkoutForm({
     steps: plain,
   });
 
+  // Leaving with changes asks first (design: builder-discard). Saving and starting leave freely.
+  const snapshot = JSON.stringify({ name, description, boardId, plain });
+  const [startState] = useState(snapshot);
+  const dirty = snapshot !== startState;
+  const leaving = useRef(false);
+  const [discardAction, setDiscardAction] = useState<unknown>(null);
+  useEffect(
+    () =>
+      navigation.addListener('beforeRemove', (e) => {
+        if (!dirty || leaving.current) return;
+        e.preventDefault();
+        setDiscardAction(e.data.action);
+      }),
+    [navigation, dirty]
+  );
+  const leave = (go: () => void) => {
+    leaving.current = true;
+    go();
+  };
+
   const applyBoard = (next: BoardId | undefined) => {
     setBoardId(next);
     if (next !== boardId) setSteps((s) => clearHolds(s));
     setPendingBoard(null);
-    setShowBoards(false);
   };
   const requestBoard = (next: BoardId | undefined) => {
     boardEdited.current = true;
@@ -168,217 +195,284 @@ export function WorkoutForm({
     []
   );
 
+  const save = () => {
+    if (!name.trim()) {
+      setNameError(true);
+      nameRef.current?.focus();
+      return;
+    }
+    leave(() => onSubmit(values()));
+  };
+
   return (
     <Screen
+      header={
+        <TopBar
+          left={initial ? 'back' : 'close'}
+          title={initial ? 'Edit workout' : 'New workout'}
+        />
+      }
+      contentClassName="gap-0"
       footer={
         onStart ? (
-          <View className="flex-row gap-3">
+          // At large text sizes the two pills go one per row (design: found-a11y-steps).
+          <View className={large ? 'flex-col gap-3' : 'flex-row gap-3'}>
             <Button
               size="lg"
               variant="outline"
-              className="flex-1"
-              disabled={!canSave}
-              onPress={() => onSubmit(values())}>
+              className={large ? 'w-full flex-none' : 'flex-1'}
+              disabled={!valid}
+              onPress={save}>
               <Text>{submitLabel}</Text>
             </Button>
             <Button
               size="lg"
-              className="flex-1"
+              className={large ? 'w-full flex-none' : 'flex-1'}
               disabled={!valid}
-              onPress={() => onStart(values())}>
+              onPress={() => leave(() => onStart(values()))}>
+              <Icon
+                as={PlayIcon}
+                weight="fill"
+                size={20}
+                className={valid ? 'text-on-action' : 'text-disabled-fg'}
+              />
               <Text>Start</Text>
             </Button>
           </View>
         ) : (
-          <Button size="lg" disabled={!canSave} onPress={() => onSubmit(values())}>
+          <Button size="lg" disabled={!valid} onPress={save}>
             <Text>{submitLabel}</Text>
           </Button>
         )
       }>
-      <View className="gap-2">
-        <Label nativeID="workout-name">Name</Label>
-        <Input
-          aria-labelledby="workout-name"
-          value={name}
-          onChangeText={setName}
-          placeholder={onStart ? 'Optional. Needed to save.' : 'Repeaters 7:3'}
-          autoCapitalize="sentences"
-          returnKeyType="done"
-        />
-      </View>
+      <Field
+        ref={nameRef}
+        label="Name"
+        value={name}
+        onChangeText={(text) => {
+          setName(text);
+          if (text.trim()) setNameError(false);
+        }}
+        placeholder="Name"
+        error={nameError ? 'Add a name to save. Start works without one.' : null}
+        autoCapitalize="sentences"
+        returnKeyType="done"
+      />
 
-      <View className="gap-2">
-        <Button
-          variant="ghost"
-          className="justify-between px-0"
-          accessibilityState={{ expanded: showDescription }}
-          onPress={() => setShowDescription((v) => !v)}>
-          <Text>{description ? 'Description' : 'Add description'}</Text>
-          <DisclosureChevron expanded={showDescription} />
-        </Button>
-        {showDescription ? (
-          <EditorReveal className="gap-2">
-            <Label nativeID="workout-description">Description</Label>
-            <Textarea
-              aria-labelledby="workout-description"
-              value={description}
-              onChangeText={setDescription}
-              placeholder="Optional. What it trains, which hold or load to pick."
-              numberOfLines={4}
-            />
-          </EditorReveal>
-        ) : description ? (
-          <Text variant="muted">{description}</Text>
-        ) : null}
-      </View>
+      {showDescription ? (
+        <EditorReveal className="mt-4">
+          <Field
+            label="Description"
+            value={description}
+            onChangeText={setDescription}
+            placeholder="What it trains, which hold or load to pick"
+            multiline
+            autoFocus={!initial}
+          />
+        </EditorReveal>
+      ) : (
+        <Pressable
+          onPress={() => setShowDescription(true)}
+          accessibilityRole="button"
+          className="mt-2 h-12 flex-row items-center gap-2.5 self-start active:opacity-70">
+          <Icon as={PlusIcon} size={20} />
+          <Text className="type-body-b">Add description</Text>
+        </Pressable>
+      )}
 
       {initial ? null : (
         // Swap this screen for the library so picking a preset does not stack two builders.
-        <Button variant="outline" className="self-start" onPress={() => router.replace('/presets')}>
-          <Icon as={BooksIcon} className="size-4" />
-          <Text>Start from a classic workout</Text>
+        <Button
+          variant="outline"
+          className={large ? 'mt-2 h-auto min-h-[52px] py-3' : 'mt-2'}
+          onPress={() => leave(() => router.replace('/presets'))}>
+          <Icon as={BooksIcon} size={20} />
+          <Text className="shrink text-center">Start from a classic workout</Text>
         </Button>
       )}
 
-      <Separator />
+      <View className="mb-6 mt-6 h-px bg-line" />
 
-      <View className="gap-3 rounded-lg border border-border bg-card p-4">
-        <View className="flex-row items-center gap-3">
-          <View className="flex-1 gap-1">
-            <Text variant="small" className="text-muted-foreground">
-              Hangboard
+      <Card className="p-6">
+        {/* At large text sizes the button goes under the name instead of squeezing it. */}
+        <View className={large ? 'gap-3' : 'flex-row items-start gap-3'}>
+          <View className={large ? 'gap-1.5' : 'flex-1 gap-1.5'}>
+            <Label>Hangboard</Label>
+            {/* Shrinks to one line where the platform can; a browser wraps it instead. */}
+            <Text
+              className="type-title"
+              numberOfLines={large || Platform.OS === 'web' ? 2 : 1}
+              adjustsFontSizeToFit={!large}>
+              {board?.name ?? 'No board'}
             </Text>
-            <Text className="font-semibold">{board?.name ?? 'No board selected'}</Text>
           </View>
           <Button
             variant="outline"
+            size="sm"
+            className={large ? 'h-auto min-h-12 self-start px-5 py-2' : 'w-[100px] px-0'}
             accessibilityState={{ expanded: showBoards }}
             onPress={() => setShowBoards((v) => !v)}>
             <Text>{showBoards ? 'Done' : 'Change'}</Text>
           </Button>
         </View>
-        {board ? (
-          <BoardView board={board} holds={usedHolds} />
-        ) : (
-          <Text variant="muted">Choose a board to highlight grips on your hangs.</Text>
-        )}
         {showBoards ? (
-          <EditorReveal className="gap-3">
+          <EditorReveal className="mt-4">
             <BoardPicker value={boardId} onChange={requestBoard} />
-            <Button
-              variant="ghost"
-              className="h-auto min-h-11 self-start"
-              onPress={() => router.push('/board-setup')}>
-              <Text>Default board for new workouts</Text>
-            </Button>
+            <Pressable
+              onPress={() => router.push('/board-setup')}
+              accessibilityRole="button"
+              className="-mx-3 mt-3 h-14 flex-row items-center px-3 active:opacity-70">
+              <Text className="type-row flex-1">See all boards</Text>
+              <Icon as={CaretRightIcon} size={20} className="text-muted" />
+            </Pressable>
           </EditorReveal>
+        ) : board ? (
+          <HangboardDiagram
+            board={board.id}
+            active={usedHolds}
+            style={{ marginTop: 16 }}
+            accessibilityLabel={`${board.name}, the grips this workout uses`}
+          />
+        ) : (
+          <Text className="type-sub mt-2 text-muted">
+            Choose a board to name the grip on each hang.
+          </Text>
+        )}
+      </Card>
+
+      <SectionHeader title="Steps" className="mt-8">
+        <Text className="type-sub text-muted">{formatClock(total)} total</Text>
+      </SectionHeader>
+      <Text className="type-caption mt-1.5 text-muted">
+        Tap a step to edit it. Hold and drag to move it.
+      </Text>
+
+      <GlideContainer className="mt-4 gap-0">
+        {errors.length ? (
+          <View
+            className="mb-4 min-h-14 flex-row items-center gap-3 rounded-input bg-raised px-4 py-3"
+            accessibilityLiveRegion="polite">
+            <Icon as={WarningCircleIcon} weight="fill" size={22} />
+            <Text className="type-body-b flex-1">{errors[0]}</Text>
+          </View>
         ) : null}
-      </View>
 
-      <Separator />
-
-      <View className="gap-1">
-        <Text className="text-xl font-semibold">Steps</Text>
-        <Text variant="muted">{formatClock(total)} total</Text>
-      </View>
-
-      <Text variant="muted">Tap a step to edit it. Hold and drag to move it.</Text>
-
-      <GlideContainer className="gap-4">
         <StepListBoardProvider board={board}>
           <StepEditorProvider
             value={{
               steps,
               actions,
               openHoldPicker: setPickingId,
+              openMenu: setMenuId,
+              openAdd: setAddTo,
               expandedId,
               setExpandedId,
             }}>
-            <StepList steps={steps} parentId={null} depth={0} />
+            <StepList steps={steps} depth={0} />
           </StepEditorProvider>
         </StepListBoardProvider>
 
-        {board ? (
-          <HoldPicker
-            board={board}
-            visible={pickingId !== null}
-            initial={pickingHolds}
-            onClose={() => setPickingId(null)}
-            onDone={(holds) => {
-              if (pickingId) actions.update(pickingId, { holds });
-              setPickingId(null);
-            }}
-          />
-        ) : null}
-
-        <AlertDialog
-          open={pendingBoard !== null}
-          onOpenChange={(open) => !open && setPendingBoard(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Clear hold choices?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Holds belong to a board, so changing it forgets which holds each hang uses.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>
-                <Text>Keep board</Text>
-              </AlertDialogCancel>
-              <AlertDialogAction onPress={() => applyBoard(pendingBoard ?? undefined)}>
-                <Text>Change board</Text>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        <Glide active watch={steps} still={expandedId} className="gap-4">
-          <View className="flex-row flex-wrap gap-3">
-            <AddStepButton onAdd={(kind) => actions.addStep(null, kind)} />
+        <Glide active watch={steps} still={expandedId} className="gap-0">
+          <View className={large ? 'mt-2 gap-3' : 'mt-2 flex-row gap-3'}>
             <Button
-              variant="secondary"
-              className="min-w-32 flex-1"
+              variant="outline"
+              size="sm"
+              className={large ? 'w-full flex-none' : 'flex-1 px-2'}
+              onPress={() => setAddTo(null)}>
+              <Icon as={PlusIcon} size={18} />
+              <Text>Add step</Text>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className={large ? 'w-full flex-none' : 'flex-1 px-2'}
               onPress={() => actions.addRepeat(null)}>
-              <Icon as={RepeatIcon} className="size-4" />
+              <Icon as={RepeatIcon} size={18} />
               <Text>Add repeat</Text>
             </Button>
           </View>
 
-          <Separator />
-
-          {errors.length ? <Text className="text-destructive">{errors[0]}</Text> : null}
-          <View className="flex-row items-center justify-between">
-            <Text variant="muted">Total</Text>
-            <Text className="text-xl font-semibold">≈ {formatClock(total)}</Text>
-          </View>
-
           {onDelete ? (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" className="mt-4 self-start">
-                  <Text className="text-destructive">Delete workout</Text>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete this workout?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Past sessions keep their own copy of the timings, so history is not affected.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>
-                    <Text>Cancel</Text>
-                  </AlertDialogCancel>
-                  <AlertDialogAction onPress={onDelete}>
-                    <Text>Delete</Text>
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button variant="ghost" className="mt-5" onPress={() => setConfirmDelete(true)}>
+              <Icon as={TrashIcon} size={20} />
+              <Text>Delete workout</Text>
+            </Button>
           ) : null}
         </Glide>
       </GlideContainer>
+
+      {board ? (
+        <HoldPicker
+          board={board}
+          visible={pickingId !== null}
+          initial={pickingHolds}
+          onClose={() => setPickingId(null)}
+          onDone={(holds) => {
+            if (pickingId) actions.update(pickingId, { holds });
+            setPickingId(null);
+          }}
+        />
+      ) : null}
+
+      <StepMenuSheet
+        stepId={menuId}
+        steps={steps}
+        board={board}
+        actions={actions}
+        onClose={() => setMenuId(null)}
+      />
+      <AddStepSheet
+        open={addTo !== false}
+        onClose={() => setAddTo(false)}
+        onAdd={(kind) => addTo !== false && actions.addStep(addTo, kind)}
+      />
+      <ConfirmSheet
+        open={pendingBoard !== null}
+        onClose={() => setPendingBoard(null)}
+        title="Change the board?"
+        body="Grips belong to a board, so a new board forgets each hang’s grip."
+        safe={{ label: 'Keep this board', onPress: () => setPendingBoard(null) }}
+        destructive={{
+          label: 'Change board',
+          plain: true,
+          onPress: () => applyBoard(pendingBoard ?? undefined),
+        }}
+      />
+      {onDelete ? (
+        <ConfirmSheet
+          open={confirmDelete}
+          onClose={() => setConfirmDelete(false)}
+          title="Delete this workout?"
+          body="Past sessions keep their own copy of the timings, so your history stays."
+          safe={{ label: 'Keep it', onPress: () => setConfirmDelete(false) }}
+          destructive={{
+            label: 'Delete workout',
+            onPress: () => {
+              setConfirmDelete(false);
+              leave(onDelete);
+            },
+          }}
+        />
+      ) : null}
+      <ConfirmSheet
+        open={discardAction !== null}
+        onClose={() => setDiscardAction(null)}
+        title="Discard your changes?"
+        body={
+          initial
+            ? 'The workout stays as it was before you started editing.'
+            : 'This workout has not been saved.'
+        }
+        safe={{ label: 'Keep editing', onPress: () => setDiscardAction(null) }}
+        destructive={{
+          label: 'Discard changes',
+          onPress: () => {
+            const action = discardAction;
+            setDiscardAction(null);
+            leave(() => navigation.dispatch(action as never));
+          },
+        }}
+      />
     </Screen>
   );
 }

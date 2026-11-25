@@ -1,17 +1,15 @@
-import type { ReactNode } from 'react';
-
 import { SettingGroup, SettingRow } from '@/components/setting-row';
 import { useClimb } from '@/lib/store/climb';
 
 /**
- * The two things the lights can be told: also light above each hold, and follow browsing.
- * More rows can be passed in to sit in the same card.
+ * What the lights can be told (design: climb-lights, climb-connect-done): also light above each
+ * hold, follow browsing, and connect by themselves when Climb opens.
  */
-export function LightSettings({ children }: { children?: ReactNode }) {
+export function LightSettings({ className }: { className?: string }) {
   const lights = useClimb((s) => s.lights);
   const setLights = useClimb((s) => s.setLights);
   return (
-    <SettingGroup>
+    <SettingGroup className={className}>
       <SettingRow
         title="Light above holds too"
         description="LED kit V2 and newer"
@@ -21,12 +19,19 @@ export function LightSettings({ children }: { children?: ReactNode }) {
       <SettingRow
         title="Light as I browse"
         description={
-          lights.browse ? 'Swiping problems changes the wall' : 'Off: the wall waits for Light up'
+          lights.browse
+            ? 'Swiping problems changes the wall'
+            : 'Off: the wall waits for Light it up'
         }
         checked={lights.browse}
         onCheckedChange={(browse) => setLights({ browse })}
       />
-      {children}
+      <SettingRow
+        title="Connect automatically"
+        description="When Climb opens near the board"
+        checked={lights.autoConnect}
+        onCheckedChange={(autoConnect) => setLights({ autoConnect })}
+      />
     </SettingGroup>
   );
 }

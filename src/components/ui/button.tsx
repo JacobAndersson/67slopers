@@ -20,44 +20,31 @@ const PRESS_SCALE = 0.97;
 const PRESS_IN_MS = 100;
 const PRESS_OUT_MS = 160;
 
+// Rivet buttons are Ink pills (design/rivet/app/ui.py `button`): primary is solid Night (Snow in
+// dark), ghost the same pill as a hairline, quiet text only. Destructive actions are never red:
+// they use the ghost pill with their icon. Sizes: lg 64 (mid-session, sheets), default 52, sm 48.
 const buttonVariants = cva(
   cn(
-    'group shrink-0 flex-row items-center justify-center gap-2 rounded-md shadow-none',
+    'group shrink-0 flex-row items-center justify-center gap-2 rounded-full',
     Platform.select({
-      web: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive whitespace-nowrap outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-[3px] disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 active:scale-[0.97] motion-reduce:active:scale-100",
+      web: 'focus-visible:ring-text/40 whitespace-nowrap outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-[3px] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 active:scale-[0.97] motion-reduce:active:scale-100',
     })
   ),
   {
     variants: {
       variant: {
-        default: cn(
-          'bg-primary active:bg-primary/90 shadow-sm shadow-black/5',
-          Platform.select({ web: 'hover:bg-primary/90' })
-        ),
-        destructive: cn(
-          'bg-destructive active:bg-destructive/90  shadow-sm shadow-black/5',
-          Platform.select({
-            web: 'hover:bg-destructive/90 focus-visible:ring-destructive/20 ',
-          })
-        ),
-        outline: cn(
-          'border-border bg-background active:bg-accent    border shadow-sm shadow-black/5',
-          Platform.select({
-            web: 'hover:bg-accent ',
-          })
-        ),
-        secondary: cn(
-          'bg-secondary active:bg-secondary/80 shadow-sm shadow-black/5',
-          Platform.select({ web: 'hover:bg-secondary/80' })
-        ),
-        ghost: cn('active:bg-accent ', Platform.select({ web: 'hover:bg-accent ' })),
+        default: 'bg-action active:opacity-90',
+        destructive: 'border-[1.5px] border-text active:bg-raised',
+        outline: 'border-[1.5px] border-text active:bg-raised',
+        secondary: 'border-[1.5px] border-text active:bg-raised',
+        ghost: 'active:bg-raised',
         link: '',
       },
       size: {
-        default: cn('h-11 px-4 py-2', Platform.select({ web: 'has-[>svg]:px-3' })),
-        sm: cn('h-10 gap-1.5 rounded-md px-3', Platform.select({ web: 'has-[>svg]:px-2.5' })),
-        lg: cn('h-14 rounded-lg px-6', Platform.select({ web: 'has-[>svg]:px-4' })),
-        icon: 'h-11 w-11',
+        default: 'h-[52px] px-6',
+        sm: 'h-12 gap-1.5 px-5',
+        lg: 'h-16 px-7',
+        icon: 'h-12 w-12',
       },
     },
     defaultVariants: {
@@ -68,30 +55,24 @@ const buttonVariants = cva(
 );
 
 const buttonTextVariants = cva(
-  cn(
-    'text-foreground text-sm font-medium',
-    Platform.select({ web: 'pointer-events-none transition-colors' })
-  ),
+  cn('text-text type-body-b', Platform.select({ web: 'pointer-events-none transition-colors' })),
   {
     variants: {
       variant: {
-        default: 'text-primary-foreground',
-        destructive: 'text-destructive-foreground',
-        outline: cn(
-          'group-active:text-accent-foreground',
-          Platform.select({ web: 'group-hover:text-accent-foreground' })
-        ),
-        secondary: 'text-secondary-foreground',
-        ghost: 'group-active:text-accent-foreground',
+        default: 'text-on-action',
+        destructive: 'text-text',
+        outline: 'text-text',
+        secondary: 'text-text',
+        ghost: 'text-text',
         link: cn(
-          'text-primary group-active:underline',
-          Platform.select({ web: 'underline-offset-4 hover:underline group-hover:underline' })
+          'text-text group-active:underline',
+          Platform.select({ web: 'underline-offset-4 hover:underline' })
         ),
       },
       size: {
         default: '',
-        sm: '',
-        lg: '',
+        sm: 'text-base',
+        lg: 'text-lg',
         icon: '',
       },
     },
@@ -133,9 +114,14 @@ function Button({ className, variant, size, style, onPressIn, onPressOut, ...pro
   };
 
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
+    <TextClassContext.Provider
+      value={cn(buttonTextVariants({ variant, size }), props.disabled && 'text-disabled-fg')}>
       <ButtonPressable
-        className={cn(props.disabled && 'opacity-50', buttonVariants({ variant, size }), className)}
+        className={cn(
+          buttonVariants({ variant, size }),
+          props.disabled && variant !== 'ghost' && 'border-0 bg-disabled',
+          className
+        )}
         role="button"
         {...props}
         style={Platform.OS === 'web' ? style : [style as never, pressStyle]}

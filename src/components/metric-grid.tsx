@@ -1,19 +1,40 @@
 import { View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
+import { cn } from '@/lib/utils';
 
-/** Quiet, wrapping facts: enough room for values even on a narrow phone. */
-export function MetricGrid({ items }: { items: { label: string; value: string }[] }) {
+/**
+ * Facts on one card, two across (design: climb-session, log-session): a caption over a 28 pt
+ * number, the cells divided by hairlines that stop short of the card's edge.
+ */
+export function MetricGrid({
+  items,
+  className,
+}: {
+  items: { label: string; value: string }[];
+  className?: string;
+}) {
+  const rows: (typeof items)[] = [];
+  for (let i = 0; i < items.length; i += 2) rows.push(items.slice(i, i + 2));
   return (
-    <View className="flex-row flex-wrap overflow-hidden rounded-lg border border-border bg-card">
-      {items.map(({ label, value }) => (
-        <View key={label} className="w-1/2 gap-1 p-4">
-          <Text variant="small" className="text-muted-foreground">
-            {label}
-          </Text>
-          <Text selectable className="text-2xl font-semibold">
-            {value}
-          </Text>
+    <View className={cn('rounded-card border border-line bg-surface px-5 py-2.5', className)}>
+      {rows.map((row, r) => (
+        <View key={r} className={cn('flex-row', r > 0 && 'border-t border-line')}>
+          {row.map(({ label, value }, c) => (
+            <View
+              key={label}
+              accessible
+              accessibilityLabel={`${label}: ${value}`}
+              className={cn(
+                'flex-1 gap-0.5 py-3',
+                c === 0 ? 'pl-1 pr-4' : 'border-l border-line pl-5'
+              )}>
+              <Text className="type-caption text-muted">{label}</Text>
+              <Text selectable className="type-bignum text-[28px] leading-[30px]" numberOfLines={1}>
+                {value}
+              </Text>
+            </View>
+          ))}
         </View>
       ))}
     </View>

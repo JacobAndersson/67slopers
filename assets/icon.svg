@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><rect width="1024" height="1024" fill="#F9C65D"/><g transform="translate(63.76106666666669 68.33493333333337) scale(9.147733333333333)"><defs><mask id="slab" x="0" y="0" width="100" height="100" maskUnits="userSpaceOnUse">
-  <path d="M15 74 34 22c3-8 11-12 20-10l29 7-18 56c-2 8-10 12-18 10L15 74Z" fill="#fff"/>
-  <path d="m32 62 12-30 23 6-12 31Z" fill="#000"/>
-  <path d="m32 62 23 7-3 9-24-6Z" fill="#fff"/>
-</mask></defs><rect width="100" height="100" fill="#20221F" mask="url(#slab)"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><rect width="1024" height="1024" fill="#F28C6E"/><g transform="translate(174.07999999999998 174.07999999999998) scale(6.7584)"><rect x="9" y="35" width="22" height="58" rx="11" fill="#141A2E"/><rect x="39" y="21" width="22" height="58" rx="11" fill="#141A2E"/><rect x="69" y="7" width="22" height="58" rx="11" fill="#141A2E"/></g></svg>

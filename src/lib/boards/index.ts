@@ -32,7 +32,25 @@ export type Grip = {
   hold: HoldManifest;
 };
 
+/** Grips per board, built once: manifests are static, and the timer and builder ask often. */
+const cache = new WeakMap<BoardManifest, { list: Grip[]; byHolds: Map<string, Grip> }>();
+const holdsKey = (holdIds: string[]) => [...holdIds].sort().join(',');
+
+function gripsOf(board: BoardManifest) {
+  let entry = cache.get(board);
+  if (!entry) {
+    const list = buildGrips(board);
+    entry = { list, byHolds: new Map(list.map((g) => [holdsKey(g.holdIds), g])) };
+    cache.set(board, entry);
+  }
+  return entry;
+}
+
 export function grips(board: BoardManifest): Grip[] {
+  return gripsOf(board).list;
+}
+
+function buildGrips(board: BoardManifest): Grip[] {
   const out: Grip[] = [];
   for (const hold of board.holds) {
     if (hold.pair && hold.side === 'right') continue; // its left twin represents the pair
@@ -50,8 +68,7 @@ export function grips(board: BoardManifest): Grip[] {
 
 /** The grip whose holds are exactly `holdIds`, in any order. */
 export function gripFor(board: BoardManifest, holdIds: string[]): Grip | undefined {
-  const wanted = [...holdIds].sort().join(',');
-  return grips(board).find((g) => [...g.holdIds].sort().join(',') === wanted);
+  return gripsOf(board).byHolds.get(holdsKey(holdIds));
 }
 
 /** "Medium edges · 20 mm", "20° sloper", "Jugs", "Deep top edge · 40 mm (left)". */
@@ -60,6 +77,16 @@ export function gripName(board: BoardManifest, holdIds: string[] | undefined): s
   const grip = gripFor(board, holdIds);
   if (grip) return grip.name;
   return holdIds.map((id) => getHold(board, id)?.label ?? id).join(' + ');
+}
+
+/** The grip's name without its depth: "Medium edges", for captions and card lines. */
+export function gripShortName(board: BoardManifest, holdIds: string[] | undefined): string {
+  return shortGripName(gripName(board, holdIds));
+}
+
+/** A grip name without its depth: "Medium edges · 20 mm" → "Medium edges". */
+export function shortGripName(name: string): string {
+  return name.split(' · ')[0];
 }
 
 /** One hold's name; `single` keeps it singular even when it belongs to a pair. */
@@ -80,4 +107,30 @@ function pluralise(label: string): string {
 /** Rows as the picker groups them. */
 export function rowTitle(row: number): string {
   return row === 1 ? 'Top' : `Row ${row}`;
+}
+
+/** How far (in dp) a tap may land from a hold's centre and still pick it. */
+const TAP_RADIUS = 28;
+
+/** The hold whose centre is closest to a point given as board fractions, within TAP_RADIUS dp. */
+export function nearestHold(
+  board: BoardManifest,
+  fx: number,
+  fy: number,
+  size: { width: number; height: number }
+): HoldManifest | undefined {
+  let best: HoldManifest | undefined;
+  let bestDistance = Infinity;
+  for (const hold of board.holds) {
+    const { box } = hold;
+    const inside = fx >= box.x && fx <= box.x + box.w && fy >= box.y && fy <= box.y + box.h;
+    const dx = (fx - (box.x + box.w / 2)) * size.width;
+    const dy = (fy - (box.y + box.h / 2)) * size.height;
+    const distance = inside ? 0 : Math.hypot(dx, dy);
+    if (distance < bestDistance) {
+      best = hold;
+      bestDistance = distance;
+    }
+  }
+  return bestDistance <= TAP_RADIUS ? best : undefined;
 }

@@ -28,14 +28,28 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
+import { LIFT, SPRING_SETTLE } from '@/lib/motion';
+
 /** How long a row is held before it lifts. A tap, or a scroll, is over well before. */
 const HOLD_MS = 220;
 /** Rows step aside, and the dropped row lands, on this: quick, with no bounce to speak of. */
-const SETTLE = { stiffness: 420, damping: 38, mass: 0.7, reduceMotion: ReduceMotion.System };
+const SETTLE = { ...SPRING_SETTLE, reduceMotion: ReduceMotion.System };
+/** Long enough for a dropped row and its neighbours to settle before rows return to flow. */
+const SETTLE_MS = 700;
+/** The drop slot fades in this fast. */
 const LIFT_MS = 160;
 /** Near the top or bottom of the screen the list scrolls under the finger. */
 const SCROLL_EDGE = 96;
 const SCROLL_SPEED = 16;
+
+/**
+ * Reanimated's frame callbacks throw in a browser, which collapsed the whole list there. The
+ * browser scrolls a held row's page itself, so on web edge-scrolling is simply off.
+ */
+const useEdgeScroll: typeof useFrameCallback =
+  Platform.OS === 'web'
+    ? () => ({ setActive: () => {}, isActive: false, callbackId: -1 })
+    : useFrameCallback;
 
 /** In a browser, a held mouse would select the text it is dragged across. */
 function holdSelection(held: boolean) {
@@ -69,6 +83,8 @@ type Layout = {
 type ListState = {
   layout: SharedValue<Layout>;
   ready: boolean;
+  /** The same as `ready`, for the UI thread: rows are placed absolutely, not in flow. */
+  placed: SharedValue<boolean>;
   reportHeight: (key: string, height: number) => void;
   gestureFor: (key: string) => GestureType;
 };
@@ -132,6 +148,25 @@ export function DragList({
 
   const [drag, setDrag] = useState<{ key: string; slot: number } | null>(null);
   const [ready, setReady] = useState(false);
+  // Rows sit in normal flow at rest, so screen readers meet them in order; from a lift until the
+  // drop has settled they are placed absolutely by the UI thread. Both put every row in the
+  // same place, so the switch does not show.
+  const [placing, setPlacingState] = useState(false);
+  const placedShared = useSharedValue(false);
+  const setPlacing = useCallback(
+    (on: boolean) => {
+      setPlacingState(on);
+      placedShared.set(on);
+    },
+    [placedShared]
+  );
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+    },
+    []
+  );
   const measured = useRef<Record<string, number>>({});
   const wanted = useRef(keys);
 
@@ -269,7 +304,9 @@ export function DragList({
   );
 
   // Held near the top or bottom edge, the list scrolls and the row stays under the finger.
-  const frames = useFrameCallback((frame) => {
+  const frames = useEdgeScroll((frame) => {
+    // Named explicitly: the worklet plugin only recognises `useFrameCallback` by its name.
+    'worklet';
     if (!active.get() || !scrollRef) return;
     const box = measure(scrollRef);
     if (!box) return;
@@ -292,6 +329,8 @@ export function DragList({
 
   const onLift = useCallback(
     (key: string, at: number) => {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+      setPlacing(true);
       frames.setActive(true);
       holdSelection(true);
       latest.current.onTouch?.();
@@ -300,7 +339,7 @@ export function DragList({
         void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       }
     },
-    [frames]
+    [frames, setPlacing]
   );
   const onRelease = useCallback(
     (key: string, at: number, moved: boolean) => {
@@ -309,8 +348,9 @@ export function DragList({
       latest.current.onTouch?.();
       setDrag(null);
       if (moved) latest.current.onDrop(key, at);
+      settleTimer.current = setTimeout(() => setPlacing(false), SETTLE_MS);
     },
-    [frames]
+    [frames, setPlacing]
   );
 
   const gestures = useRef(new Map<string, GestureType>());
@@ -387,7 +427,11 @@ export function DragList({
       } else height.set(withSpring(total, SETTLE));
     }
   );
-  const frameStyle = useAnimatedStyle(() => ({ height: height.get() }));
+  // At rest the list takes its natural height again; the value is reset, not just dropped,
+  // because a style Reanimated has written stays on the native view.
+  const frameStyle = useAnimatedStyle(() => ({
+    height: placedShared.get() ? height.get() : 'auto',
+  }));
 
   const gapY = useSharedValue(0);
   const gapShown = useSharedValue(0);
@@ -414,8 +458,8 @@ export function DragList({
   }));
 
   const context = useMemo(
-    () => ({ layout, ready, reportHeight, gestureFor }),
-    [layout, ready, reportHeight, gestureFor]
+    () => ({ layout, ready: ready && placing, placed: placedShared, reportHeight, gestureFor }),
+    [layout, ready, placing, placedShared, reportHeight, gestureFor]
   );
   const sizeOf = useMemo(() => new Map(rows.map((row) => [row.key, row.size])), [rows]);
   const liftedKeys = useMemo(() => {
@@ -428,8 +472,8 @@ export function DragList({
   return (
     <ListContext.Provider value={context}>
       {/* Holding a row must not start a text selection in a browser. */}
-      <Animated.View className="select-none" style={ready ? frameStyle : undefined}>
-        {ready ? (
+      <Animated.View className="select-none" style={frameStyle}>
+        {ready && placing ? (
           <Animated.View
             pointerEvents="none"
             style={[{ position: 'absolute', left: 0, right: 0, top: 0 }, gapStyle]}>
@@ -450,12 +494,12 @@ export function DragList({
 }
 
 function Row({ rowKey, children }: { rowKey: string; children: ReactNode }) {
-  const { layout, ready, reportHeight } = useContext(ListContext)!;
+  const { layout, ready, placed: absolute, reportHeight } = useContext(ListContext)!;
   const y = useSharedValue(0);
   const placed = useSharedValue(false);
   /** 1 while the row is in the air, easing back to 0 as it lands. */
   const raise = useSharedValue(0);
-  /** Whether it is in the air alone: then it grows a touch and casts a shadow. */
+  /** Whether it is in the air alone: then it rises and casts a shadow. */
   const solo = useSharedValue(false);
 
   useAnimatedReaction(
@@ -467,7 +511,7 @@ function Row({ rowKey, children }: { rowKey: string; children: ReactNode }) {
       if (now.top === undefined) return;
       if (now.lifted !== !!before?.lifted) {
         if (now.lifted) solo.set(now.solo);
-        raise.set(withTiming(now.lifted ? 1 : 0, { duration: now.lifted ? LIFT_MS : 240 }));
+        raise.set(withSpring(now.lifted ? 1 : 0, SETTLE));
       }
       if (!placed.get() || now.lifted) {
         y.set(now.top);
@@ -477,17 +521,29 @@ function Row({ rowKey, children }: { rowKey: string; children: ReactNode }) {
       }
     }
   );
-  const style = useAnimatedStyle(() => ({
-    opacity: placed.get() ? 1 : 0,
-    zIndex: raise.get() > 0 ? 10 : 0,
-    transform: [{ translateY: y.get() }, { scale: solo.get() ? 1 + 0.025 * raise.get() : 1 }],
-  }));
+  // At rest every value is set back explicitly: a style Reanimated has written stays on the
+  // native view, and a stale one took rows out of Android's accessibility tree.
+  const style = useAnimatedStyle(() =>
+    absolute.get()
+      ? {
+          opacity: placed.get() ? 1 : 0,
+          zIndex: raise.get() > 0 ? 10 : 0,
+          // A row alone in the air rises 8 pt above where it is held (lift, then settle).
+          transform: [{ translateY: y.get() - (solo.get() ? LIFT * raise.get() : 0) }],
+        }
+      : { opacity: 1, zIndex: 0, transform: [{ translateY: 0 }] }
+  );
   const row = useMemo(() => ({ key: rowKey, raise, solo }), [rowKey, raise, solo]);
 
   return (
     <RowContext.Provider value={row}>
       <Animated.View
-        style={ready ? [{ position: 'absolute', left: 0, right: 0, top: 0 }, style] : undefined}
+        style={[
+          ready
+            ? { position: 'absolute', left: 0, right: 0, top: 0 }
+            : { position: 'relative', left: 0, right: 0, top: 0 },
+          style,
+        ]}
         onLayout={(event) => reportHeight(rowKey, event.nativeEvent.layout.height)}>
         {children}
       </Animated.View>
@@ -525,7 +581,10 @@ function Handle({
   children: ReactNode;
 }) {
   const cast = useAnimatedStyle(() => ({
-    boxShadow: `0px 8px 20px rgba(0, 0, 0, ${solo.get() ? 0.18 * raise.get() : 0})`,
+    boxShadow:
+      solo.get() && raise.get() > 0
+        ? `0px 14px 30px rgba(11, 15, 28, ${0.22 * raise.get()})`
+        : undefined,
   }));
   return (
     <GestureDetector gesture={gesture}>

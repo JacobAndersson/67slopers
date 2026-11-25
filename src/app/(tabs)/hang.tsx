@@ -1,100 +1,88 @@
 import { useRouter } from 'expo-router';
 import { BooksIcon } from 'phosphor-react-native/src/icons/Books';
-import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
+import { Card, ListRow } from '@/components/card';
+import { IconButton } from '@/components/icon-button';
 import { Screen } from '@/components/screen';
-import { SectionHeader } from '@/components/section-header';
+import { Label } from '@/components/section-header';
 import { TabHeader } from '@/components/tab-header';
+import { HangboardIcon } from '@/components/training-icons';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { WorkoutCard } from '@/components/workout-card';
-import { formatClock, relativeDay } from '@/lib/dates';
-import { mark } from '@/lib/perf';
 import { lastSessionForWorkout, sortWorkoutsByLastUsed } from '@/lib/store/selectors';
+import { PRESETS } from '@/lib/store/presets';
 import { useStore } from '@/lib/store/store';
-import { estimateDuration } from '@/lib/workout-summary';
 
-/** The workout library: what is next, every saved workout, and the classics. */
+/**
+ * The workout library (design: home-hang, home-hang-empty): every saved workout as a card with
+ * its shape and a one-tap Start, the one used last first; the classics below. New workout and
+ * the classics are also up by the title.
+ */
 export default function HangScreen() {
   const router = useRouter();
   const workouts = useStore((s) => s.workouts);
   const sessions = useStore((s) => s.sessions);
   const sorted = useMemo(() => sortWorkoutsByLastUsed(workouts, sessions), [workouts, sessions]);
-  const next = sorted[0];
-  const last = useMemo(
-    () => (next ? lastSessionForWorkout(sessions, next.id) : undefined),
-    [sessions, next]
-  );
 
   return (
-    <Screen tab>
+    <Screen tab contentClassName="gap-0">
       <TabHeader title="Hang">
-        <Button
-          variant="ghost"
-          size="icon"
-          accessibilityLabel="Classic workouts"
-          onPress={() => router.push('/presets')}>
-          <Icon as={BooksIcon} className="size-6" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          accessibilityLabel="New workout"
-          onPress={() => router.push('/workout/new')}>
-          <Icon as={PlusIcon} className="size-6" />
-        </Button>
+        <IconButton
+          icon={BooksIcon}
+          label="Classic workouts"
+          onPress={() => router.push('/presets')}
+        />
+        <IconButton
+          icon={PlusIcon}
+          variant="primary"
+          label="New workout"
+          onPress={() => router.push('/workout/new')}
+        />
       </TabHeader>
 
-      {next ? (
-        <View className="flex-row items-center gap-4 rounded-2xl bg-secondary p-5">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityHint="Opens the workout"
-            onPress={() => router.push(`/workout/${next.id}`)}
-            className="flex-1 gap-1 active:opacity-70">
-            <Text className="text-xs font-medium">Next up</Text>
-            <Text className="text-lg font-bold" numberOfLines={1}>
-              {next.name}
-            </Text>
-            <Text className="text-xs text-muted-foreground font-medium">
-              {formatClock(estimateDuration(next))}
-              {last ? ` · last done ${relativeDay(last.completedAt)}` : ' · not done yet'}
-            </Text>
-          </Pressable>
-          <Button
-            size="icon"
-            className="size-12 rounded-full"
-            accessibilityLabel={`Start ${next.name}`}
-            onPress={() => {
-              mark('start');
-              router.push({
-                pathname: '/workout/[id]/run',
-                params: { id: next.id, autostart: '1' },
-              });
-            }}>
-            <Icon as={PlayIcon} weight="fill" className="size-5 text-primary-foreground" />
-          </Button>
-        </View>
-      ) : null}
-
-      <SectionHeader title="Your workouts" />
       {sorted.length > 0 ? (
-        <View className="gap-2">
-          {sorted.map((workout) => (
-            <WorkoutCard key={workout.id} workout={workout} />
-          ))}
-        </View>
+        <>
+          <Label className="mt-6">Your workouts</Label>
+          <View className="mt-3 gap-3">
+            {sorted.map((workout, index) => (
+              <WorkoutCard
+                key={workout.id}
+                workout={workout}
+                last={lastSessionForWorkout(sessions, workout.id)}
+                next={index === 0}
+              />
+            ))}
+          </View>
+          <ListRow
+            className="mt-5"
+            height={76}
+            icon={BooksIcon}
+            title="Classic workouts"
+            sub={`${PRESETS.length} protocols, beginner to advanced`}
+            chevron
+            onPress={() => router.push('/presets')}
+          />
+        </>
       ) : (
-        <Text variant="muted">No saved workouts yet. Start from a classic, or build your own.</Text>
+        <Card className="mt-6 p-6">
+          <Icon as={HangboardIcon} size={40} className="mt-1" />
+          <Text className="type-title mt-5">No workouts yet</Text>
+          <Text className="type-sub mt-2 text-muted">
+            Start from a classic protocol, or build{'\n'}your own step by step.
+          </Text>
+          <Button className="mt-6" onPress={() => router.push('/presets')}>
+            <Text>Browse classics</Text>
+          </Button>
+          <Button variant="outline" className="mt-2.5" onPress={() => router.push('/workout/new')}>
+            <Text>Build a workout</Text>
+          </Button>
+        </Card>
       )}
-      <Button variant="outline" onPress={() => router.push('/presets')}>
-        <Icon as={BooksIcon} className="size-5" />
-        <Text>Classic workouts</Text>
-      </Button>
     </Screen>
   );
 }

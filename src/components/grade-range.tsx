@@ -16,7 +16,7 @@ type GradeRangeProps = {
   onChange: (min: number, max: number) => void;
 };
 
-const BAR_HEIGHT = 64;
+const BAR_HEIGHT = 72;
 
 /**
  * A grade range with the real spread of problems above it. Touch anywhere on the bars or
@@ -41,9 +41,8 @@ export function GradeRange({ histogram, bounds, min, max, scale, onChange }: Gra
 
   return (
     <View
-      accessibilityRole="adjustable"
-      accessibilityLabel={`Grade range, ${gradeLabel(low, scale)} to ${gradeLabel(high, scale)}`}
-      className="gap-2"
+      accessible={false}
+      className="gap-3"
       onLayout={(event: LayoutChangeEvent) => setWidth(event.nativeEvent.layout.width)}
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
@@ -53,41 +52,59 @@ export function GradeRange({ histogram, bounds, min, max, scale, onChange }: Gra
         move(grade);
       }}
       onResponderMove={(event) => move(gradeAt(event))}>
-      <View pointerEvents="none" className="flex-row items-end" style={{ height: BAR_HEIGHT }}>
+      <View
+        pointerEvents="none"
+        className="flex-row items-end gap-1.5"
+        style={{ height: BAR_HEIGHT }}>
         {grades.map((grade) => (
-          <View key={grade} className="flex-1 px-0.5">
-            <View
-              className={cn('rounded', grade >= low && grade <= high ? 'bg-chart-1' : 'bg-border')}
-              style={{ height: Math.max(3, ((histogram[grade] ?? 0) / peak) * BAR_HEIGHT) }}
-            />
-          </View>
+          <View
+            key={grade}
+            className={cn(
+              'flex-1 rounded-full',
+              grade >= low && grade <= high ? 'bg-text' : 'bg-track'
+            )}
+            style={{ height: Math.max(6, ((histogram[grade] ?? 0) / peak) * BAR_HEIGHT) }}
+          />
         ))}
       </View>
-      <View pointerEvents="none" className="h-6 justify-center">
-        <View className="h-1 rounded-full bg-border" />
+      <View pointerEvents="box-none" className="h-7 justify-center">
+        <View className="h-1.5 rounded-full bg-track" />
         {width > 0 ? (
           <>
             <View
-              className="absolute h-1 rounded-full bg-foreground"
+              className="absolute h-1.5 rounded-full bg-text"
               style={{ left: (low - bounds[0] + 0.5) * step, width: (high - low) * step }}
             />
-            {[low, high].map((grade, index) => (
-              <View
-                key={index}
-                className="absolute size-6 rounded-full border-2 border-foreground bg-card"
-                style={{ left: (grade - bounds[0] + 0.5) * step - 12 }}
-              />
-            ))}
+            {[low, high].map((grade, index) => {
+              const end = index === 0 ? 'min' : 'max';
+              // Each end is its own slider for a screen reader: swipe up or down to move it.
+              const nudge = (by: 1 | -1) => {
+                const next = Math.min(bounds[1], Math.max(bounds[0], grade + by));
+                if (end === 'min') onChange(Math.min(next, high), high);
+                else onChange(low, Math.max(next, low));
+              };
+              return (
+                <View
+                  key={index}
+                  accessible
+                  accessibilityRole="adjustable"
+                  accessibilityLabel={index === 0 ? 'Easiest grade' : 'Hardest grade'}
+                  accessibilityValue={{ text: gradeLabel(grade, scale) }}
+                  accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+                  onAccessibilityAction={(event) =>
+                    nudge(event.nativeEvent.actionName === 'increment' ? 1 : -1)
+                  }
+                  className="absolute size-7 rounded-full border-2 border-text bg-surface"
+                  style={{ left: (grade - bounds[0] + 0.5) * step - 14 }}
+                />
+              );
+            })}
           </>
         ) : null}
       </View>
       <View pointerEvents="none" className="flex-row justify-between">
-        <Text className="text-xs text-muted-foreground font-medium">
-          {gradeLabel(bounds[0], scale)}
-        </Text>
-        <Text className="text-xs text-muted-foreground font-medium">
-          {gradeLabel(bounds[1], scale)}
-        </Text>
+        <Text className="type-caption text-muted">{gradeLabel(bounds[0], scale)}</Text>
+        <Text className="type-caption text-muted">{gradeLabel(bounds[1], scale)}</Text>
       </View>
     </View>
   );
