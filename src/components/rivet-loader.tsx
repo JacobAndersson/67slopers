@@ -32,24 +32,24 @@ export function RivetLoader({
   const reduced = useReducedMotion();
   const clock = useSharedValue(0);
   useFrameCallback((frame) => {
-    clock.value = frame.timeSinceFirstFrame;
+    clock.set(frame.timeSinceFirstFrame);
   });
   const box = (size / PITCH.bounds.width) * PITCH.box;
 
   const s0 = useAnimatedStyle(() =>
     reduced
-      ? { opacity: loadingBreath(clock.value, 0) }
-      : { transform: [{ translateY: loadingLift(clock.value, 0) * box }] }
+      ? { opacity: loadingBreath(clock.get(), 0) }
+      : { transform: [{ translateY: loadingLift(clock.get(), 0) * box }] }
   );
   const s1 = useAnimatedStyle(() =>
     reduced
-      ? { opacity: loadingBreath(clock.value, 1) }
-      : { transform: [{ translateY: loadingLift(clock.value, 1) * box }] }
+      ? { opacity: loadingBreath(clock.get(), 1) }
+      : { transform: [{ translateY: loadingLift(clock.get(), 1) * box }] }
   );
   const s2 = useAnimatedStyle(() =>
     reduced
-      ? { opacity: loadingBreath(clock.value, 2) }
-      : { transform: [{ translateY: loadingLift(clock.value, 2) * box }] }
+      ? { opacity: loadingBreath(clock.get(), 2) }
+      : { transform: [{ translateY: loadingLift(clock.get(), 2) * box }] }
   );
   const styles = [s0, s1, s2] as const;
 

@@ -82,9 +82,9 @@ export function useSplash(enabled: boolean, firstRun: boolean) {
   const done = useCallback(() => setVisible(false), []);
   const total = firstRun ? FIRST_RUN_TOTAL : reduced ? REDUCED.crossfade + 60 : LAUNCH_TOTAL;
   useFrameCallback((frame) => {
-    clock.value = frame.timeSinceFirstFrame;
-    if (!finished.value && frame.timeSinceFirstFrame >= total) {
-      finished.value = true;
+    clock.set(frame.timeSinceFirstFrame);
+    if (!finished.get() && frame.timeSinceFirstFrame >= total) {
+      finished.set(true);
       runOnJS(done)();
     }
   }, visible);
@@ -101,7 +101,7 @@ export function Arrival({ splash, children }: { splash: Splash; children: ReactN
   const { clock, firstRun, reduced, visible } = splash;
   const style = useAnimatedStyle(() => ({
     transform: [
-      { translateY: reduced || !visible ? 0 : arrival(clock.value, groundStart(firstRun)) },
+      { translateY: reduced || !visible ? 0 : arrival(clock.get(), groundStart(firstRun)) },
     ],
   }));
   return <Animated.View style={[{ flex: 1 }, style]}>{children}</Animated.View>;
@@ -129,13 +129,13 @@ export function RivetSplash({ splash }: { splash: Splash }) {
   const glide = firstRun && !reduced ? (lockup.total - lockup.symbolHeight) / 2 : 0;
 
   const ground = useAnimatedStyle(() => {
-    const t = clock.value;
+    const t = clock.get();
     if (reduced) return { opacity: fade(t, firstRun ? FIRST_RUN_EXIT : 60) };
     return { opacity: firstRun ? firstRunGround(t) : launchGround(t) };
   });
 
   const mark = useAnimatedStyle(() => {
-    const t = clock.value;
+    const t = clock.get();
     if (reduced) {
       return { opacity: fade(t, firstRun ? FIRST_RUN_EXIT : 60), transform: [{ translateY: 0 }] };
     }
@@ -145,7 +145,7 @@ export function RivetSplash({ splash }: { splash: Splash }) {
   });
 
   const name = useAnimatedStyle(() => {
-    const t = clock.value;
+    const t = clock.get();
     if (reduced)
       return { opacity: t >= FIRST_RUN.nameDelay ? 1 : 0, transform: [{ translateY: 0 }] };
     const n = firstRunName(t);
@@ -157,9 +157,9 @@ export function RivetSplash({ splash }: { splash: Splash }) {
     if (reduced) return 0;
     return (firstRun ? firstRunStep(t, i) : launchLift(t, i)) * box;
   };
-  const b0 = useAnimatedStyle(() => ({ transform: [{ translateY: lift(0, clock.value) }] }));
-  const b1 = useAnimatedStyle(() => ({ transform: [{ translateY: lift(1, clock.value) }] }));
-  const b2 = useAnimatedStyle(() => ({ transform: [{ translateY: lift(2, clock.value) }] }));
+  const b0 = useAnimatedStyle(() => ({ transform: [{ translateY: lift(0, clock.get()) }] }));
+  const b1 = useAnimatedStyle(() => ({ transform: [{ translateY: lift(1, clock.get()) }] }));
+  const b2 = useAnimatedStyle(() => ({ transform: [{ translateY: lift(2, clock.get()) }] }));
 
   // The symbol is centred on the screen, exactly where the native splash draws it.
   const symbolTop = (area.height - lockup.symbolHeight) / 2;

@@ -84,7 +84,7 @@ export function Dock() {
   const reducedMotion = useReducedMotion();
   const x = useSharedValue(offsetOf(0));
   const lit = useLights((s) => s.status === 'connected');
-  const tile = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+  const tile = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
   const bottom = dockBottom(insets.bottom);
 
   return (
@@ -130,9 +130,7 @@ export function Dock() {
               label={tab.label}
               badge={tab.name === 'climb' && lit}
               onActive={() => {
-                x.value = reducedMotion
-                  ? offsetOf(index)
-                  : withSpring(offsetOf(index), SPRING_SETTLE);
+                x.set(reducedMotion ? offsetOf(index) : withSpring(offsetOf(index), SPRING_SETTLE));
               }}
             />
           </TabTrigger>
