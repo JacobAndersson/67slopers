@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Modal, Pressable, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -44,19 +44,30 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
   // How fast (px/s) the finger was going when a drag closed the sheet; 0 for any other close.
   const release = useSharedValue(0);
 
-  const unmount = useCallback(() => setMounted(false), []);
+  // Whether the Modal's window is on screen. It appears a frame or more after `open` turns true,
+  // so the sheet rises from onShow: started any earlier, the rise would play before it is seen.
+  const showing = useRef(false);
+  const unmount = useCallback(() => {
+    showing.current = false;
+    setMounted(false);
+  }, []);
   if (open && !mounted) setMounted(true);
+
+  const enter = useCallback(() => {
+    drag.set(0);
+    release.set(0);
+    // Rivet's lift: the sheet rises on the 380/32 spring; reduced motion is a short crossfade.
+    shown.set(
+      reducedMotion
+        ? withTiming(1, REDUCED_FADE)
+        : withSpring(1, { ...SPRING_SETTLE, overshootClamping: true })
+    );
+  }, [drag, release, shown, reducedMotion]);
 
   useEffect(() => {
     if (open) {
-      drag.set(0);
-      release.set(0);
-      // Rivet's lift: the sheet rises on the 380/32 spring; reduced motion is a short crossfade.
-      shown.set(
-        reducedMotion
-          ? withTiming(1, REDUCED_FADE)
-          : withSpring(1, { ...SPRING_SETTLE, overshootClamping: true })
-      );
+      // Reopened while it was still closing: the window never left, so no onShow comes.
+      if (showing.current) enter();
     } else {
       const done = (finished?: boolean) => {
         'worklet';
@@ -72,7 +83,7 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
         shown.set(withTiming(0, fade, done));
       }
     }
-  }, [open, shown, drag, release, height, unmount, reducedMotion]);
+  }, [open, enter, shown, release, height, unmount, reducedMotion]);
 
   const pan = Gesture.Pan()
     .activeOffsetY(8)
@@ -102,6 +113,10 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
       transparent
       animationType="none"
       onRequestClose={onClose}
+      onShow={() => {
+        showing.current = true;
+        if (open) enter();
+      }}
       statusBarTranslucent>
       {/* A modal is its own native root, so gestures need their own root view inside it. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
