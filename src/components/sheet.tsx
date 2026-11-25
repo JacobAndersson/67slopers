@@ -49,7 +49,7 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
       // Rivet's lift: the sheet rises on the 380/32 spring; reduced motion is a short crossfade.
       shown.set(
         reducedMotion
-          ? withTiming(1, { duration: REDUCED_FADE_MS })
+          ? withTiming(1, { duration: REDUCED_FADE_MS, easing: EASE_OUT })
           : withSpring(1, { ...SPRING_SETTLE, overshootClamping: true })
       );
     } else {

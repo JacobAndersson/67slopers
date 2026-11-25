@@ -46,7 +46,7 @@ import { getBoard, gripShortName } from '@/lib/boards';
 import { countWord, DOT, plural } from '@/lib/copy';
 import { sessionVerdict } from '@/lib/session-sets';
 import { formatClock } from '@/lib/dates';
-import { liftIn, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import { EASE_OUT, liftIn, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
 import { measure } from '@/lib/perf';
 import { useStore } from '@/lib/store/store';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
@@ -170,9 +170,13 @@ function FadingGround({ color, onDone }: { color: string; onDone: () => void }) 
   const opacity = useSharedValue(1);
   useEffect(() => {
     opacity.set(
-      withTiming(0, { duration: GROUND_MS, reduceMotion: ReduceMotion.System }, (finished) => {
-        if (finished) runOnJS(onDone)();
-      })
+      withTiming(
+        0,
+        { duration: GROUND_MS, easing: EASE_OUT, reduceMotion: ReduceMotion.System },
+        (finished) => {
+          if (finished) runOnJS(onDone)();
+        }
+      )
     );
   }, [opacity, onDone]);
   const style = useAnimatedStyle(() => ({ opacity: opacity.get() }));
@@ -208,7 +212,7 @@ function useRise(delay: number, reduced: boolean) {
   useEffect(() => {
     rise.set(
       reduced
-        ? withTiming(1, { duration: REDUCED_FADE_MS })
+        ? withTiming(1, { duration: REDUCED_FADE_MS, easing: EASE_OUT })
         : withDelay(delay, withSpring(1, SPRING_SETTLE))
     );
   }, [rise, delay, reduced]);
@@ -486,7 +490,7 @@ export function Runner({
   const split = panelHeight < rootHeight;
   const panelHeightValue = useSharedValue(panelHeight);
   useEffect(() => {
-    panelHeightValue.set(withTiming(panelHeight, { duration: SPLIT_MS }));
+    panelHeightValue.set(withTiming(panelHeight, { duration: SPLIT_MS, easing: EASE_OUT }));
   }, [panelHeight, panelHeightValue]);
   const animatedPanelStyle = useAnimatedStyle(() => ({ height: panelHeightValue.get() }));
   const ordinal = hangOrdinal(timer.engineState);

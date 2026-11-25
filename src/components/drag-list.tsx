@@ -28,7 +28,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { LIFT, SPRING_SETTLE } from '@/lib/motion';
+import { EASE_OUT, LIFT, SPRING_SETTLE } from '@/lib/motion';
 
 /** How long a row is held before it lifts. A tap, or a scroll, is over well before. */
 const HOLD_MS = 220;
@@ -447,7 +447,7 @@ export function DragList({
       }
       if (previous === null || previous === undefined) {
         gapY.set(top);
-        gapShown.set(withTiming(1, { duration: LIFT_MS }));
+        gapShown.set(withTiming(1, { duration: LIFT_MS, easing: EASE_OUT }));
       } else gapY.set(withSpring(top, SETTLE));
     }
   );

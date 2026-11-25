@@ -9,6 +9,7 @@ import Animated, {
 import Svg, { Path, Rect } from 'react-native-svg';
 
 import { BOARD_DIAGRAMS } from '@/lib/boards/generated/diagrams';
+import { EASE_OUT } from '@/lib/motion';
 import { useAppTheme } from '@/lib/use-theme';
 
 type Props = {
@@ -43,7 +44,11 @@ function FadingHold({ d, on, ink }: { d: string; on: boolean; ink: string }) {
   const shown = useSharedValue(on ? 1 : 0);
   useEffect(() => {
     shown.set(
-      withTiming(on ? 1 : 0, { duration: GRIP_FADE_MS, reduceMotion: ReduceMotion.System })
+      withTiming(on ? 1 : 0, {
+        duration: GRIP_FADE_MS,
+        easing: EASE_OUT,
+        reduceMotion: ReduceMotion.System,
+      })
     );
   }, [on, shown]);
   const fill = useAnimatedProps(() => ({ fillOpacity: shown.get() }));
