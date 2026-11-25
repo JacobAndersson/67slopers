@@ -85,7 +85,10 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   stable slices (`s.workouts`, `s.sessions`) and derive with `useMemo`; never return fresh objects
   from a selector. Sessions store a snapshot of the workout they ran.
 - Timer logic is pure and tested: `src/lib/timer/intervals.ts` expands a workout into intervals,
-  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. Cues are a
+  `engine.ts` is a reducer over a monotonic clock, `useTimer.ts` drives it at 100 ms. The session
+  ground carries a living field (`src/components/hang-field.tsx`, a Skia shader on the UI thread)
+  that chases each phase's energy in `energy.ts`; the runner lazy-loads it, so Skia never loads on
+  the way to Home, and reduced motion leaves the ground still. Skia is for the runner only. Cues are a
   beep and a heavy tap at every interval boundary (`cues.ts` computes the boundary on the engine
   clock, `useCues.ts` schedules it, `cue-player.ts` wraps expo-audio and is only created by a
   mounted timer). On Android the buzz goes through the local module `modules/cue-vibration`
