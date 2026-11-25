@@ -63,3 +63,6 @@ modules/*/android/build/
 # MoonBoard benchmark lists: third-party data, generated locally by
 # scripts/moonboard-benchmarks.mjs and never published.
 /src/lib/moonboard/data/
+
+# Motion capture clips (design/explorations/motion/capture.sh): large, rerecorded per phase.
+/design/explorations/motion/**/*.mp4
