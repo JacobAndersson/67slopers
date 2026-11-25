@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.sloppyslopers.app"
+      "bundleIdentifier": "com.sloppyslopers.app",
+      "infoPlist": {
+        "UIFileSharingEnabled": true,
+        "LSSupportsOpeningDocumentsInPlace": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +37,10 @@
           "backgroundColor": "#141A2E",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 96,
-          "dark": { "backgroundColor": "#141A2E", "image": "./assets/images/splash-icon.png" }
+          "dark": {
+            "backgroundColor": "#141A2E",
+            "image": "./assets/images/splash-icon.png"
+          }
         }
       ],
       [
@@ -55,7 +62,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "67slopers uses the camera to scan the QR code of a shared workout.",
+          "cameraPermission": "Rivet uses the camera to scan shared workouts and problems, and to photograph walls when you choose to.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
@@ -70,7 +77,13 @@
         }
       ],
       "./plugins/with-bundle-inputs",
-      "./plugins/with-night-window"
+      "./plugins/with-night-window",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Rivet reads the phone's tilt to measure a wall's angle."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

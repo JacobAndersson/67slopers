@@ -92,6 +92,10 @@ export default function RootLayout() {
               <Stack.Screen name="climb/circuit/[id]/index" options={{ title: 'Circuit' }} />
               <Stack.Screen name="climb/circuit/[id]/edit" options={{ title: 'Edit circuit' }} />
               <Stack.Screen name="climb/session/[id]" options={{ title: 'Session' }} />
+              <Stack.Screen name="walls/index" options={{ title: 'Wall photos' }} />
+              <Stack.Screen name="walls/new" options={{ title: 'New wall' }} />
+              <Stack.Screen name="walls/[id]/index" options={{ title: '' }} />
+              <Stack.Screen name="walls/[id]/measure" options={{ title: 'Measure the angle' }} />
               <Stack.Screen
                 name="climb/circuit/[id]/run"
                 options={{
@@ -101,7 +105,9 @@ export default function RootLayout() {
                   animation: 'slide_from_bottom',
                 }}
               />
-              {(['workout/[id]/share', 'climb/share/[id]', 'scan'] as const).map((route) => (
+              {(
+                ['workout/[id]/share', 'climb/share/[id]', 'scan', 'walls/[id]/capture'] as const
+              ).map((route) => (
                 <Stack.Screen
                   key={route}
                   name={route}

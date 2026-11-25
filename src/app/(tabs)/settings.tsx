@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { GameControllerIcon } from 'phosphor-react-native/src/icons/GameController';
+import { CameraIcon } from 'phosphor-react-native/src/icons/Camera';
 import { LightbulbFilamentIcon } from 'phosphor-react-native/src/icons/LightbulbFilament';
 import { SpeakerHighIcon } from 'phosphor-react-native/src/icons/SpeakerHigh';
 import { VibrateIcon } from 'phosphor-react-native/src/icons/Vibrate';
@@ -119,6 +120,15 @@ export default function SettingsScreen() {
             onChange={setScale}
           />
         </View>
+      </SettingGroup>
+
+      <SettingGroup title="Help build Rivet">
+        <SettingRow
+          icon={CameraIcon}
+          title="Wall photos"
+          description="Photos of walls with their angle"
+          onPress={() => router.push('/walls')}
+        />
       </SettingGroup>
 
       <View className="mt-3 items-center">

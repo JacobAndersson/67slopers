@@ -143,6 +143,16 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   `npm run icons`). Every launch the mark lifts away, the Night fades and the screen rises 8 pt, under
   half a second; the first launch (store `firstLaunch`, not persisted) plays the stacked lockup with the
   name. It never blocks touches or delays the app, which is already rendered underneath.
+- Wall photos (`src/app/walls/`, from Settings › Help build Rivet) collect example data for the
+  wall-angle and hold models (research in `reports/Wall angle and hold segmentation.md`). A wall
+  is labelled once (kind, stated angle, and a reference angle measured with the phone laid on it
+  top up and top down, which cancels the camera bump), then photographed from many spots. Each
+  photo is saved full size with a JSON sidecar (`PhotoMeta`): gravity from `useMotionSamples`
+  (`src/hooks/use-motion-samples.ts`, DeviceMotion at 50 Hz on the JS clock) for the second
+  before the press until the photo returns, the camera's EXIF (focal length), the phone and the
+  wall's labels. The maths is pure and tested in `src/lib/wall-photos/` (`geometry.ts`,
+  `meta.ts`); `storage.ts` keeps everything as plain files under Documents/walls, never in the
+  store. iOS shows the folder in the Files app; Android copies it to a picked folder.
 - Controls that switch state show it moving: `Switch`, `CheckBox`, `Segmented` (a sliding tile)
   and `Chip` in `src/components/` animate on `SPRING_SETTLE` or a short fade and honour reduced
   motion. Use them instead of the platform switch or a bare toggle.
