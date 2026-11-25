@@ -125,7 +125,9 @@ Read [docs/principles.md](docs/principles.md) before adding features or dependen
   `board` and each hang `holds`; selection is symmetric, one _grip_ per hang (a mirrored pair or a
   centre hold, see `grips()` in `src/lib/boards/index.ts`). In the timer the diagram sits in the
   band above the digits, which never move, and the grip's holds fade in per hang (`animated`).
-  The phase word is in the header with a small rep and set line
+  The count (`src/components/timer-count.tsx`, sizes and slots in `src/lib/timer/count.ts`) has
+  one size for the whole run and fixed slots per interval (a 10 s count goes "10", "09"): only
+  a changed digit rolls. The phase word is in the header with a small rep and set line
   under it; `src/lib/timer/next-up.ts` decides when a Next line shows (only when the pattern
   breaks). The X ends a workout; there is no End button. Keep `src/lib/boards` off the Home path.
 - The builder (`src/components/workout-form.tsx` with `step-list.tsx`) is Garmin-style: step

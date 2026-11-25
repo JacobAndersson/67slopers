@@ -140,3 +140,85 @@ so turn reduced motion on after seeding, never before.
   out in place and does not follow a drag. Before `318d9cb` the sheet's 120 ms fade had one frame
   between nothing and the full sheet, because it ran before the Modal's window was drawn; it now
   has four (`reduced/sheet-open-sheet.png`).
+
+## Phase 2a (timer)
+
+The timer, the core loop, in four units on the same harness. Clips are in `timer/` (git-ignored);
+the contact sheets next to them are committed.
+
+| Unit | Commit    | Change                                                                                                                                                                                                                                                                                    | Checked on the emulator                                                                                                                                                                                                                                                                               |
+| ---- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A    | `7e783aa` | `src/lib/timer/energy.ts`: what each phase asks of the field (Get ready low and slow, Hang high, rests breathing, a stopped clock still) and a chase toward it by `1 - e^(-dt/tau)`, so a phase change retargets a running field and any frame rate lands on the same values.             | Pure: 9 tests (a hang arrives within 300 ms, the chase never passes its target, 30, 60 and 120 Hz land alike, a pause decays, a resume starts from where the decay stands).                                                                                                                           |
+| B    | `7078271` | A smoke field on the session ground, a Skia shader drawn on the UI thread, chasing that energy. Over the fill, under the words, at most 16% toward the ground's deepest step or toward light, so Glow stays Glow. Lazy-loaded by the runner; no field under reduced motion or on the web. | `field-variants-sheet.png` and `field-*/runner-sheet.png` (three fields, below); `field/controls-sheet.png` (a pause lets it decay on Snow in about 2 s). `librnskia.so` is not mapped into the process after two cold launches to Home, and is once the runner opens.                                |
+| C    | `84e7e2a` | The count in fixed slots per interval: only a changed digit rolls, 5% of its size from above in 220 ms (the old one leaves in 110), a lost digit becomes a leading zero ("09"). One size for the whole run, so a 3:00 rest and a 7 s hang no longer jump between 150 and 240 pt.          | `digits/roll-sheet.png` (10 to 09 over four frames, centred), `digits/runner-sheet.png`, `digits/reduced-sheet.png` (crossfade in place, the unchanged 0 stays). Pure: 7 tests in `count.test.ts`.                                                                                                    |
+| D    | `b6e9216` | Press dip on the ground buttons and the pill; the pill stays mounted and its glyph and word cross-scale 0.75 to 1 on SPRING_SETTLE with a 200 ms fade (100 ms out), Back and Skip scale in at the sides; caption, Next line, set pills and a set line under the same word crossfade.      | `micro/swap-sheet.png`: Pause, Resume, Pause tapped 150 ms apart all land. A held press dips the Start pill 947 to 917 px and the settings ring 175 to 169 px (0.97). `micro/start-sheet.png`, `micro/boundary-sheet.png`, `micro/reduced-sheet.png`, `micro/split-reduced-sheet.png` (height snaps). |
+
+### The field: three variants
+
+Each field was built behind a constant, recorded with `capture.sh runner` and compared at one
+frame every 3 s (`field-*/runner-sheet.png`) and over one hang at 2 fps with contrast ×4
+(`field-variants-sheet.png`, top to bottom): smoke (fractal noise warped by noise), rising bands,
+wandering cells. Smoke is the one kept. The bands travel up faster than the fill and read as a
+second progress bar; the cells put a busy pattern behind the digits. Smoke is tone without
+direction or structure, the nearest to one colour in many tones. The other two were deleted.
+
+### Launch and cold start
+
+| Build    | Commit    | Cold start (`am start -W`, median of 10) | Launch on video (median of 10): splash / first React frame / Home settled |
+| -------- | --------- | ---------------------------------------- | ------------------------------------------------------------------------- |
+| Phase 2b | `318d9cb` | 652.5 ms (614 to 681)                    | 216.5 / 824 / 1394.5 ms (React 757 to 943, Home 1317 to 1477)             |
+| Phase 2a | `b6e9216` | 654.5 ms (631 to 690)                    | 210.5 / 815 / 1375.5 ms (React 779 to 903, Home 1330 to 1430)             |
+
+Measured with `capture.sh launch 5` and then `capture.sh coldstart 5`, each twice per APK in the
+order Phase 2b, Phase 2a, Phase 2b, Phase 2a, reseeded before every set, at host load 2.8 to 4.5,
+on an emulator booted that hour. Both rounds put Phase 2a a little sooner to the first React frame
+(5 and 9 ms), well inside the spread: no measurable difference in launch or cold start. That fits
+what the process shows: after a cold launch to Home, `librnskia.so` is not mapped (Skia loads its
+native library in `RNSkiaModule.install()`, the first time its JavaScript runs, not in
+`Application.onCreate`), and the field's JavaScript only runs when the runner imports it.
+
+### Size and jank
+
+The x86_64 release APK grows from 101.8 MB (`318d9cb`) to 114.1 MB (`b6e9216`): 11.7 MB is
+`librnskia.so`, stored uncompressed, and 0.47 MB is Skia's JavaScript in the bundle (5.05 to
+5.52 MB), which Hermes loads but does not run until the runner imports the field.
+
+Jank, from `dumpsys gfxinfo` over 20 s of the Warm-up ladder's 25 s hang (reached by Pause and
+Skip, then Resume, sampled from 2 s in), three runs per build, alternating:
+
+| Build                                      | Frames in 20 s | Janky frames         | p50 / p90 / p95 / p99 | Slow UI thread |
+| ------------------------------------------ | -------------- | -------------------- | --------------------- | -------------- |
+| Field on (`b6e9216`)                       | 973 to 978     | 23.4% (23.2 to 23.6) | 36 / 57 / 61 / 65 ms  | 175 to 178     |
+| Field off (the same, field never mounted)  | 1196 to 1201   | 0.25% (0.17 to 0.59) | 18 / 29 / 30 / 32 ms  | 0 to 5         |
+| Field on, redrawn at 30 Hz (not committed) | 997 to 1001    | 20.5% (20.4 to 20.8) | 34 / 61 / 61 / 65 ms  | 176 to 183     |
+| Field on, a quarter of the pixels (1 run)  | 1005           | 19.7%                | 36 / 57 / 61 / 65 ms  | 170            |
+
+On this emulator the field costs about a quarter of the hang's frames. The limiter is not the
+shader: drawing a quarter of the pixels changes nothing. A `simpleperf` profile of the main thread
+(DWARF call graphs) puts 53% of its samples in RN Skia presenting the canvas on the main thread
+(`RNSkPictureView::setJsiProperties` to `OpenGLWindowContext::present`), and nearly all of that
+in two calls that block on a round trip to the host GPU over the emulator's qemu pipe:
+`glBufferDataSyncAEMU` (about 30%) and the fence created in `eglSwapBuffers` (about 20%). At
+about 30 ms a round trip, even 30 redraws a second keep the main thread full, which is why the
+30 Hz throttle only bought 3 points and was dropped. That transport exists only on the emulator
+(`-gpu software`); a phone presents through its own GL driver. Whether the field holds 60 fps on
+a phone is not measured here.
+
+### Emulator notes from this phase
+
+- uiautomator cannot dump a screen that draws every frame ("could not get idle state"), so
+  `timer/controls.sh` and `timer/reduced.sh` tap fixed points on the 1080x2340 screen.
+- The emulator died once, mid-build, while the host was out of swap and at load 200 (QEMU's
+  watchdog logged 15 to 28 s stalls). `docker restart` and the image's own
+  `docker-android start device` both fail on `sudo chown /dev/kvm`. What worked, in the same
+  container: kill the `docker-android start device` process, delete `hardware-qemu.ini.lock` and
+  `multiinstance.lock` in `/home/androidusr/emulator`, start
+  `/opt/android/emulator/emulator @samsung_galaxy_s10_14.0 -gpu software -accel on -writable-system -no-boot-anim -no-audio -memory 2048`
+  with `docker exec -d`, then repeat `~/Android/emu.sh`'s settings by hand (root, `wm size
+1080x2340`, density 440, animation scales, `auto_time 0`, the demo clock). Installed apps and data
+  survive.
+- After that, release builds ran with a 1.5 GB Gradle heap and a 1.5 GB Metro heap, under `nice`
+  and `ionice`, refused to start below 3 GB of free memory, and stopped the Gradle daemon after
+  each build: about 30 s for a JS change, and the emulator stayed up.
+- Drive the emulator from one script at a time. Two at once (a measurement in the background and a
+  check in the foreground) gave runs of 99 to 400 frames in 20 s, which are worthless.
