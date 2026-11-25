@@ -11,7 +11,7 @@ import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 
 import { Text } from '@/components/ui/text';
 import { COLUMNS } from '@/lib/moonboard/boards';
-import { EASE_OUT } from '@/lib/motion';
+import { EASE_OUT, REDUCED_FADE_MS } from '@/lib/motion';
 import { holdName, parseHold } from '@/lib/moonboard/grid';
 import { ROLES, type ProblemHolds, type Role } from '@/lib/moonboard/types';
 import { useAppTheme } from '@/lib/use-theme';
@@ -47,7 +47,7 @@ function Halo({
     opacity.set(
       withDelay(
         reducedMotion ? 0 : order * 20,
-        withTiming(HALO, { duration: reducedMotion ? 120 : 160, easing: EASE_OUT })
+        withTiming(HALO, { duration: reducedMotion ? REDUCED_FADE_MS : 160, easing: EASE_OUT })
       )
     );
   }, [opacity, order, reducedMotion]);

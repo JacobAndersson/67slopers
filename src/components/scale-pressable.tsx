@@ -7,11 +7,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { EASE_OUT, PRESS_SCALE } from '@/lib/motion';
+import { EASE_OUT, PRESS_IN_MS, PRESS_OUT_MS, PRESS_SCALE } from '@/lib/motion';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const PRESS_IN_MS = 100;
-const PRESS_OUT_MS = 160;
 
 /**
  * A Pressable that dips to 0.97 under the finger (brand: "Press: scale 0.97"), for cards and

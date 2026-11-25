@@ -9,15 +9,12 @@ import {
   type RefObject,
 } from 'react';
 import { Platform, View } from 'react-native';
-import Animated, {
-  cubicBezier,
-  useReducedMotion,
-  type AnimatedProps,
-} from 'react-native-reanimated';
+import Animated, { useReducedMotion, type AnimatedProps } from 'react-native-reanimated';
+
+import { CSS_EASE_OUT } from '@/lib/motion';
 
 const GLIDE_MS = 200;
 const FRAME_MS = 16;
-const CSS_EASE_OUT = cubicBezier(0.23, 1, 0.32, 1);
 
 const ContainerContext = createContext<RefObject<View | null> | null>(null);
 

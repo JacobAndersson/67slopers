@@ -1,5 +1,5 @@
 import { TextClassContext } from '@/components/ui/text';
-import { EASE_OUT } from '@/lib/motion';
+import { EASE_OUT, PRESS_IN_MS, PRESS_OUT_MS, PRESS_SCALE } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useEffect } from 'react';
@@ -15,10 +15,6 @@ import Animated, {
 // Reanimated would override it.
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const ButtonPressable = Platform.OS === 'web' ? Pressable : AnimatedPressable;
-
-const PRESS_SCALE = 0.97;
-const PRESS_IN_MS = 100;
-const PRESS_OUT_MS = 160;
 
 // Rivet buttons are Ink pills (design/rivet/app/ui.py `button`): primary is solid Night (Snow in
 // dark), ghost the same pill as a hairline, quiet text only. Destructive actions are never red:

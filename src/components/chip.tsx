@@ -1,13 +1,11 @@
 import type { Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Pressable, View } from 'react-native';
-import Animated, { cubicBezier, useReducedMotion } from 'react-native-reanimated';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { QUICK_MS } from '@/lib/motion';
+import { CSS_EASE_OUT, QUICK_MS } from '@/lib/motion';
 import { cn } from '@/lib/utils';
-
-const EASE = cubicBezier(0.23, 1, 0.32, 1);
 
 type ChipProps = {
   label: string;
@@ -51,7 +49,7 @@ export function Chip({
           opacity: selected ? 1 : 0,
           transitionProperty: 'opacity',
           transitionDuration: reduced ? 0 : QUICK_MS,
-          transitionTimingFunction: EASE,
+          transitionTimingFunction: CSS_EASE_OUT,
         }}
       />
       {dotClassName ? <View className={cn('mr-1 size-2.5 rounded-full', dotClassName)} /> : null}
