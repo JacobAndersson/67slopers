@@ -11,6 +11,14 @@ The current brand book is in [`rivet/`](rivet/README.md): the
 [asset kit](rivet/kit/README.md) (logo masters, tokens, icons, fonts, motion). It was rebuilt from a
 clean slate and supersedes the earlier brand exports listed under `exports/rivet-*`.
 
+## Rivet app design
+
+The complete redesign of the app in the Rivet brand is [`rivet/app/`](rivet/app/README.md): Penpot project
+**Rivet** → **Rivet — App design** (11 pages, about 140 screens and system boards, light and dark, with a
+native library of colours, type styles, tokens and components). The editable export is
+[`penpot/rivet-app.penpot`](penpot/rivet-app.penpot); review PNGs and contact sheets are in
+[`exports/rivet-app/`](exports/rivet-app/). It replaces the 67slopers designs below as the target look.
+
 ## Open Penpot
 
 ```bash
