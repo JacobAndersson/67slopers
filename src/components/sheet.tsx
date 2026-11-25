@@ -29,7 +29,9 @@ type SheetProps = {
 
 /**
  * A bottom sheet over the current screen. It slides up by its own height and leaves the way
- * it came; tapping the dimmed area or dragging it down closes it. Reduced motion fades it.
+ * it came; tapping the dimmed area or dragging it down closes it. A drag let go short of closing
+ * springs back, and one that closes it carries on at the speed of the finger, both on
+ * SPRING_SETTLE. Reduced motion fades it.
  */
 export function Sheet({ open, onClose, title, action, children }: SheetProps) {
   const insets = useSafeAreaInsets();
@@ -39,6 +41,8 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
   const [mounted, setMounted] = useState(open);
   const shown = useSharedValue(0);
   const drag = useSharedValue(0);
+  // How fast (px/s) the finger was going when a drag closed the sheet; 0 for any other close.
+  const release = useSharedValue(0);
 
   const unmount = useCallback(() => setMounted(false), []);
   if (open && !mounted) setMounted(true);
@@ -46,6 +50,7 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
   useEffect(() => {
     if (open) {
       drag.set(0);
+      release.set(0);
       // Rivet's lift: the sheet rises on the 380/32 spring; reduced motion is a short crossfade.
       shown.set(
         reducedMotion
@@ -53,17 +58,21 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
           : withSpring(1, { ...SPRING_SETTLE, overshootClamping: true })
       );
     } else {
-      shown.set(
-        withTiming(
-          0,
-          reducedMotion ? REDUCED_FADE : { duration: CLOSE_MS, easing: EASE_OUT },
-          (finished) => {
-            if (finished) runOnJS(unmount)();
-          }
-        )
-      );
+      const done = (finished?: boolean) => {
+        'worklet';
+        if (finished) runOnJS(unmount)();
+      };
+      const velocity = release.get();
+      if (velocity > 0 && !reducedMotion) {
+        // `shown` runs 1 → 0 over the window height, so the finger's px/s become -v / height.
+        const spring = { ...SPRING_SETTLE, velocity: -velocity / height, overshootClamping: true };
+        shown.set(withSpring(0, spring, done));
+      } else {
+        const fade = reducedMotion ? REDUCED_FADE : { duration: CLOSE_MS, easing: EASE_OUT };
+        shown.set(withTiming(0, fade, done));
+      }
     }
-  }, [open, shown, drag, unmount, reducedMotion]);
+  }, [open, shown, drag, release, height, unmount, reducedMotion]);
 
   const pan = Gesture.Pan()
     .activeOffsetY(8)
@@ -71,8 +80,14 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
       drag.set(Math.max(0, drag.get() + event.changeY));
     })
     .onEnd((event) => {
-      if (drag.get() > 120 || event.velocityY > FLICK) runOnJS(onClose)();
-      else drag.set(withTiming(0, { duration: CLOSE_MS, easing: EASE_OUT }));
+      if (drag.get() > 120 || event.velocityY > FLICK) {
+        release.set(Math.max(1, event.velocityY));
+        runOnJS(onClose)();
+      } else {
+        // Clamped: past its rest the sheet would lift off the bottom edge.
+        const spring = { ...SPRING_SETTLE, velocity: event.velocityY, overshootClamping: true };
+        drag.set(withSpring(0, spring));
+      }
     });
 
   const scrim = useAnimatedStyle(() => ({ opacity: shown.get() }));
