@@ -31,6 +31,7 @@ import { SetBars } from '@/components/data-bars';
 import { FeelPicker } from '@/components/feel';
 import { Field } from '@/components/field';
 import { PitchMark } from '@/components/rivet-mark';
+import { TimerCount } from '@/components/timer-count';
 import { TimerPhaseLabel } from '@/components/timer-phase-label';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -53,6 +54,7 @@ import type { Feel, WorkoutTimings } from '@/lib/store/types';
 import { PALETTE, SESSION } from '@/lib/theme';
 import { gripCue } from '@/lib/timer/grip-cue';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
+import { countShape, countSize, countText, runShapes, shapeOf } from '@/lib/timer/count';
 import { energyTarget } from '@/lib/timer/energy';
 import type { Interval } from '@/lib/timer/intervals';
 import { intervalWord, nextUp, spokenDuration } from '@/lib/timer/next-up';
@@ -87,8 +89,6 @@ const NOTE_MS = 180;
 
 /** Board diagram width on a 390 pt screen (design: x 64, w 262). */
 const BOARD_INSET = 64;
-/** The interval's count: 240 for one or two digits, 150 for m:ss, 120 for mm:ss (design). */
-const countSize = (text: string) => (text.length <= 2 ? 240 : text.length <= 4 ? 150 : 120);
 
 /** Which session colour a running interval wears. */
 function stateOf(interval: Interval): keyof typeof SESSION {
@@ -425,12 +425,11 @@ export function Runner({
   const interval = timer.interval;
   const intervals = timer.engineState.intervals;
   const facts = useMemo(() => workoutFacts(timings), [timings]);
-  const secondsLeft = Math.ceil(timer.remainingSeconds);
   const count = idle
     ? formatClock(facts.seconds)
-    : interval.seconds >= 60
-      ? formatClock(secondsLeft)
-      : String(secondsLeft);
+    : countText(interval.seconds, Math.ceil(timer.remainingSeconds));
+  // Each interval keeps fixed slots for its count; Ready shows the total in its own.
+  const shape = idle ? shapeOf(count) : countShape(interval.seconds);
   const board = getBoard(timings.board);
   // What the board and the Next line show depends only on the interval, not on the tick.
   const cue = useMemo(
@@ -500,15 +499,12 @@ export function Runner({
   const clipId = compact ? rotation.clipAt(ordinal) : undefined;
   const clip = CLIPS.find((entry) => entry.id === clipId);
 
+  // One size for every interval of the run, so a 3:00 rest and a 7 s hang draw the same digits.
+  // Ready keeps it too, unless the workout's total is wider than any interval.
   const room = panelHeight - headerHeight - footerHeight - 24;
-  const digitSize = Math.max(
-    56,
-    Math.min(
-      countSize(count),
-      (width * 0.92) / (count.length * 0.58 * fontScale),
-      room / (1.02 * fontScale)
-    )
-  );
+  const shapes = useMemo(() => runShapes(intervals), [intervals]);
+  const runSize = countSize(shapes, width, room, fontScale);
+  const digitSize = idle ? Math.min(runSize, countSize([shape], width, room, fontScale)) : runSize;
 
   // Ground, fill colour and fill level change in the same commit as the phase word, so a phase
   // change never shows a frame of the old colour (brand motion review). An interval that runs out
@@ -769,23 +765,17 @@ export function Runner({
           </Text>
 
           <View className="flex-1 items-center justify-center pb-4">
-            <Text
-              className="text-center font-black"
-              style={{
-                color: ink,
-                fontSize: digitSize,
-                lineHeight: Math.round(digitSize * 1.02),
-                letterSpacing: -0.03 * digitSize,
-                // Negative tracking pulls the last glyph past the box; give it back.
-                paddingRight: 0.03 * digitSize,
-                fontVariant: ['tabular-nums'],
-              }}
-              numberOfLines={1}
-              accessibilityLabel={
+            <TimerCount
+              key={shape}
+              text={count}
+              shape={shape}
+              size={digitSize}
+              color={ink}
+              reduced={reducedMotion}
+              label={
                 idle ? `${count} in all` : `${count} ${interval.seconds >= 60 ? '' : 'seconds'}`
-              }>
-              {count}
-            </Text>
+              }
+            />
           </View>
 
           <View
