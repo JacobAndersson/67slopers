@@ -13,6 +13,7 @@ import { AccessibilityInfo, Pressable, ScrollView, useWindowDimensions, View } f
 import Animated, {
   FadeIn,
   FadeOut,
+  LayoutAnimationConfig,
   ReduceMotion,
   runOnJS,
   useAnimatedStyle,
@@ -31,6 +32,7 @@ import { SetBars } from '@/components/data-bars';
 import { FeelPicker } from '@/components/feel';
 import { Field } from '@/components/field';
 import { PitchMark } from '@/components/rivet-mark';
+import { ScalePressable } from '@/components/scale-pressable';
 import { TimerCount } from '@/components/timer-count';
 import { TimerPhaseLabel } from '@/components/timer-phase-label';
 import { Button } from '@/components/ui/button';
@@ -47,7 +49,7 @@ import { getBoard, gripShortName } from '@/lib/boards';
 import { countWord, DOT, plural } from '@/lib/copy';
 import { sessionVerdict } from '@/lib/session-sets';
 import { formatClock } from '@/lib/dates';
-import { EASE_OUT, liftIn, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import { EASE_OUT, fadeIn, fadeOut, liftIn, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
 import { measure } from '@/lib/perf';
 import { useStore } from '@/lib/store/store';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
@@ -87,6 +89,35 @@ const SUMMARY_GROUND_MS = 120;
 /** The Pitch's bars rise with the three closing notes, this far apart. */
 const NOTE_MS = 180;
 
+/**
+ * Controls that swap (Start, Pause and Resume, Back and Skip) cross-scale from this, fading in
+ * over SWAP_FADE_MS; the one leaving fades in half that, so the two words never sit on each other.
+ */
+const SWAP_SCALE = 0.75;
+const SWAP_FADE_MS = 200;
+
+/** A control arriving (or leaving): scale on the Rivet spring, opacity on a short ease-out. */
+function crossScale(arriving: boolean) {
+  return () => {
+    'worklet';
+    return {
+      initialValues: {
+        opacity: arriving ? 0 : 1,
+        transform: [{ scale: arriving ? SWAP_SCALE : 1 }],
+      },
+      animations: {
+        opacity: withTiming(arriving ? 1 : 0, {
+          duration: arriving ? SWAP_FADE_MS : SWAP_FADE_MS / 2,
+          easing: EASE_OUT,
+        }),
+        transform: [{ scale: withSpring(arriving ? 1 : SWAP_SCALE, SPRING_SETTLE) }],
+      },
+    };
+  };
+}
+const SWAP_IN = crossScale(true);
+const SWAP_OUT = crossScale(false);
+
 /** Board diagram width on a 390 pt screen (design: x 64, w 262). */
 const BOARD_INSET = 64;
 
@@ -120,18 +151,22 @@ function GroundButton({
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <ScalePressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className="size-16 items-center justify-center rounded-full active:opacity-60"
+      className="size-16 items-center justify-center rounded-full"
       style={{ borderWidth: 1, borderColor: `${color}40` }}>
       <IconGlyph size={26} weight="bold" color={color} />
-    </Pressable>
+    </ScalePressable>
   );
 }
 
-/** The one big control: Start, Pause or Resume, an 88 pt Ink pill with a word. */
+/**
+ * The one big control: Start, Pause or Resume, an 88 pt Ink pill with a word. It is one pill
+ * through the whole run, so it stays under the thumb: Pause and Resume cross-scale their glyph and
+ * word (`swap`) while the pill keeps taking touches. Start leaves at once, as the pill narrows.
+ */
 function MainControl({
   icon: IconGlyph,
   label,
@@ -139,6 +174,7 @@ function MainControl({
   glyph,
   wide,
   compact,
+  swap,
   onPress,
 }: {
   icon: PhosphorIcon;
@@ -147,26 +183,37 @@ function MainControl({
   glyph: string;
   wide?: boolean;
   compact?: boolean;
+  swap: Swap;
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <ScalePressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className={cn(
-        'flex-row items-center justify-center gap-2.5 rounded-full active:opacity-90',
-        wide ? 'flex-1' : 'w-44'
-      )}
+      className={cn('items-center justify-center rounded-full', wide ? 'flex-1' : 'w-44')}
       style={{ height: compact ? 72 : 88, backgroundColor: disc }}>
-      {/* Fill inside the solid pill: it reads at a glance from a metre away (brand review). */}
-      <IconGlyph size={28} weight="fill" color={glyph} />
-      <Text className="text-2xl font-black" style={{ color: glyph }}>
-        {label}
-      </Text>
-    </Pressable>
+      <Animated.View
+        key={label}
+        entering={swap.in}
+        exiting={wide ? undefined : swap.out}
+        pointerEvents="none"
+        className="flex-row items-center gap-2.5">
+        {/* Fill inside the solid pill: it reads at a glance from a metre away (brand review). */}
+        <IconGlyph size={28} weight="fill" color={glyph} />
+        <Text className="text-2xl font-black" style={{ color: glyph }}>
+          {label}
+        </Text>
+      </Animated.View>
+    </ScalePressable>
   );
 }
+
+/** How controls arrive and leave: cross-scaling, or a crossfade under reduced motion. */
+type Swap = {
+  in: typeof SWAP_IN | ReturnType<typeof fadeIn>;
+  out: typeof SWAP_OUT | ReturnType<typeof fadeOut>;
+};
 
 /** The previous ground, fading out over the new one (pause, skip, resume). */
 function FadingGround({ color, onDone }: { color: string; onDone: () => void }) {
@@ -492,8 +539,13 @@ export function Runner({
   const split = panelHeight < rootHeight;
   const panelHeightValue = useSharedValue(panelHeight);
   useEffect(() => {
-    panelHeightValue.set(withTiming(panelHeight, { duration: SPLIT_MS, easing: EASE_OUT }));
-  }, [panelHeight, panelHeightValue]);
+    // Under reduced motion the panel takes its new height at once and the gameplay fades.
+    panelHeightValue.set(
+      reducedMotion
+        ? panelHeight
+        : withTiming(panelHeight, { duration: SPLIT_MS, easing: EASE_OUT })
+    );
+  }, [panelHeight, panelHeightValue, reducedMotion]);
   const animatedPanelStyle = useAnimatedStyle(() => ({ height: panelHeightValue.get() }));
   const ordinal = hangOrdinal(timer.engineState);
   const clipId = compact ? rotation.clipAt(ordinal) : undefined;
@@ -659,237 +711,258 @@ export function Runner({
   }
 
   const boardWidth = Math.min(width - BOARD_INSET * 2, 300);
+  const swap: Swap = reducedMotion
+    ? { in: fadeIn(), out: fadeOut() }
+    : { in: SWAP_IN, out: SWAP_OUT };
   const stoppedGround = SESSION[state].ground;
 
   return (
-    <View
-      className="flex-1"
-      style={{ backgroundColor: compact ? theme.canvas : ground }}
-      onLayout={(e) => setRootHeight(e.nativeEvent.layout.height)}>
-      <StatusBar style={idle && dark ? 'light' : 'dark'} />
-      <Animated.View style={[{ overflow: 'hidden', backgroundColor: ground }, animatedPanelStyle]}>
-        {fade ? (
-          <FadingGround key={fade.id} color={fade.color} onDone={() => setFade(null)} />
-        ) : null}
-        {/* The interval rising from the bottom in the deeper step of the same colour. */}
+    // The screen arrives whole: only what changes after it opens animates in.
+    <LayoutAnimationConfig skipEntering>
+      <View
+        className="flex-1"
+        style={{ backgroundColor: compact ? theme.canvas : ground }}
+        onLayout={(e) => setRootHeight(e.nativeEvent.layout.height)}>
+        <StatusBar style={idle && dark ? 'light' : 'dark'} />
         <Animated.View
-          key={index}
-          pointerEvents="none"
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: fillHeight,
-            backgroundColor: SESSION[state].elapsed,
-            borderTopWidth: 3,
-            borderTopColor: SESSION[state].edge,
-            opacity: running || paused ? 1 : 0,
-            // Linear between the timer's 100 ms ticks, so the level rises continuously.
-            transitionProperty: running ? 'height' : 'none',
-            transitionDuration: FILL_STEP_MS,
-            transitionTimingFunction: 'linear',
-          }}
-        />
-        {/* The ground's living field, in the ground's own tones; under reduced motion, none. */}
-        {reducedMotion ? null : (
-          <Suspense fallback={null}>
-            <HangField
-              width={width}
-              height={rootHeight}
-              target={energyTarget(status, interval.phase)}
-              deep={paused ? SESSION.ready.edge : SESSION[state].edge}
-            />
-          </Suspense>
-        )}
-        {paused ? (
-          // A stopped clock never looks like a running one: the ground goes Snow and a band
-          // of the phase it stopped in stays behind the header.
-          <View
-            pointerEvents="none"
-            className="absolute inset-x-0 top-0"
-            style={{ height: headerHeight, backgroundColor: stoppedGround }}
-          />
-        ) : null}
-
-        <View className="flex-1">
-          <View
-            onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
-            style={{ paddingTop: buttonsTop }}
-            className="pb-3">
-            <View className="flex-row items-center justify-between px-3">
-              <GroundButton
-                icon={XIcon}
-                label={idle ? 'Close' : 'End session'}
-                color={ink}
-                onPress={onClose}
-              />
-              {idle ? (
-                <Text
-                  className="type-body-b flex-1 px-2 text-center"
-                  style={{ color: ink }}
-                  numberOfLines={1}>
-                  {name}
-                </Text>
-              ) : null}
-              <GroundButton
-                icon={SlidersHorizontalIcon}
-                label="Session settings"
-                color={ink}
-                onPress={() => setSettingsOpen(true)}
-              />
-            </View>
-            <View className="mt-2.5 px-6">
-              <TimerPhaseLabel label={phaseWord} line={line} color={ink} />
-            </View>
-          </View>
-
-          {board && !compact ? (
-            <View className="items-center pt-3.5">
-              <HangboardDiagram
-                animated
-                board={timings.board!}
-                active={cue.holds}
-                color={ink}
-                width={boardWidth}
-                plate={paused ? PALETTE.snow : ground}
-                strokeWidth={1.2}
-                lineOpacity={0x40 / 255}
-                fillOpacity={0x0a / 255}
-              />
-            </View>
+          style={[{ overflow: 'hidden', backgroundColor: ground }, animatedPanelStyle]}>
+          {fade ? (
+            <FadingGround key={fade.id} color={fade.color} onDone={() => setFade(null)} />
           ) : null}
-          {/* Always there, so the digits never move when a caption comes or goes. */}
-          <Text className="type-body-b px-6 text-center" style={{ color: ink }} numberOfLines={1}>
-            {caption || ' '}
-          </Text>
-
-          <View className="flex-1 items-center justify-center pb-4">
-            <TimerCount
-              key={shape}
-              text={count}
-              shape={shape}
-              size={digitSize}
-              color={ink}
-              reduced={reducedMotion}
-              label={
-                idle ? `${count} in all` : `${count} ${interval.seconds >= 60 ? '' : 'seconds'}`
-              }
+          {/* The interval rising from the bottom in the deeper step of the same colour. */}
+          <Animated.View
+            key={index}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: fillHeight,
+              backgroundColor: SESSION[state].elapsed,
+              borderTopWidth: 3,
+              borderTopColor: SESSION[state].edge,
+              opacity: running || paused ? 1 : 0,
+              // Linear between the timer's 100 ms ticks, so the level rises continuously.
+              transitionProperty: running ? 'height' : 'none',
+              transitionDuration: FILL_STEP_MS,
+              transitionTimingFunction: 'linear',
+            }}
+          />
+          {/* The ground's living field, in the ground's own tones; under reduced motion, none. */}
+          {reducedMotion ? null : (
+            <Suspense fallback={null}>
+              <HangField
+                width={width}
+                height={rootHeight}
+                target={energyTarget(status, interval.phase)}
+                deep={paused ? SESSION.ready.edge : SESSION[state].edge}
+              />
+            </Suspense>
+          )}
+          {paused ? (
+            // A stopped clock never looks like a running one: the ground goes Snow and a band
+            // of the phase it stopped in stays behind the header.
+            <View
+              pointerEvents="none"
+              className="absolute inset-x-0 top-0"
+              style={{ height: headerHeight, backgroundColor: stoppedGround }}
             />
-          </View>
+          ) : null}
 
-          <View
-            onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
-            className="items-center px-6"
-            style={{ paddingBottom: split ? 12 : Math.max(insets.bottom, 16) + 6 }}>
-            <SetBars
-              done={setsDone}
-              total={interval.setCount}
-              current={idle || interval.phase === 'done' ? undefined : interval.setIndex}
-              height={8}
-              gap={6}
-              color={ink}
-              track={`${ink}40`}
-              className="w-[222px]"
-            />
-            <Text
-              className="type-body-b mt-6 min-h-[26px] text-center text-[19px] leading-[26px]"
-              style={{ color: ink }}
-              numberOfLines={1}>
-              {next ?? ''}
-            </Text>
-            <View className={cn('w-full flex-row items-center', compact ? 'mt-4' : 'mt-[42px]')}>
-              {idle ? (
+          <View className="flex-1">
+            <View
+              onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
+              style={{ paddingTop: buttonsTop }}
+              className="pb-3">
+              <View className="flex-row items-center justify-between px-3">
+                <GroundButton
+                  icon={XIcon}
+                  label={idle ? 'Close' : 'End session'}
+                  color={ink}
+                  onPress={onClose}
+                />
+                {idle ? (
+                  <Text
+                    className="type-body-b flex-1 px-2 text-center"
+                    style={{ color: ink }}
+                    numberOfLines={1}>
+                    {name}
+                  </Text>
+                ) : null}
+                <GroundButton
+                  icon={SlidersHorizontalIcon}
+                  label="Session settings"
+                  color={ink}
+                  onPress={() => setSettingsOpen(true)}
+                />
+              </View>
+              <View className="mt-2.5 px-6">
+                <TimerPhaseLabel label={phaseWord} line={line} color={ink} />
+              </View>
+            </View>
+
+            {board && !compact ? (
+              <View className="items-center pt-3.5">
+                <HangboardDiagram
+                  animated
+                  board={timings.board!}
+                  active={cue.holds}
+                  color={ink}
+                  width={boardWidth}
+                  plate={paused ? PALETTE.snow : ground}
+                  strokeWidth={1.2}
+                  lineOpacity={0x40 / 255}
+                  fillOpacity={0x0a / 255}
+                />
+              </View>
+            ) : null}
+            {/* Always there, so the digits never move when a caption comes or goes; a new one
+              crossfades over the old. */}
+            <View className="px-6">
+              <Animated.View
+                key={caption}
+                entering={fadeIn()}
+                exiting={fadeOut()}
+                pointerEvents="none">
+                <Text className="type-body-b text-center" style={{ color: ink }} numberOfLines={1}>
+                  {caption || ' '}
+                </Text>
+              </Animated.View>
+            </View>
+
+            <View className="flex-1 items-center justify-center pb-4">
+              <TimerCount
+                key={shape}
+                text={count}
+                shape={shape}
+                size={digitSize}
+                color={ink}
+                reduced={reducedMotion}
+                label={
+                  idle ? `${count} in all` : `${count} ${interval.seconds >= 60 ? '' : 'seconds'}`
+                }
+              />
+            </View>
+
+            <View
+              onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
+              className="items-center px-6"
+              style={{ paddingBottom: split ? 12 : Math.max(insets.bottom, 16) + 6 }}>
+              <SetBars
+                done={setsDone}
+                total={interval.setCount}
+                current={idle || interval.phase === 'done' ? undefined : interval.setIndex}
+                height={8}
+                gap={6}
+                color={ink}
+                track={`${ink}40`}
+                className="w-[222px]"
+              />
+              <View className="mt-6 min-h-[26px] self-stretch">
+                <Animated.View
+                  key={next ?? ''}
+                  entering={fadeIn()}
+                  exiting={fadeOut()}
+                  pointerEvents="none">
+                  <Text
+                    className="type-body-b text-center text-[19px] leading-[26px]"
+                    style={{ color: ink }}
+                    numberOfLines={1}>
+                    {next ?? ''}
+                  </Text>
+                </Animated.View>
+              </View>
+              <View
+                className={cn(
+                  'w-full flex-row items-center justify-center',
+                  compact ? 'mt-4' : 'mt-[42px]'
+                )}>
+                {paused ? (
+                  <Animated.View
+                    key="back"
+                    entering={swap.in}
+                    exiting={swap.out}
+                    className="absolute inset-y-0 left-0 justify-center">
+                    <GroundButton
+                      icon={ArrowCounterClockwiseIcon}
+                      label="Back to the start of this interval"
+                      color={ink}
+                      onPress={act(() => {
+                        setRestart((value) => value + 1);
+                        timer.back();
+                      })}
+                    />
+                  </Animated.View>
+                ) : null}
                 <MainControl
-                  icon={PlayIcon}
-                  label="Start"
+                  icon={running ? PauseIcon : PlayIcon}
+                  label={idle ? 'Start' : paused ? 'Resume' : 'Pause'}
                   disc={disc}
                   glyph={glyph}
-                  wide
+                  wide={idle}
                   compact={compact}
-                  onPress={act(timer.start)}
+                  swap={swap}
+                  onPress={act(idle ? timer.start : paused ? timer.resume : timer.pause)}
                 />
-              ) : paused ? (
-                <View className="flex-1 flex-row items-center justify-between">
-                  <GroundButton
-                    icon={ArrowCounterClockwiseIcon}
-                    label="Back to the start of this interval"
-                    color={ink}
-                    onPress={act(() => {
-                      setRestart((value) => value + 1);
-                      timer.back();
-                    })}
-                  />
-                  <MainControl
-                    icon={PlayIcon}
-                    label="Resume"
-                    disc={disc}
-                    glyph={glyph}
-                    compact={compact}
-                    onPress={act(timer.resume)}
-                  />
-                  <GroundButton
-                    icon={SkipForwardIcon}
-                    label="Skip"
-                    color={ink}
-                    onPress={act(timer.skip)}
-                  />
-                </View>
-              ) : (
-                <View className="flex-1 items-center">
-                  <MainControl
-                    icon={PauseIcon}
-                    label="Pause"
-                    disc={disc}
-                    glyph={glyph}
-                    compact={compact}
-                    onPress={act(timer.pause)}
-                  />
-                </View>
-              )}
+                {paused ? (
+                  <Animated.View
+                    key="skip"
+                    entering={swap.in}
+                    exiting={swap.out}
+                    className="absolute inset-y-0 right-0 justify-center">
+                    <GroundButton
+                      icon={SkipForwardIcon}
+                      label="Skip"
+                      color={ink}
+                      onPress={act(timer.skip)}
+                    />
+                  </Animated.View>
+                ) : null}
+              </View>
             </View>
           </View>
-        </View>
-      </Animated.View>
-      {split ? (
-        <Animated.View
-          entering={FadeIn.duration(SPLIT_MS)}
-          exiting={FadeOut.duration(SPLIT_MS)}
-          style={{ flex: 1 }}
-          className="overflow-hidden bg-raised">
-          {clip ? (
-            <BrainrotBoundary>
-              <Suspense fallback={<View className="flex-1 bg-raised" />}>
-                <BrainrotVideo
-                  key={`${ordinal}:${restart}:${clip.id}`}
-                  clip={clip}
-                  playing={timer.status === 'running'}
-                  onFailure={() => rotation.fail(clip.id)}
-                />
-              </Suspense>
-            </BrainrotBoundary>
-          ) : (
-            <View className="flex-1 items-center justify-center">
-              <Text className="type-sub text-muted">Video unavailable</Text>
-            </View>
-          )}
         </Animated.View>
-      ) : null}
-      <WorkoutSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <ConfirmSheet
-        open={confirmOpen}
-        onClose={keepGoing}
-        title="End the session?"
-        body={
-          timer.completedSets === 0
-            ? 'No full set is in yet. Rivet keeps what you did the moment you end.'
-            : `${countWord(timer.completedSets, true)} full ${
-                timer.completedSets === 1 ? 'set is' : 'sets are'
-              } in. Rivet keeps ${timer.completedSets === 1 ? 'it' : 'them'} the moment you end.`
-        }
-        safe={{ label: 'Keep going', icon: PlayIcon, onPress: keepGoing }}
-        destructive={{ label: 'End and save', plain: true, onPress: () => timer.end() }}
-      />
-    </View>
+        {split ? (
+          <Animated.View
+            entering={reducedMotion ? fadeIn() : FadeIn.duration(SPLIT_MS)}
+            exiting={reducedMotion ? fadeOut() : FadeOut.duration(SPLIT_MS)}
+            style={{ flex: 1 }}
+            className="overflow-hidden bg-raised">
+            {clip ? (
+              <BrainrotBoundary>
+                <Suspense fallback={<View className="flex-1 bg-raised" />}>
+                  <BrainrotVideo
+                    key={`${ordinal}:${restart}:${clip.id}`}
+                    clip={clip}
+                    playing={timer.status === 'running'}
+                    onFailure={() => rotation.fail(clip.id)}
+                  />
+                </Suspense>
+              </BrainrotBoundary>
+            ) : (
+              <View className="flex-1 items-center justify-center">
+                <Text className="type-sub text-muted">Video unavailable</Text>
+              </View>
+            )}
+          </Animated.View>
+        ) : null}
+        <WorkoutSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+        <ConfirmSheet
+          open={confirmOpen}
+          onClose={keepGoing}
+          title="End the session?"
+          body={
+            timer.completedSets === 0
+              ? 'No full set is in yet. Rivet keeps what you did the moment you end.'
+              : `${countWord(timer.completedSets, true)} full ${
+                  timer.completedSets === 1 ? 'set is' : 'sets are'
+                } in. Rivet keeps ${timer.completedSets === 1 ? 'it' : 'them'} the moment you end.`
+          }
+          safe={{ label: 'Keep going', icon: PlayIcon, onPress: keepGoing }}
+          destructive={{ label: 'End and save', plain: true, onPress: () => timer.end() }}
+        />
+      </View>
+    </LayoutAnimationConfig>
   );
 }

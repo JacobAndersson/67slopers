@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Text } from '@/components/ui/text';
-import { CSS_EASE_OUT, liftIn, REDUCED_FADE_MS } from '@/lib/motion';
+import { CSS_EASE_OUT, liftIn, QUICK_MS, REDUCED_FADE_MS } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { useAppTheme } from '@/lib/use-theme';
 import { shapeWidths, type ShapePiece } from '@/lib/workout-shape';
@@ -56,6 +56,10 @@ export function SetBars({
           style={{
             height,
             opacity: i === current && i >= done ? 0.6 : 1,
+            // The timer moves `current` and `done` on: the bars crossfade to their new state.
+            transitionProperty: ['opacity', 'backgroundColor'],
+            transitionDuration: QUICK_MS,
+            transitionTimingFunction: CSS_EASE_OUT,
             // Only when given: an undefined colour here would override the class on native.
             ...((i < done || i === current ? color : track)
               ? { backgroundColor: i < done || i === current ? color : track }
