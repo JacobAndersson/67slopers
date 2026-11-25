@@ -1,9 +1,10 @@
 import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import { StarIcon } from 'phosphor-react-native/src/icons/Star';
 import { memo } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ProblemThumb } from '@/components/moon-board';
+import { ScalePressable } from '@/components/scale-pressable';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { DOT } from '@/lib/copy';
@@ -94,12 +95,13 @@ export const ProblemRow = memo(function ProblemRow({
     .filter(Boolean)
     .join(', ');
   return (
-    <Pressable
+    <ScalePressable
+      feedback="dim"
       onPress={onPress ? () => onPress(problem) : undefined}
       disabled={!onPress}
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={spoken}
-      className="min-h-[88px] flex-row items-center active:opacity-70">
+      className="min-h-[88px] flex-row items-center">
       {index !== undefined ? (
         <Text className="type-num w-[30px] text-muted">{index + 1}</Text>
       ) : null}
@@ -133,6 +135,6 @@ export const ProblemRow = memo(function ProblemRow({
           <Text className="type-num ml-2">{grade}</Text>
         )}
       </View>
-    </Pressable>
+    </ScalePressable>
   );
 });

@@ -1,6 +1,7 @@
 import type { Icon as PhosphorIcon, IconWeight } from 'phosphor-react-native';
-import { Pressable, type PressableProps } from 'react-native';
+import type { PressableProps } from 'react-native';
 
+import { ScalePressable } from '@/components/scale-pressable';
 import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +19,7 @@ type IconButtonProps = Omit<PressableProps, 'children'> & {
   iconClassName?: string;
 };
 
-/** A round button with one icon (design/rivet/app/ui.py `icon_button`). */
+/** A round button with one icon (design/rivet/app/ui.py `icon_button`); it dips under the finger. */
 export function IconButton({
   icon,
   variant = 'ghost',
@@ -31,12 +32,12 @@ export function IconButton({
   ...props
 }: IconButtonProps) {
   return (
-    <Pressable
+    <ScalePressable
       accessibilityRole="button"
       accessibilityLabel={label}
       hitSlop={size < 48 ? (48 - size) / 2 : undefined}
       className={cn(
-        'items-center justify-center rounded-full active:opacity-80',
+        'items-center justify-center rounded-full',
         variant === 'ghost' && 'border border-line-strong bg-surface',
         variant === 'primary' && 'bg-action',
         props.disabled && 'opacity-40',
@@ -50,6 +51,6 @@ export function IconButton({
         weight={weight}
         className={cn(variant === 'primary' ? 'text-on-action' : 'text-text', iconClassName)}
       />
-    </Pressable>
+    </ScalePressable>
   );
 }

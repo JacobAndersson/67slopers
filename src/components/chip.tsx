@@ -1,7 +1,8 @@
 import type { Icon as PhosphorIcon } from 'phosphor-react-native';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { useReducedMotion } from 'react-native-reanimated';
 
+import { ScalePressable } from '@/components/scale-pressable';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { CSS_EASE_OUT, QUICK_MS } from '@/lib/motion';
@@ -21,7 +22,7 @@ type ChipProps = {
 
 /**
  * A 48 pt pill: a filter or choice that is on (solid Ink) or off (hairline). Turning it on fades
- * the fill in (design/rivet/app/ui.py `chip`).
+ * the fill in (design/rivet/app/ui.py `chip`); a press dips it.
  */
 export function Chip({
   label,
@@ -35,13 +36,13 @@ export function Chip({
   const reduced = useReducedMotion();
   const fg = selected ? 'text-on-action' : 'text-text';
   return (
-    <Pressable
+    <ScalePressable
       onPress={onPress}
       disabled={!onPress}
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={accessibilityLabel}
       accessibilityState={selected === undefined ? undefined : { selected }}
-      className="h-12 flex-row items-center gap-1 rounded-full border border-line-strong px-[18px] active:opacity-80">
+      className="h-12 flex-row items-center gap-1 rounded-full border border-line-strong px-[18px]">
       <Animated.View
         pointerEvents="none"
         className="absolute -inset-px rounded-full bg-action"
@@ -66,6 +67,6 @@ export function Chip({
           </Text>
         </View>
       ) : null}
-    </Pressable>
+    </ScalePressable>
   );
 }

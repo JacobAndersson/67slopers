@@ -1,9 +1,10 @@
 import type { Icon as PhosphorIcon } from 'phosphor-react-native';
 import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { Children, type ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useLargeText } from '@/hooks/use-large-text';
+import { ScalePressable } from '@/components/scale-pressable';
 import { Label } from '@/components/section-header';
 import { Switch } from '@/components/switch';
 import { Icon } from '@/components/ui/icon';
@@ -79,12 +80,13 @@ export function SettingRow({
     </View>
   ) : null;
   return (
-    <Pressable
+    <ScalePressable
+      feedback="dim"
       onPress={toggles ? () => onCheckedChange(!checked) : onPress}
       disabled={!toggles && !onPress}
       accessibilityRole={toggles ? 'switch' : onPress ? 'button' : undefined}
       accessibilityState={toggles ? { checked } : undefined}
-      className="min-h-16 flex-row items-center gap-2 py-3 active:opacity-70">
+      className="min-h-16 flex-row items-center gap-2 py-3">
       {icon ? <Icon as={icon} size={24} className="mr-2" /> : null}
       <View className="flex-1 gap-0.5">
         <Text className="type-body-b" numberOfLines={large ? undefined : 1}>
@@ -100,6 +102,6 @@ export function SettingRow({
       ) : onPress ? (
         <Icon as={CaretRightIcon} size={20} className="text-muted" />
       ) : null}
-    </Pressable>
+    </ScalePressable>
   );
 }

@@ -50,6 +50,8 @@ export const QUICK_MS = 160;
 export const PRESS_SCALE = 0.97;
 export const PRESS_IN_MS = 100;
 export const PRESS_OUT_MS = 160;
+/** A row in a list or a grouped card dims to this instead, on the same timings. */
+export const PRESS_DIM = 0.7;
 
 /** Layout moves (a card taking another's place) glide on SPRING_SETTLE. */
 export const LAYOUT_SETTLE = LinearTransition.springify()

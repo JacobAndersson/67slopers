@@ -1,12 +1,14 @@
 import { MinusIcon } from 'phosphor-react-native/src/icons/Minus';
 import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { useEffect, useRef, useState } from 'react';
-import { Keyboard, Pressable, TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
 
+import { ScalePressable } from '@/components/scale-pressable';
 import { Icon } from '@/components/ui/icon';
 import { useScreenScroll } from '@/components/screen';
 import { Text } from '@/components/ui/text';
 import { parseStepperInput } from '@/lib/stepper-input';
+import { cn } from '@/lib/utils';
 
 type StepperProps = {
   label: string;
@@ -205,16 +207,16 @@ export function Stepper({
             />
           )
         ) : (
-          <Pressable
+          <ScalePressable
             onPress={beginEdit}
             accessibilityRole="button"
             accessibilityLabel={`Edit ${label}`}
             accessibilityHint="Type a value"
-            className="h-12 min-w-24 flex-1 items-center justify-center rounded-full active:bg-raised">
+            className="h-12 min-w-24 flex-1 items-center justify-center rounded-full">
             <Text className="type-num text-[26px] leading-[30px]">
               {format ? format(value) : String(value)}
             </Text>
-          </Pressable>
+          </ScalePressable>
         )}
 
         {editing && inputMode === 'clock' ? (
@@ -252,15 +254,18 @@ function RoundButton({
   onPressOut: () => void;
 }) {
   return (
-    <Pressable
+    <ScalePressable
       disabled={disabled}
       onPress={onPress}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       accessibilityRole="button"
       accessibilityLabel={`${direction < 0 ? 'Decrease' : 'Increase'} ${label}`}
-      className="size-[52px] items-center justify-center rounded-full border-[1.5px] border-text active:bg-raised disabled:opacity-30">
+      className={cn(
+        'size-[52px] items-center justify-center rounded-full border-[1.5px] border-text',
+        disabled && 'opacity-30'
+      )}>
       <Icon as={direction < 0 ? MinusIcon : PlusIcon} size={22} weight="bold" />
-    </Pressable>
+    </ScalePressable>
   );
 }
