@@ -12,7 +12,6 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { AccessibilityInfo, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import Animated, {
   FadeIn,
-  FadeInDown,
   FadeOut,
   ReduceMotion,
   runOnJS,
@@ -47,7 +46,7 @@ import { getBoard, gripShortName } from '@/lib/boards';
 import { countWord, DOT, plural } from '@/lib/copy';
 import { sessionVerdict } from '@/lib/session-sets';
 import { formatClock } from '@/lib/dates';
-import { LIFT, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import { liftIn, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
 import { measure } from '@/lib/perf';
 import { useStore } from '@/lib/store/store';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
@@ -80,12 +79,6 @@ const WORDS_AT_MS = 680;
 const SUMMARY_DELAY_MS = WORDS_AT_MS + 400 + 1800;
 /** Night crossfades to the summary's ground in this long. */
 const SUMMARY_GROUND_MS = 120;
-/** "Done" and its line lift in 8 pt as the third bar lands. */
-const DONE_WORDS = FadeInDown.springify()
-  .stiffness(SPRING_SETTLE.stiffness)
-  .damping(SPRING_SETTLE.damping)
-  .delay(WORDS_AT_MS)
-  .withInitialValues({ transform: [{ translateY: LIFT }] });
 /** The Pitch's bars rise with the three closing notes, this far apart. */
 const NOTE_MS = 180;
 
@@ -207,20 +200,16 @@ function FactRow({ label, value }: { label: string; value: string }) {
  * Summary blocks follow each other in, lifting 8 pt on the Rivet spring. They start once the
  * ground is fully Snow, so text never sits half-faded on a passing grey.
  */
-const summaryEnter = (index: number) =>
-  FadeInDown.springify()
-    .stiffness(SPRING_SETTLE.stiffness)
-    .damping(SPRING_SETTLE.damping)
-    .delay(SUMMARY_GROUND_MS + index * 50)
-    .withInitialValues({ transform: [{ translateY: LIFT }] })
-    .reduceMotion(ReduceMotion.System);
+const summaryEnter = (index: number) => liftIn(SUMMARY_GROUND_MS + index * 50);
 
 /** One bar of the Pitch rising after `delay`, on the Rivet spring (a fade under reduced motion). */
 function useRise(delay: number, reduced: boolean) {
   const rise = useSharedValue(0);
   useEffect(() => {
     rise.set(
-      reduced ? withTiming(1, { duration: 120 }) : withDelay(delay, withSpring(1, SPRING_SETTLE))
+      reduced
+        ? withTiming(1, { duration: REDUCED_FADE_MS })
+        : withDelay(delay, withSpring(1, SPRING_SETTLE))
     );
   }, [rise, delay, reduced]);
   return useAnimatedStyle(() =>
@@ -555,11 +544,7 @@ export function Runner({
         <StatusBar style="light" />
         <View className="items-center">
           <RisingPitch ended={ended} />
-          <Animated.View
-            entering={
-              reducedMotion ? FadeIn.duration(REDUCED_FADE_MS).delay(WORDS_AT_MS) : DONE_WORDS
-            }
-            className="items-center">
+          <Animated.View entering={liftIn(WORDS_AT_MS, reducedMotion)} className="items-center">
             <Text
               className="mt-6 font-black"
               style={{

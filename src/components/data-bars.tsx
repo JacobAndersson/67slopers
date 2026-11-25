@@ -1,9 +1,9 @@
 import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
-import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { Text } from '@/components/ui/text';
-import { LIFT, SPRING_SETTLE } from '@/lib/motion';
+import { liftIn } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { useAppTheme } from '@/lib/use-theme';
 import { shapeWidths, type ShapePiece } from '@/lib/workout-shape';
@@ -44,16 +44,7 @@ export function SetBars({
       {Array.from({ length: Math.max(1, total) }, (_, i) => (
         <Animated.View
           key={i}
-          entering={
-            stagger === undefined
-              ? undefined
-              : FadeInDown.springify()
-                  .stiffness(SPRING_SETTLE.stiffness)
-                  .damping(SPRING_SETTLE.damping)
-                  .delay(stagger + i * 30)
-                  .withInitialValues({ transform: [{ translateY: LIFT }] })
-                  .reduceMotion(ReduceMotion.System)
-          }
+          entering={stagger === undefined ? undefined : liftIn(stagger + i * 30)}
           className={cn(
             'flex-1 rounded-full',
             i < done || i === current ? !color && 'bg-text' : !track && 'bg-bar'

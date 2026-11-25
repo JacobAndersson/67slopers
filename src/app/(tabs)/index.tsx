@@ -2,7 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { useCallback, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
-import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ActiveRunCard, useActiveRun } from '@/components/active-run-card';
 import { BoardCard } from '@/components/board-card';
@@ -16,16 +16,13 @@ import { Text } from '@/components/ui/text';
 import { WeekBars } from '@/components/week-bars';
 import { greetingLines, sessionLine, sessionTitle, weekBars, weekSummary } from '@/lib/copy';
 import { greeting } from '@/lib/greetings';
-import { REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import { LAYOUT_SETTLE, REDUCED_FADE_MS } from '@/lib/motion';
 import { lastSessionForWorkout, sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useClimb } from '@/lib/store/climb';
 import { useStore } from '@/lib/store/store';
 import { trainingLog, trainingStreak } from '@/lib/training-log';
 
 const PREVIEW = 3;
-const SETTLE = LinearTransition.springify()
-  .stiffness(SPRING_SETTLE.stiffness)
-  .damping(SPRING_SETTLE.damping);
 
 /**
  * Home (design: page 03, home-home and its states). A few words that follow the clock, then
@@ -76,12 +73,12 @@ export default function HomeScreen() {
   // When the unfinished card goes, the cards under it settle into place instead of jumping.
   const hang =
     next && !run ? (
-      <Animated.View key="hang" layout={SETTLE} entering={FadeIn.duration(REDUCED_FADE_MS)}>
+      <Animated.View key="hang" layout={LAYOUT_SETTLE} entering={FadeIn.duration(REDUCED_FADE_MS)}>
         <HangCard workout={next} last={last} top={!training.climbFirst} first={first} />
       </Animated.View>
     ) : null;
   const board = (
-    <Animated.View key="board" layout={SETTLE}>
+    <Animated.View key="board" layout={LAYOUT_SETTLE}>
       <BoardCard top={training.climbFirst} />
     </Animated.View>
   );

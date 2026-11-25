@@ -3,13 +3,7 @@ import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeOut,
-  ReduceMotion,
-  useReducedMotion,
-} from 'react-native-reanimated';
+import Animated, { FadeOut, ReduceMotion, useReducedMotion } from 'react-native-reanimated';
 
 import { ConfirmSheet } from '@/components/confirm-sheet';
 import { SetBars } from '@/components/data-bars';
@@ -19,19 +13,12 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { countWord, LABEL_DOT, plural } from '@/lib/copy';
 import { timeAgo } from '@/lib/dates';
-import { LIFT, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import { liftIn, REDUCED_FADE_MS } from '@/lib/motion';
 import { clearActiveRun, loadActiveRun } from '@/lib/store/active-run';
 import { useStore } from '@/lib/store/store';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import { expandWorkout } from '@/lib/timer/intervals';
 
-// Rivet's arrival: lift 8 pt on the spring; under reduced motion a 120 ms crossfade instead.
-const CARD_ENTER = FadeInDown.springify()
-  .stiffness(SPRING_SETTLE.stiffness)
-  .damping(SPRING_SETTLE.damping)
-  .withInitialValues({ transform: [{ translateY: LIFT }] })
-  .reduceMotion(ReduceMotion.Never);
-const CARD_ENTER_REDUCED = FadeIn.duration(REDUCED_FADE_MS).reduceMotion(ReduceMotion.Never);
 const CARD_EXIT = FadeOut.duration(REDUCED_FADE_MS * 1.5).reduceMotion(ReduceMotion.Never);
 
 /** The checkpointed run, read on focus after the first frame so it never delays startup. */
@@ -95,7 +82,9 @@ export function ActiveRunCard({ run, onGone }: { run: ActiveRun; onGone: () => v
   };
 
   return (
-    <Animated.View entering={reduced ? CARD_ENTER_REDUCED : CARD_ENTER} exiting={CARD_EXIT}>
+    <Animated.View
+      entering={liftIn(0, reduced).reduceMotion(ReduceMotion.Never)}
+      exiting={CARD_EXIT}>
       <View className="rounded-card border-[1.5px] border-text bg-surface p-6">
         <Label>{`Unfinished${LABEL_DOT}stopped ${timeAgo(run.savedAt)}`}</Label>
         <Text className="type-title mt-1.5" numberOfLines={1}>
