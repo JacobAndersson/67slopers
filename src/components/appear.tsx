@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import Animated, {
+  ReduceMotion,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -24,7 +25,8 @@ export function Appear({ children, rise = 8, duration = 200 }: AppearProps) {
   const reducedMotion = useReducedMotion();
   const progress = useSharedValue(0);
   useEffect(() => {
-    progress.set(withTiming(1, { duration, easing: EASE_OUT }));
+    // The fade stays under reduced motion; only the rise goes.
+    progress.set(withTiming(1, { duration, easing: EASE_OUT, reduceMotion: ReduceMotion.Never }));
   }, [progress, duration]);
   const style = useAnimatedStyle(() => ({
     opacity: progress.get(),

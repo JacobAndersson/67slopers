@@ -2,7 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { useCallback, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { ActiveRunCard, useActiveRun } from '@/components/active-run-card';
 import { BoardCard } from '@/components/board-card';
@@ -16,7 +16,7 @@ import { Text } from '@/components/ui/text';
 import { WeekBars } from '@/components/week-bars';
 import { greetingLines, sessionLine, sessionTitle, weekBars, weekSummary } from '@/lib/copy';
 import { greeting } from '@/lib/greetings';
-import { LAYOUT_SETTLE, REDUCED_FADE_MS } from '@/lib/motion';
+import { fadeIn, LAYOUT_SETTLE } from '@/lib/motion';
 import { lastSessionForWorkout, sortWorkoutsByLastUsed } from '@/lib/store/selectors';
 import { useClimb } from '@/lib/store/climb';
 import { useStore } from '@/lib/store/store';
@@ -73,7 +73,7 @@ export default function HomeScreen() {
   // When the unfinished card goes, the cards under it settle into place instead of jumping.
   const hang =
     next && !run ? (
-      <Animated.View key="hang" layout={LAYOUT_SETTLE} entering={FadeIn.duration(REDUCED_FADE_MS)}>
+      <Animated.View key="hang" layout={LAYOUT_SETTLE} entering={fadeIn()}>
         <HangCard workout={next} last={last} top={!training.climbFirst} first={first} />
       </Animated.View>
     ) : null;

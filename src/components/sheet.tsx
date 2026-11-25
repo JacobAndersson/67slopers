@@ -12,7 +12,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/text';
-import { EASE_OUT, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import { EASE_OUT, REDUCED_FADE, SPRING_SETTLE } from '@/lib/motion';
 
 const CLOSE_MS = 200;
 /** A flick this fast (px/s) closes the sheet however far it has travelled. */
@@ -49,14 +49,14 @@ export function Sheet({ open, onClose, title, action, children }: SheetProps) {
       // Rivet's lift: the sheet rises on the 380/32 spring; reduced motion is a short crossfade.
       shown.set(
         reducedMotion
-          ? withTiming(1, { duration: REDUCED_FADE_MS, easing: EASE_OUT })
+          ? withTiming(1, REDUCED_FADE)
           : withSpring(1, { ...SPRING_SETTLE, overshootClamping: true })
       );
     } else {
       shown.set(
         withTiming(
           0,
-          { duration: reducedMotion ? REDUCED_FADE_MS : CLOSE_MS, easing: EASE_OUT },
+          reducedMotion ? REDUCED_FADE : { duration: CLOSE_MS, easing: EASE_OUT },
           (finished) => {
             if (finished) runOnJS(unmount)();
           }

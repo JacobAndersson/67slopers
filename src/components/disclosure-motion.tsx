@@ -1,10 +1,10 @@
 import type { PropsWithChildren } from 'react';
 import { Platform } from 'react-native';
-import Animated, { FadeOut, useReducedMotion } from 'react-native-reanimated';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
-import { liftIn, REDUCED_FADE_MS } from '@/lib/motion';
+import { fadeOut, liftIn } from '@/lib/motion';
 
-const FADE_OUT = FadeOut.duration(REDUCED_FADE_MS);
+const FADE_OUT = fadeOut();
 
 /** Controls and step cards the user just added or opened: they lift in, and fade on close. */
 export function EditorReveal({ children, className }: PropsWithChildren<{ className?: string }>) {

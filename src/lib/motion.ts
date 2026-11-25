@@ -1,4 +1,12 @@
-import { cubicBezier, Easing, FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
+import {
+  cubicBezier,
+  Easing,
+  FadeIn,
+  FadeInDown,
+  FadeOut,
+  LinearTransition,
+  ReduceMotion,
+} from 'react-native-reanimated';
 
 /** Strong ease-out for anything entering, leaving or answering a touch. */
 export const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
@@ -19,6 +27,16 @@ export const LIFT = 8;
 /** Under reduced motion every lift becomes a crossfade of this length. */
 export const REDUCED_FADE_MS = 120;
 
+/**
+ * `withTiming` config for that crossfade. It is the reduced-motion version, so it runs under the
+ * system setting: Reanimated's default (`ReduceMotion.System`) would skip it and pop instead.
+ */
+export const REDUCED_FADE = {
+  duration: REDUCED_FADE_MS,
+  easing: EASE_OUT,
+  reduceMotion: ReduceMotion.Never,
+};
+
 /** Controls (switch, segmented tile, chip) change state in about this long. */
 export const QUICK_MS = 160;
 
@@ -33,12 +51,22 @@ export const LAYOUT_SETTLE = LinearTransition.springify()
   .damping(SPRING_SETTLE.damping)
   .mass(SPRING_SETTLE.mass);
 
+/** An `entering` crossfade that runs with reduced motion on too (a fade is not motion). */
+export function fadeIn(delayMs = 0) {
+  return FadeIn.duration(REDUCED_FADE_MS).delay(delayMs).reduceMotion(ReduceMotion.Never);
+}
+
+/** The matching `exiting` crossfade. */
+export function fadeOut(durationMs = REDUCED_FADE_MS) {
+  return FadeOut.duration(durationMs).reduceMotion(ReduceMotion.Never);
+}
+
 /**
  * Rivet's arrival, as an `entering` animation: rise LIFT and settle on SPRING_SETTLE after
  * `delayMs`. With `reduced`, a REDUCED_FADE_MS crossfade after the same delay instead.
  */
 export function liftIn(delayMs = 0, reduced = false) {
-  if (reduced) return FadeIn.duration(REDUCED_FADE_MS).delay(delayMs);
+  if (reduced) return fadeIn(delayMs);
   return FadeInDown.springify()
     .stiffness(SPRING_SETTLE.stiffness)
     .damping(SPRING_SETTLE.damping)

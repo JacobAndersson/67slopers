@@ -3,7 +3,7 @@ import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { FadeOut, ReduceMotion, useReducedMotion } from 'react-native-reanimated';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 import { ConfirmSheet } from '@/components/confirm-sheet';
 import { SetBars } from '@/components/data-bars';
@@ -13,13 +13,13 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { countWord, LABEL_DOT, plural } from '@/lib/copy';
 import { timeAgo } from '@/lib/dates';
-import { liftIn, REDUCED_FADE_MS } from '@/lib/motion';
+import { fadeOut, liftIn, REDUCED_FADE_MS } from '@/lib/motion';
 import { clearActiveRun, loadActiveRun } from '@/lib/store/active-run';
 import { useStore } from '@/lib/store/store';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import { expandWorkout } from '@/lib/timer/intervals';
 
-const CARD_EXIT = FadeOut.duration(REDUCED_FADE_MS * 1.5).reduceMotion(ReduceMotion.Never);
+const CARD_EXIT = fadeOut(REDUCED_FADE_MS * 1.5);
 
 /** The checkpointed run, read on focus after the first frame so it never delays startup. */
 export function useActiveRun() {
@@ -82,9 +82,7 @@ export function ActiveRunCard({ run, onGone }: { run: ActiveRun; onGone: () => v
   };
 
   return (
-    <Animated.View
-      entering={liftIn(0, reduced).reduceMotion(ReduceMotion.Never)}
-      exiting={CARD_EXIT}>
+    <Animated.View entering={liftIn(0, reduced)} exiting={CARD_EXIT}>
       <View className="rounded-card border-[1.5px] border-text bg-surface p-6">
         <Label>{`Unfinished${LABEL_DOT}stopped ${timeAgo(run.savedAt)}`}</Label>
         <Text className="type-title mt-1.5" numberOfLines={1}>
