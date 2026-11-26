@@ -57,7 +57,6 @@ import { PALETTE, SESSION } from '@/lib/theme';
 import { gripCue } from '@/lib/timer/grip-cue';
 import { sessionFromCheckpoint, type ActiveRun } from '@/lib/timer/checkpoint';
 import { countShape, countSize, countText, runShapes, shapeOf } from '@/lib/timer/count';
-import { energyTarget } from '@/lib/timer/energy';
 import type { Interval } from '@/lib/timer/intervals';
 import { intervalWord, nextUp, spokenDuration } from '@/lib/timer/next-up';
 import { useCues } from '@/lib/timer/useCues';
@@ -68,8 +67,6 @@ import { cn } from '@/lib/utils';
 import { workoutFacts } from '@/lib/workout-summary';
 
 const BrainrotVideo = lazy(() => import('@/components/brainrot-video'));
-// Skia loads with the field, so only once a timer is open and never on the way to Home.
-const HangField = lazy(() => import('@/components/hang-field'));
 
 /** The ground crossfades between states in this long (brand: state change 250 ms). */
 const GROUND_MS = 250;
@@ -749,17 +746,6 @@ export function Runner({
               transitionTimingFunction: 'linear',
             }}
           />
-          {/* The ground's living field, in the ground's own tones; under reduced motion, none. */}
-          {reducedMotion ? null : (
-            <Suspense fallback={null}>
-              <HangField
-                width={width}
-                height={rootHeight}
-                target={energyTarget(status, interval.phase)}
-                deep={paused ? SESSION.ready.edge : SESSION[state].edge}
-              />
-            </Suspense>
-          )}
           {paused ? (
             // A stopped clock never looks like a running one: the ground goes Snow and a band
             // of the phase it stopped in stays behind the header.
