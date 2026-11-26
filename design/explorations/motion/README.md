@@ -222,3 +222,28 @@ a phone is not measured here.
   each build: about 30 s for a JS change, and the emulator stayed up.
 - Drive the emulator from one script at a time. Two at once (a measurement in the background and a
   check in the foreground) gave runs of 99 to 400 frames in 20 s, which are worthless.
+
+## Phase 3 (timer fixes)
+
+Three changes after the operator ran Phase 2a on a phone. Clips are in `fixes/` (git-ignored);
+the contact sheets and `fixes/grip.sh` are committed.
+
+| Commit    | Change                                                                                                                                                                                                                                                                                                       | Checked on the emulator                                                                                                                                                                                                                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `b48e735` | The smoke field is gone: `hang-field.tsx`, its web stub, `energy.ts` and its tests, and `@shopify/react-native-skia`. The grounds are flat session colours again. The digit roll, press dips, control swaps and crossfades stay.                                                                             | The x86_64 release APK has no `librnskia.so` and is 101.8 MB, down from 114.1 MB (`b6e9216`), back to Phase 2b's size. The JS bundle is 5.05 MB, down from 5.52 MB.                                                                                                                                                                  |
+| `dfd7e74` | Paused is Snow under the band, with no fill (`timer-paused`). The fill used to stay at full opacity while paused, so the lower half kept the phase colour and the count sat across its edge. It now fades out with the ground's 250 ms crossfade and back on Resume.                                         | `paused-sheet.png`, left to right: the operator's phone, `a435f72` (before the motion work), `b6e9216`, this fix, the design. The fill was there before the motion work too, so this was a gap against the design, not a regression.                                                                                                 |
+| `b5788a1` | The board and its grip show only while the grip is news: through Get ready and the first hang, and from the rest before a new grip through its first hang (`show` in `grip-cue.ts`). Hidden, it fades out in 200 ms and keeps its room, so the count never moves. A hang with no grip never shows the board. | `runner-sheet.png` (Repeaters 7:3: board for Get ready and hang 1, gone from the first rest), `board-hide-sheet.png` (that fade at 25 fps), `grip-sheet.png` (`grip.sh`: back for the Recover before large edges and their first hang, kept while paused there), `controls-sheet.png` (Skip while paused into a rest: it fades out). |
+
+The operator's screenshot also showed the board with no hold lit and no grip name. That did not
+reproduce on any build with the seeded Repeaters 7:3, whose hangs carry a grip, including after
+backgrounding the app while paused and after continuing the run from Home. It is what the runner
+draws for a workout with a board but no grip chosen, unchanged since before the motion work; under
+the new rule such a workout no longer shows the board at all.
+
+Left as it was: on Pause and Resume the board's plate switches to the new ground at once while
+the ground crossfades, so for 250 ms the plate is a shade off the ground around it (visible in
+both `a435f72` and `b6e9216`).
+
+The release build ran at host load up to 300 with swap full, and the emulator's QEMU process died
+during it with no OOM line of its own. It came back in the same container as described under
+Phase 2a's emulator notes, in 25 s.
