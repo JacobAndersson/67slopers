@@ -125,6 +125,8 @@ const SWAP_OUT = crossScale(false);
 
 /** Board diagram width on a 390 pt screen (design: x 64, w 262). */
 const BOARD_INSET = 64;
+/** The board fades in and out this fast when its grip becomes news or stops being it. */
+const BOARD_FADE_MS = 200;
 
 /** Which session colour a running interval wears. */
 function stateOf(interval: Interval): keyof typeof SESSION {
@@ -312,7 +314,7 @@ type RunnerProps = {
  * The session (design page 05): the whole screen becomes the colour of the moment, Get ready
  * Stone, Hang Glow, Rest Glacier, Recover Glacier 200, in both modes, and every state has a
  * word. The interval rises from the bottom in a deeper step of the same colour; the grip is
- * drawn on the board and named under it; set pills show the whole session; Next speaks only
+ * drawn on the board and named under it while it is news; set pills show the whole session; Next speaks only
  * when the pattern breaks. While it runs there is one control, Pause; Back and Skip come with
  * Resume, and Paused goes Snow under a band of the phase it stopped in. The X ends it (a sheet
  * asks first). Done is Night for a breath, then the summary: how it felt, the facts, a note,
@@ -488,8 +490,9 @@ export function Runner({
     () => gripCue(intervals, timer.engineState.index),
     [intervals, timer.engineState.index]
   );
+  // The grip is named only while the board is on screen.
   const grip = useMemo(
-    () => (board && cue.holds.length ? gripShortName(board, cue.holds) : ''),
+    () => (board && cue.show ? gripShortName(board, cue.holds) : ''),
     [board, cue]
   );
   const upNext = useMemo(() => {
@@ -799,7 +802,16 @@ export function Runner({
             </View>
 
             {board && !compact ? (
-              <View className="items-center pt-3.5">
+              // Shown only while the grip is news (gripCue). Hidden, it keeps its room, so the
+              // digits never move; under reduced motion this is still a fade, not motion.
+              <Animated.View
+                className="items-center pt-3.5"
+                style={{
+                  opacity: cue.show ? 1 : 0,
+                  transitionProperty: 'opacity',
+                  transitionDuration: BOARD_FADE_MS,
+                  transitionTimingFunction: CSS_EASE_OUT,
+                }}>
                 <HangboardDiagram
                   animated
                   board={timings.board!}
@@ -811,7 +823,7 @@ export function Runner({
                   lineOpacity={0x40 / 255}
                   fillOpacity={0x0a / 255}
                 />
-              </View>
+              </Animated.View>
             ) : null}
             {/* Always there, so the digits never move when a caption comes or goes; a new one
               crossfades over the old. */}
