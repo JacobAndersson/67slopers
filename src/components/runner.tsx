@@ -49,7 +49,15 @@ import { getBoard, gripShortName } from '@/lib/boards';
 import { countWord, DOT, plural } from '@/lib/copy';
 import { sessionVerdict } from '@/lib/session-sets';
 import { formatClock } from '@/lib/dates';
-import { EASE_OUT, fadeIn, fadeOut, liftIn, REDUCED_FADE_MS, SPRING_SETTLE } from '@/lib/motion';
+import {
+  CSS_EASE_OUT,
+  EASE_OUT,
+  fadeIn,
+  fadeOut,
+  liftIn,
+  REDUCED_FADE_MS,
+  SPRING_SETTLE,
+} from '@/lib/motion';
 import { measure } from '@/lib/perf';
 import { useStore } from '@/lib/store/store';
 import type { Feel, WorkoutTimings } from '@/lib/store/types';
@@ -739,11 +747,13 @@ export function Runner({
               backgroundColor: SESSION[state].elapsed,
               borderTopWidth: 3,
               borderTopColor: SESSION[state].edge,
-              opacity: running || paused ? 1 : 0,
+              // Paused is Snow (design timer-paused): the fill fades out with the ground and
+              // comes back on Resume at the level it stopped.
+              opacity: running ? 1 : 0,
               // Linear between the timer's 100 ms ticks, so the level rises continuously.
-              transitionProperty: running ? 'height' : 'none',
-              transitionDuration: FILL_STEP_MS,
-              transitionTimingFunction: 'linear',
+              transitionProperty: running ? ['height', 'opacity'] : 'opacity',
+              transitionDuration: running ? [FILL_STEP_MS, GROUND_MS] : GROUND_MS,
+              transitionTimingFunction: running ? ['linear', CSS_EASE_OUT] : CSS_EASE_OUT,
             }}
           />
           {paused ? (
